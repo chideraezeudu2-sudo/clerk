@@ -69,14 +69,14 @@ export const SentView: React.FC<SentViewProps> = ({ sentEmails, campaigns }) => 
       </div>
 
       {/* Filter Bar */}
-      <div className="p-3 bg-[#ffffff] rounded-[9px] border border-[#0a2414]/10 shadow-[0_1px_0_0_rgba(10,36,20,0.06)] flex flex-col md:flex-row md:items-center justify-between gap-3">
+      <div className="p-4 bg-[#ffffff] rounded-[10px] border border-[#0a2414]/10 flex flex-col md:flex-row md:items-center justify-between gap-3">
         <div className="flex items-center space-x-2 flex-1">
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search by recipient or company..."
-            className="w-full text-[14px] text-[#0a2414] outline-none placeholder-[#607166] px-1"
+            className="w-full text-[14px] text-[#0a2414] outline-none placeholder-[#607166] px-1 bg-transparent"
           />
         </div>
 
@@ -115,11 +115,11 @@ export const SentView: React.FC<SentViewProps> = ({ sentEmails, campaigns }) => 
       </div>
 
       {/* Table */}
-      <div className="rounded-[9px] bg-[#ffffff] border border-[#0a2414]/10 shadow-[0_1px_0_0_rgba(10,36,20,0.06)] overflow-hidden">
+      <div className="rounded-[10px] bg-[#ffffff] border border-[#0a2414]/10 overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="border-b border-[#0a2414]/8 bg-[#f9f6f1] text-[12px] uppercase text-[#607166]">
+              <tr className="border-b border-[#0a2414]/8 bg-[#fafaf9] text-[11.5px] uppercase text-[#607166] font-semibold">
                 <th className="py-3 px-5">Recipient</th>
                 <th className="py-3 px-4">Subject</th>
                 <th className="py-3 px-4">Campaign</th>
@@ -128,12 +128,12 @@ export const SentView: React.FC<SentViewProps> = ({ sentEmails, campaigns }) => 
                 <th className="py-3 px-4 text-right">Thread</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-[#0a2414]/6 text-[14px]">
+            <tbody className="divide-y divide-[#0a2414]/6 text-[13.5px]">
               {filteredEmails.map((item) => (
                 <tr
                   key={item.id}
                   onClick={() => setActiveThreadEmail(item)}
-                  className="hover:bg-[#f3fbe9]/50 transition-colors cursor-pointer group"
+                  className="hover:bg-[#fafaf9] transition-colors cursor-pointer group"
                 >
                   <td className="py-3.5 px-5">
                     <div className="font-medium text-[#0a2414]">
@@ -168,19 +168,19 @@ export const SentView: React.FC<SentViewProps> = ({ sentEmails, campaigns }) => 
       {/* THREAD DRAWER / MODAL */}
       {activeThreadEmail && (
         <div className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-4">
-          <div className="w-full max-w-2xl bg-[#ffffff] rounded-[9px] p-6 sm:p-8 border border-[#0a2414]/10 shadow-2xl space-y-5 max-h-[90vh] overflow-y-auto">
+          <div className="w-full max-w-2xl bg-[#ffffff] rounded-[10px] p-6 sm:p-8 border border-[#0a2414]/10 space-y-5 max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between border-b border-[#0a2414]/10 pb-4">
               <div>
                 <span className="text-[12px] uppercase text-[#607166] block">
                   Campaign: {activeThreadEmail.campaignName}
                 </span>
-                <h2 className="text-[18px] font-medium text-[#0a2414]">
+                <h2 className="text-[18px] font-semibold text-[#0a2414]">
                   {activeThreadEmail.subject}
                 </h2>
               </div>
               <button
                 onClick={() => setActiveThreadEmail(null)}
-                className="px-2.5 py-1 text-[13px] rounded-[6px] hover:bg-[#f9f6f1] text-[#607166]"
+                className="px-2.5 py-1 text-[13px] rounded-[10px] hover:bg-[#fafaf9] text-[#607166]"
               >
                 Close
               </button>
@@ -192,7 +192,7 @@ export const SentView: React.FC<SentViewProps> = ({ sentEmails, campaigns }) => 
                 <span>Sent from: {activeThreadEmail.senderMailbox}</span>
                 <span>{activeThreadEmail.sentAt}</span>
               </div>
-              <div className="p-4 rounded-[6px] bg-[#f9f6f1] border border-[#0a2414]/8 text-[14px] leading-relaxed text-[#283a2e]">
+              <div className="p-4 rounded-[10px] bg-[#fafaf9] border border-[#0a2414]/8 text-[14px] leading-relaxed text-[#283a2e]">
                 {activeThreadEmail.body}
               </div>
             </div>
@@ -206,7 +206,7 @@ export const SentView: React.FC<SentViewProps> = ({ sentEmails, campaigns }) => 
                   </span>
                   <span>{activeThreadEmail.replyAt}</span>
                 </div>
-                <div className="p-4 rounded-[6px] bg-[#f3fbe9] border border-[#17b267]/30 text-[14px] leading-relaxed text-[#0a2414] font-medium">
+                <div className="p-4 rounded-[10px] bg-[#f3fbe9] border border-[#17b267]/30 text-[14px] leading-relaxed text-[#0a2414] font-medium">
                   {activeThreadEmail.replyContent}
                 </div>
                 <p className="text-[12px] text-[#607166]">
@@ -214,7 +214,7 @@ export const SentView: React.FC<SentViewProps> = ({ sentEmails, campaigns }) => 
                 </p>
               </div>
             ) : (
-              <div className="p-3 rounded-[6px] bg-[#f9f6f1] text-[13px] text-[#607166] text-center">
+              <div className="p-3 rounded-[10px] bg-[#fafaf9] text-[13px] text-[#607166] text-center">
                 No incoming replies received yet. Automatic reply tracking active.
               </div>
             )}
@@ -222,7 +222,7 @@ export const SentView: React.FC<SentViewProps> = ({ sentEmails, campaigns }) => 
             <div className="flex justify-end pt-2">
               <button
                 onClick={() => setActiveThreadEmail(null)}
-                className="px-5 py-2 rounded-[6px] bg-[#0a2414] text-[#ffffff] text-[14px] font-medium"
+                className="px-5 py-2 rounded-[10px] bg-[#0a2414] text-[#ffffff] text-[14px] font-medium"
               >
                 Close Thread
               </button>

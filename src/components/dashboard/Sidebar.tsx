@@ -94,8 +94,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
       >
         {/* Top brand & navigation */}
         <div className="p-6 flex flex-col h-full overflow-y-auto space-y-6">
-          {/* Logo Header */}
-          <div className="flex items-center px-1.5">
+          {/* Logo Header - Centered */}
+          <div className="flex items-center justify-center px-1.5 pb-2 border-b border-[#0a2414]/8">
             <button
               onClick={() => onNavigate('landing')}
               className="text-[23px] font-semibold tracking-[-0.04em] text-[#0a2414] hover:opacity-80 transition-opacity inline-flex items-baseline"

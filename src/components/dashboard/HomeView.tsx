@@ -229,14 +229,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
 
       {/* Metrics Row - Flat white with 1px hairline borders */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div
-          onClick={() => setActiveMetric(activeMetric === 'signals' ? 'all' : 'signals')}
-          className={`p-6 rounded-[10px] bg-[#ffffff] border transition-all cursor-pointer ${
-            activeMetric === 'signals'
-              ? 'border-[#0ea5e9] ring-1 ring-[#0ea5e9]'
-              : 'border-[#0a2414]/10 hover:border-[#0a2414]/25'
-          }`}
-        >
+        <div className="p-6 rounded-[10px] bg-[#ffffff] border border-[#0a2414]/10">
           <div className="flex items-center justify-between text-[12.5px] text-[#607166] mb-2 font-medium">
             <span>Leads Found</span>
             <span className="text-[#0ea5e9] text-[11px] font-semibold">Active Signals</span>
@@ -244,20 +237,12 @@ export const HomeView: React.FC<HomeViewProps> = ({
           <div className="text-[30px] font-normal text-[#0a2414] tracking-tight">
             {Math.round(totalLeads * multiplier)}
           </div>
-          <div className="text-[12px] text-[#0ea5e9] mt-1.5 font-medium flex items-center justify-between">
-            <span>+{Math.round(14 * multiplier)} new triggers</span>
-            <span className="text-[11px] underline opacity-80">{activeMetric === 'signals' ? 'Active on chart' : 'Graph'}</span>
+          <div className="text-[12px] text-[#0ea5e9] mt-1.5 font-medium">
+            +{Math.round(14 * multiplier)} new triggers detected
           </div>
         </div>
 
-        <div
-          onClick={() => setActiveMetric(activeMetric === 'sent' ? 'all' : 'sent')}
-          className={`p-6 rounded-[10px] bg-[#ffffff] border transition-all cursor-pointer ${
-            activeMetric === 'sent'
-              ? 'border-[#17b267] ring-1 ring-[#17b267]'
-              : 'border-[#0a2414]/10 hover:border-[#0a2414]/25'
-          }`}
-        >
+        <div className="p-6 rounded-[10px] bg-[#ffffff] border border-[#0a2414]/10">
           <div className="flex items-center justify-between text-[12.5px] text-[#607166] mb-2 font-medium">
             <span>Emails Sent</span>
             <span className="text-[#607166] text-[11px]">Direct Pool</span>
@@ -265,20 +250,12 @@ export const HomeView: React.FC<HomeViewProps> = ({
           <div className="text-[30px] font-normal text-[#0a2414] tracking-tight">
             {Math.round(totalSent * multiplier)}
           </div>
-          <div className="text-[12px] text-[#607166] mt-1.5 flex items-center justify-between">
-            <span>Native Gmail • 35/day cap</span>
-            <span className="text-[11px] underline opacity-80">{activeMetric === 'sent' ? 'Active on chart' : 'Graph'}</span>
+          <div className="text-[12px] text-[#607166] mt-1.5">
+            Native Gmail • 35/day cap
           </div>
         </div>
 
-        <div
-          onClick={() => setActiveMetric(activeMetric === 'replies' ? 'all' : 'replies')}
-          className={`p-6 rounded-[10px] bg-[#ffffff] border transition-all cursor-pointer ${
-            activeMetric === 'replies'
-              ? 'border-[#0a2414] ring-1 ring-[#0a2414]'
-              : 'border-[#0a2414]/10 hover:border-[#0a2414]/25'
-          }`}
-        >
+        <div className="p-6 rounded-[10px] bg-[#ffffff] border border-[#0a2414]/10">
           <div className="flex items-center justify-between text-[12.5px] text-[#607166] mb-2 font-medium">
             <span>Replies Received</span>
             <span className="text-[#17b267] text-[11px] font-semibold">High Intent</span>
@@ -289,9 +266,8 @@ export const HomeView: React.FC<HomeViewProps> = ({
               ({overallReplyRate}%)
             </span>
           </div>
-          <div className="text-[12px] text-[#17b267] mt-1.5 font-medium flex items-center justify-between">
-            <span>3.8x above cold baseline</span>
-            <span className="text-[11px] underline opacity-80">{activeMetric === 'replies' ? 'Active on chart' : 'Graph'}</span>
+          <div className="text-[12px] text-[#17b267] mt-1.5 font-medium">
+            3.8x above cold baseline
           </div>
         </div>
 
