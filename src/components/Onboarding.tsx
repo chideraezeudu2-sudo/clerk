@@ -254,7 +254,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete, onNavigate }
               </div>
               <p className="text-[#607166]">
                 {state.isMailboxConnected
-                  ? <>Connected mailbox: <span className="text-[#0a2414] font-medium">{state.mailboxEmail}</span> (Safe ramp rate: 15/day limit).</>
+                  ? <>Connected mailbox: <span className="text-[#0a2414] font-medium">{state.mailboxEmail}</span> (Safe ramp: up to 150/day (personal) · 1000/day (business)).</>
                   : 'Mailbox not connected yet — you can add one later from the Senders tab.'}
               </p>
               <div className="pt-2 border-t border-[#0a2414]/6 flex items-center justify-between text-[12px] text-[#607166]">
@@ -437,7 +437,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete, onNavigate }
                       </div>
 
                       <div className="pt-2 border-t border-[#17b267]/20 flex items-center justify-between text-[12px] text-[#283a2e]">
-                        <span>Initial warm-up ramp: <strong>15 sends/day limit</strong></span>
+                        <span>Sending limit scales by account type: up to <strong>150/day (personal) · 1000/day (business)</strong></span>
                         <span className="text-[#17b267] font-semibold">Health Score: 100%</span>
                       </div>
                     </div>

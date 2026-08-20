@@ -41,8 +41,8 @@ create table if not exists public.senders (
   smtp_user text not null default '',
   smtp_pass text not null default '',
   status text not null default 'active' check (status in ('active', 'paused')),
-  daily_cap int not null default 15,
-  max_cap int not null default 50,
+  daily_cap int not null default 150,
+  max_cap int not null default 1000,
   created_at timestamptz not null default now()
 );
 

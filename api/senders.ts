@@ -12,6 +12,9 @@ export default async function handler(req: any, res: any) {
     }
     const host = provider === 'outlook' ? 'smtp.office365.com' : 'smtp.gmail.com';
     const port = provider === 'outlook' ? 587 : 465;
+    // Free-email providers cap at 150/day; business/custom domains cap at 1000/day.
+    const freeEmail = /@(gmail|googlemail|outlook|hotmail|yahoo|live|msn|icloud)\.com$/i.test(email.trim());
+    const dailyCap = freeEmail ? 150 : 1000;
 
     const candidate = {
       email: email.trim(),
@@ -19,6 +22,8 @@ export default async function handler(req: any, res: any) {
       smtp_port: port,
       smtp_user: email.trim(),
       smtp_pass: password.trim(),
+      daily_cap: dailyCap,
+      max_cap: dailyCap,
     };
 
     try {
