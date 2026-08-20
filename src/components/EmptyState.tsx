@@ -29,24 +29,17 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
         {type === 'campaigns' && (
           <svg
             className="w-12 h-12 text-[#17b267]"
-            viewBox="0 0 48 48"
+            viewBox="0 0 24 24"
             fill="none"
             stroke="currentColor"
-            strokeWidth="1.8"
+            strokeWidth="1.6"
             strokeLinecap="round"
             strokeLinejoin="round"
           >
-            {/* Concentric radar rings */}
-            <circle cx="24" cy="24" r="20" strokeDasharray="3 3" opacity="0.35" />
-            <circle cx="24" cy="24" r="14" opacity="0.6" />
-            <circle cx="24" cy="24" r="8" />
-            <circle cx="24" cy="24" r="2" fill="#0a2414" />
-            {/* Signal blip 1 */}
-            <circle cx="34" cy="16" r="3" fill="#1ad379" stroke="#0a2414" strokeWidth="1.5" />
-            {/* Signal blip 2 */}
-            <circle cx="14" cy="30" r="2.5" fill="#1ad379" stroke="#0a2414" strokeWidth="1.5" />
-            {/* Radar scan line */}
-            <line x1="24" y1="24" x2="38" y2="10" stroke="#0a2414" strokeWidth="2" />
+            {/* Clean target: outer ring, inner ring, bullseye */}
+            <circle cx="12" cy="12" r="10" stroke="#0a2414" opacity="0.5" />
+            <circle cx="12" cy="12" r="6" stroke="#0a2414" opacity="0.8" />
+            <circle cx="12" cy="12" r="2" fill="#1ad379" stroke="#0a2414" strokeWidth="1.5" />
           </svg>
         )}
 
@@ -133,8 +126,6 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
           </svg>
         )}
 
-        {/* Ambient indicator dot */}
-        <span className="absolute bottom-1 right-1 w-3 h-3 rounded-full bg-[#1ad379] border-2 border-[#ffffff]" />
       </div>
 
       {/* Text Copy */}
