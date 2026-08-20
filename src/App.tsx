@@ -330,9 +330,9 @@ export default function App() {
       setCampaigns((prev) => [campaign, ...prev]);
 
       // Generate AI drafts for the new campaign (Groq)
-      const { drafts: newDrafts } = await apiFetch('/api/drafts-generate', {
+      const { drafts: newDrafts } = await apiFetch('/api/drafts', {
         method: 'POST',
-        body: { campaignId: campaign.id, max: subscription.maxLeads || 10 },
+        body: { campaignId: campaign.id },
       }).catch(() => ({ drafts: [] }));
       if (newDrafts && newDrafts.length) {
         setDrafts((prev) => [...newDrafts, ...prev]);

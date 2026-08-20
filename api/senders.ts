@@ -6,7 +6,29 @@ export default async function handler(req: any, res: any) {
   const supa = getAdmin();
 
   if (req.method === 'POST') {
-    const { email, password, provider } = req.body || {};
+    const { email, password, provider, action, senderId } = req.body || {};
+
+    // Action: test an existing mailbox (sends a test email to itself).
+    if (action === 'test') {
+      if (!senderId) return fail(res, 400, 'senderId is required');
+      const { data: sender } = await supa
+        .from('senders').select('*').eq('id', senderId).eq('user_id', user.id).single();
+      if (!sender) return fail(res, 404, 'Sender not found');
+      try {
+        const transport = senderTransport(sender);
+        await transport.verify();
+        await transport.sendMail({
+          from: sender.email,
+          to: sender.email,
+          subject: 'Signal — mailbox test',
+          text: `This is a test email from Signal confirming ${sender.email} is connected and able to send.\n\nYou can delete this message.`,
+        });
+        return ok(res, { ok: true, message: `Test email sent to ${sender.email}` });
+      } catch (e: any) {
+        return fail(res, 400, `Connection failed: ${e.message}`);
+      }
+    }
+
     if (!email?.trim() || !password?.trim()) {
       return fail(res, 400, 'Email and app password are required');
     }
