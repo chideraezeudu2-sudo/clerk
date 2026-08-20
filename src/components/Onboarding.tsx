@@ -356,12 +356,15 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete, onNavigate }
 
                       {showAppPassHelp && (
                         <div className="p-4 rounded-[6px] bg-[#f9f6f1] border border-[#0a2414]/10 text-[13px] text-[#283a2e] space-y-1.5">
-                          <p className="font-medium text-[#0a2414]">Quick 30-second setup:</p>
+                          <p className="font-medium text-[#0a2414]">Setup:</p>
                           <ol className="list-decimal pl-4 space-y-1 text-[#607166]">
-                            <li>Turn on 2-Step Verification if it's off (Google Account → Security).</li>
-                            <li>Go to <a href="https://myaccount.google.com/apppasswords" target="_blank" rel="noopener noreferrer" className="text-[#17b267] underline">myaccount.google.com/apppasswords</a>.</li>
+                            <li>Turn on <strong>2-Step Verification</strong> first (Google Account → Security) — it's required, not optional.</li>
+                            <li>Then open <a href="https://myaccount.google.com/apppasswords" target="_blank" rel="noopener noreferrer" className="text-[#17b267] underline">myaccount.google.com/apppasswords</a>.</li>
                             <li>Name it "clerk", click Create, and paste the 16-character code here.</li>
                           </ol>
+                          <p className="text-[12px] text-[#607166] pt-1">
+                            See "not available for your account"? 2-Step Verification isn't fully on, or it's a Workspace account with app passwords disabled by your admin — or the account uses passkey-only sign-in. Use a regular @gmail.com with 2FA on.
+                          </p>
                         </div>
                       )}
 
