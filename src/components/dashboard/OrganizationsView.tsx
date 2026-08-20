@@ -6,9 +6,10 @@ interface OrganizationsViewProps {
   onAddOrganization?: (input: { name: string; domain: string; industry: string; keywords: string[] }) => void;
   onDeleteOrganization?: (id: string) => void;
   onScout?: () => void;
+  onSuggestLookalikes?: () => Promise<Array<{ name: string; domain: string; industry: string; keywords: string[] }>>;
 }
 
-export const OrganizationsView: React.FC<OrganizationsViewProps> = ({ organizations, onAddOrganization, onDeleteOrganization, onScout }) => {
+export const OrganizationsView: React.FC<OrganizationsViewProps> = ({ organizations, onAddOrganization, onDeleteOrganization, onScout, onSuggestLookalikes }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedTag, setSelectedTag] = useState<string>('all');
   const [selectedSignalFilter, setSelectedSignalFilter] = useState<string>('all');
@@ -18,6 +19,8 @@ export const OrganizationsView: React.FC<OrganizationsViewProps> = ({ organizati
   const [newDomain, setNewDomain] = useState('');
   const [newIndustry, setNewIndustry] = useState('');
   const [newKeywords, setNewKeywords] = useState('');
+  const [lookalikes, setLookalikes] = useState<Array<{ name: string; domain: string; industry: string; keywords: string[] }>>([]);
+  const [isSuggesting, setIsSuggesting] = useState(false);
 
   const filteredOrgs = organizations.filter((org) => {
     const matchesSearch =
@@ -59,6 +62,22 @@ export const OrganizationsView: React.FC<OrganizationsViewProps> = ({ organizati
         </div>
 
         <div className="flex items-center space-x-2">
+          {onSuggestLookalikes && (
+            <button
+              onClick={async () => {
+                setIsSuggesting(true);
+                try {
+                  const s = await onSuggestLookalikes();
+                  setLookalikes(s || []);
+                } finally {
+                  setIsSuggesting(false);
+                }
+              }}
+              className="px-3.5 py-2 rounded-[10px] bg-[#ffffff] border border-[#0a2414]/15 text-[#0a2414] text-[13px] font-semibold hover:bg-[#f3fbe9] transition-all"
+            >
+              {isSuggesting ? 'Finding…' : '✨ Suggest lookalikes'}
+            </button>
+          )}
           {onScout && (
             <button
               onClick={onScout}
@@ -111,6 +130,26 @@ export const OrganizationsView: React.FC<OrganizationsViewProps> = ({ organizati
           >
             Add
           </button>
+        </div>
+      )}
+
+      {/* Lookalike suggestions (manual-mode: you pick which to add) */}
+      {lookalikes.length > 0 && (
+        <div className="p-3 bg-[#f3fbe9] rounded-[10px] border border-[#0a2414]/10 flex flex-wrap items-center gap-2">
+          <span className="text-[12.5px] font-medium text-[#607166]">Suggested lookalikes:</span>
+          {lookalikes.map((lk) => (
+            <button
+              key={lk.name}
+              onClick={() => {
+                onAddOrganization?.(lk);
+                setLookalikes((prev) => prev.filter((x) => x.name !== lk.name));
+              }}
+              className="px-3 py-1.5 rounded-[8px] bg-[#ffffff] border border-[#17b267]/40 text-[#0a2414] text-[12.5px] font-medium hover:bg-[#17b267]/10 transition-colors"
+              title={`Add ${lk.name}${lk.domain ? ' (' + lk.domain + ')' : ''} to watchlist`}
+            >
+              + {lk.name}{lk.domain ? ` · ${lk.domain}` : ''}
+            </button>
+          ))}
         </div>
       )}
 

@@ -154,3 +154,44 @@ export async function gatherSignals(orgName: string, domain: string, allowTechSt
   }
   return { hiring, funding, freeSignals, tech };
 }
+
+// ---------- LOOKALIKES (free: companies hiring the same roles you already watch) ----------
+// For each seed org, take its role keywords, search the free hiring pool, and
+// surface NEW companies (different employers) that match the same pattern.
+// This turns a few hand-picked targets into a broad, self-expanding watchlist.
+export async function findLookalikes(
+  seedKeywords: string[],
+  existingNames: string[],
+  limit = 8
+) {
+  const JSEARCH_KEY = process.env.JSEARCH_API_KEY || '';
+  if (!JSEARCH_KEY || !seedKeywords.length) return [];
+  const query = seedKeywords.join(' ');
+  try {
+    const res = await fetch(
+      `https://api.openwebninja.com/jsearch/search-v2?query=${encodeURIComponent(query)}&page=1&num_pages=1&country=us&language=en`,
+      { headers: { 'X-API-Key': JSEARCH_KEY } }
+    );
+    if (!res.ok) return [];
+    const json = await res.json();
+    const jobs = Array.isArray(json?.data?.jobs) ? json.data.jobs : [];
+    const existing = new Set(existingNames.map((n) => n.toLowerCase()));
+    const seen = new Set<string>();
+    const out: any[] = [];
+    for (const j of jobs) {
+      const name = (j.employer_name || '').trim();
+      if (!name || existing.has(name.toLowerCase()) || seen.has(name.toLowerCase())) continue;
+      seen.add(name.toLowerCase());
+      out.push({
+        name,
+        domain: (j.employer_website || '').replace(/^https?:\/\//, '').replace(/\/$/, ''),
+        industry: j.job_employment_type || '',
+        keywords: seedKeywords,
+      });
+      if (out.length >= limit) break;
+    }
+    return out;
+  } catch {
+    return [];
+  }
+}

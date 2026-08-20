@@ -545,6 +545,16 @@ export default function App() {
     }
   };
 
+  const handleSuggestLookalikes = async (): Promise<Array<{ name: string; domain: string; industry: string; keywords: string[] }>> => {
+    try {
+      const result = await apiFetch('/api/scout', { method: 'POST', body: { lookalikes: true, limit: 8 } });
+      return result?.suggestions || [];
+    } catch (err) {
+      console.error('Lookalikes failed:', err);
+      return [];
+    }
+  };
+
   const isBlog = window.location.hash.startsWith('#/blog');
 
   return (
@@ -588,6 +598,7 @@ export default function App() {
           onAddOrganization={handleAddOrganization}
           onDeleteOrganization={handleDeleteOrganization}
           onScout={handleScout}
+          onSuggestLookalikes={handleSuggestLookalikes}
           assistantMessages={assistantMessages}
           settings={settings}
           subscription={subscription}

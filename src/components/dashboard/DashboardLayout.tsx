@@ -40,6 +40,7 @@ interface DashboardLayoutProps {
   onAddOrganization?: (input: { name: string; domain: string; industry: string; keywords: string[] }) => void;
   onDeleteOrganization?: (id: string) => void;
   onScout?: () => void;
+  onSuggestLookalikes?: () => Promise<Array<{ name: string; domain: string; industry: string; keywords: string[] }>>;
   assistantMessages: AssistantMessage[];
   settings: UserSettings;
 
@@ -91,6 +92,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
   onAddOrganization,
   onDeleteOrganization,
   onScout,
+  onSuggestLookalikes,
   assistantMessages,
   settings,
   subscription = {
@@ -259,6 +261,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
               onAddOrganization={onAddOrganization}
               onDeleteOrganization={onDeleteOrganization}
               onScout={onScout}
+              onSuggestLookalikes={onSuggestLookalikes}
             />
           )}
 
