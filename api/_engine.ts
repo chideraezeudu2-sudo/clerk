@@ -9,6 +9,17 @@ import { getAdmin } from './_lib.js';
 const JSEARCH_KEY = process.env.JSEARCH_API_KEY || '';
 const JSEARCH_URL = 'https://api.openwebninja.com/jsearch/search-v2';
 
+// Apify: one token powers the tech-stack signal class AND (optionally) a cheap
+// email-lookup actor. Tech-stack adds a signal type to the compound score.
+const APIFY_TOKEN = process.env.APIFY_TOKEN || '';
+const APIFY_TECHSTACK_ACTOR =
+  'https://api.apify.com/v2/acts/qyd7nNyqFPelQViBx/run-sync-get-dataset-items?timeout=120';
+// Default cheap email-lookup actor (name+domain -> email). You're billed ~$0.15/result.
+// Override via env if you switch providers.
+const EMAIL_LOOKUP_ACTOR =
+  process.env.EMAIL_LOOKUP_ACTOR ||
+  'https://api.apify.com/v2/acts/ryanclinton~waterfall-contact-enrichment/run-sync-get-dataset-items?timeout=120';
+
 // Roles that indicate a company is scaling the functions our ICP sells into.
 // Higher weight = stronger buying signal.
 const ROLE_WEIGHTS: Array<{ match: RegExp; weight: number }> = [
@@ -36,6 +47,46 @@ export function scoreJobTitle(title: string): number {
 
 export function isFreeEmailDomain(domain: string): boolean {
   return /@(gmail|googlemail|outlook|hotmail|yahoo|live|msn|icloud)\.com$/i.test(domain);
+}
+
+// --- Apify helpers (one token, two uses) ---
+
+// Tech-stack signal: detect a company's GTM tools (CRM/sequencer/marketing automation).
+export async function detectTechStack(domain: string) {
+  if (!APIFY_TOKEN || !domain) return null;
+  try {
+    const res = await fetch(APIFY_TECHSTACK_ACTOR, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${APIFY_TOKEN}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ url: domain, crawl_additional_pages: true }),
+    });
+    if (!res.ok) return null;
+    const items = await res.json();
+    const row = Array.isArray(items) ? items[0] : items;
+    return row || null;
+  } catch {
+    return null;
+  }
+}
+
+// Cheap email lookup (name + company domain -> email) via an Apify actor.
+export async function lookupEmail(name: string, domain: string) {
+  if (!APIFY_TOKEN || !domain) return null;
+  try {
+    const res = await fetch(EMAIL_LOOKUP_ACTOR, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${APIFY_TOKEN}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ people: [{ name, domain }] }),
+    });
+    if (!res.ok) return null;
+    const items = await res.json();
+    const row = Array.isArray(items) ? items[0] : items;
+    const email = row?.email || row?.emails?.[0] || null;
+    if (!email || row?.status === 'not_found') return null;
+    return { email, confidence: row?.emailConfidence ?? row?.confidence?.score ?? 0, source: row?.emailSource || 'apify' };
+  } catch {
+    return null;
+  }
 }
 
 interface JSearchJob {
@@ -168,6 +219,35 @@ export async function scoutForUser(userId: string, campaignId?: string) {
       newSignals++;
     }
 
+    // Tech-stack signal (once per org per day) — uses the detected tools as a stacked signal.
+    if (org.domain) {
+      const { data: recentStack } = await supa
+        .from('signal_events')
+        .select('id')
+        .eq('organization_id', org.id)
+        .eq('type', 'tech_changes')
+        .gte('detected_at', new Date(Date.now() - 86400000).toISOString())
+        .maybeSingle();
+      if (!recentStack) {
+        const stack = await detectTechStack(org.domain);
+        if (stack && !stack.detection_error && stack.tech_stack_signal !== 'low') {
+          const tools = (stack.detected_tools || []).join(', ') || stack.gtm_tool_count || 'tools';
+          const w = stack.tech_stack_signal === 'high' ? 15 : 8;
+          await supa.from('signal_events').insert({
+            user_id: userId,
+            organization_id: org.id,
+            type: 'tech_changes',
+            title: `Stack: ${stack.crm_detected || ''}${stack.seq_tool_detected ? ' + ' + stack.seq_tool_detected : ''}`.replace(/^\s*\+\s*/, '').trim() || 'GTM tools in use',
+            detail: `${org.name} runs ${tools} (${stack.tech_stack_signal} stack signal)`,
+            weight: w,
+          });
+          await supa.from('organizations').update({ score: (org.score || 0) + w, last_signal_at: new Date().toISOString() }).eq('id', org.id);
+          org.score = (org.score || 0) + w;
+          newSignals++;
+        }
+      }
+    }
+
     // Threshold cross -> create a lead (if we have a campaign to attach to).
     if (org.score >= TRIGGER_THRESHOLD && org.state !== 'triggered') {
       await supa.from('organizations').update({ state: 'triggered' }).eq('id', org.id);
@@ -188,12 +268,19 @@ export async function scoutForUser(userId: string, campaignId?: string) {
           .filter(Boolean)
           .join(' | ');
 
+        // Resolve a contact email (cheap Apify lookup) when we have a domain.
+        let contactEmail = '';
+        if (org.domain) {
+          const hit = await lookupEmail('Hiring Manager', org.domain).catch(() => null);
+          contactEmail = hit?.email || '';
+        }
+
         const { error: leadErr } = await supa.from('leads').insert({
           user_id: userId,
           campaign_id: targetCampaignId,
           organization_id: org.id,
           name: `Hiring Manager`,
-          email: '', // resolved by the contact provider (Email Search / Hunter) later
+          email: contactEmail,
           company: org.name,
           role: 'Hiring Manager',
           signal_type: 'hiring',
