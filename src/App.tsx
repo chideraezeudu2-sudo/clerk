@@ -11,6 +11,7 @@ import {
   UserSettings,
   UserSubscription,
   PlanTier,
+  Organization,
 } from './types';
 import { PLANS } from './data/plansData';
 import { supabase, isSupabaseConfigured } from './lib/supabase';
@@ -55,6 +56,7 @@ export default function App() {
   const [sentEmails, setSentEmails] = useState<SentEmail[]>([]);
   const [senders, setSenders] = useState<SenderMailbox[]>([]);
   const [personas, setPersonas] = useState<Persona[]>([]);
+  const [organizations, setOrganizations] = useState<Organization[]>([]);
   const [assistantMessages, setAssistantMessages] = useState<AssistantMessage[]>([]);
   const [settings, setSettings] = useState<UserSettings>({
     mailingAddress: '',
@@ -80,6 +82,7 @@ export default function App() {
       setSentEmails(data.sentEmails || []);
       setSenders(data.senders || []);
       setPersonas(data.personas || []);
+      setOrganizations(data.organizations || []);
       setSettings(data.settings || {
         mailingAddress: '',
         defaultFollowUpDays: 3,
@@ -514,6 +517,33 @@ export default function App() {
     }).catch((err) => console.error('Save settings failed:', err));
   };
 
+  // Organizations (watchlist) — real API + signal engine
+  const handleAddOrganization = async (input: { name: string; domain: string; industry: string; keywords: string[] }) => {
+    try {
+      const { organization } = await apiFetch('/api/organizations', { method: 'POST', body: input });
+      setOrganizations((prev) => [organization, ...prev]);
+    } catch (err) {
+      console.error('Add organization failed:', err);
+    }
+  };
+
+  const handleDeleteOrganization = (id: string) => {
+    setOrganizations((prev) => prev.filter((o) => o.id !== id));
+    apiFetch(`/api/organizations?id=${id}`, { method: 'DELETE' }).catch((err) =>
+      console.error('Delete organization failed:', err)
+    );
+  };
+
+  const handleScout = async () => {
+    try {
+      const result = await apiFetch('/api/scout', { method: 'POST', body: {} });
+      await loadData();
+      alert(result?.message || 'Scout complete.');
+    } catch (err: any) {
+      alert(`Scout failed: ${err?.message || 'unknown error'}`);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-[#f3fbe9] text-[#0a2414] font-sans selection:bg-[#ffbac3] selection:text-[#360003]">
       {/* 1. Landing Page View */}
@@ -546,6 +576,10 @@ export default function App() {
           sentEmails={sentEmails}
           senders={senders}
           personas={personas}
+          organizations={organizations}
+          onAddOrganization={handleAddOrganization}
+          onDeleteOrganization={handleDeleteOrganization}
+          onScout={handleScout}
           assistantMessages={assistantMessages}
           settings={settings}
           subscription={subscription}

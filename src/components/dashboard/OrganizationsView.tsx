@@ -3,14 +3,21 @@ import { Organization } from '../../types';
 
 interface OrganizationsViewProps {
   organizations: Organization[];
-  onAddOrgToCampaign?: (org: Organization) => void;
+  onAddOrganization?: (input: { name: string; domain: string; industry: string; keywords: string[] }) => void;
+  onDeleteOrganization?: (id: string) => void;
+  onScout?: () => void;
 }
 
-export const OrganizationsView: React.FC<OrganizationsViewProps> = ({ organizations, onAddOrgToCampaign }) => {
+export const OrganizationsView: React.FC<OrganizationsViewProps> = ({ organizations, onAddOrganization, onDeleteOrganization, onScout }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedTag, setSelectedTag] = useState<string>('all');
   const [selectedSignalFilter, setSelectedSignalFilter] = useState<string>('all');
   const [selectedOrg, setSelectedOrg] = useState<Organization | null>(null);
+  const [showAdd, setShowAdd] = useState(false);
+  const [newName, setNewName] = useState('');
+  const [newDomain, setNewDomain] = useState('');
+  const [newIndustry, setNewIndustry] = useState('');
+  const [newKeywords, setNewKeywords] = useState('');
 
   const filteredOrgs = organizations.filter((org) => {
     const matchesSearch =
@@ -43,15 +50,31 @@ export const OrganizationsView: React.FC<OrganizationsViewProps> = ({ organizati
               Organizations
             </h1>
             <span className="px-2.5 py-0.5 rounded-[6px] bg-[#f3fbe9] border border-[#17b267]/30 text-[#0a2414] text-[12px] font-semibold">
-              1,742,828 matching orgs
+              {organizations.length} watched
             </span>
           </div>
           <p className="text-[13.5px] text-[#607166]">
-            Target accounts ranked by hiring momentum, tech stack changes, and funding events.
+            Target accounts the engine monitors for hiring momentum, tech stack changes, and funding events.
           </p>
         </div>
 
         <div className="flex items-center space-x-2">
+          {onScout && (
+            <button
+              onClick={onScout}
+              className="px-3.5 py-2 rounded-[10px] bg-[#0a2414] text-[#ffffff] text-[13px] font-semibold hover:bg-[#17b267] transition-all"
+            >
+              Scout now
+            </button>
+          )}
+          {onAddOrganization && (
+            <button
+              onClick={() => setShowAdd((v) => !v)}
+              className="px-3.5 py-2 rounded-[10px] bg-[#1ad379] hover:bg-[#17b267] text-[#0a2414] text-[13px] font-semibold transition-all"
+            >
+              + Add organization
+            </button>
+          )}
           <button
             onClick={() => setSelectedSignalFilter(selectedSignalFilter === 'active' ? 'all' : 'active')}
             className={`px-3.5 py-2 rounded-[10px] text-[13px] font-semibold transition-all ${
@@ -64,6 +87,32 @@ export const OrganizationsView: React.FC<OrganizationsViewProps> = ({ organizati
           </button>
         </div>
       </div>
+
+      {/* Add organization form */}
+      {showAdd && onAddOrganization && (
+        <div className="p-4 bg-[#ffffff] rounded-[10px] border border-[#17b267]/30 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 items-end">
+          <input value={newName} onChange={(e) => setNewName(e.target.value)} placeholder="Company name *" className="px-3 py-2 rounded-[8px] border border-[#0a2414]/15 text-[13px] outline-none focus:border-[#17b267]" />
+          <input value={newDomain} onChange={(e) => setNewDomain(e.target.value)} placeholder="Domain (acme.com)" className="px-3 py-2 rounded-[8px] border border-[#0a2414]/15 text-[13px] outline-none focus:border-[#17b267]" />
+          <input value={newIndustry} onChange={(e) => setNewIndustry(e.target.value)} placeholder="Industry" className="px-3 py-2 rounded-[8px] border border-[#0a2414]/15 text-[13px] outline-none focus:border-[#17b267]" />
+          <input value={newKeywords} onChange={(e) => setNewKeywords(e.target.value)} placeholder="Watch roles (comma-sep)" className="px-3 py-2 rounded-[8px] border border-[#0a2414]/15 text-[13px] outline-none focus:border-[#17b267]" />
+          <button
+            onClick={() => {
+              if (!newName.trim()) return;
+              onAddOrganization({
+                name: newName.trim(),
+                domain: newDomain.trim(),
+                industry: newIndustry.trim(),
+                keywords: newKeywords.split(',').map((k) => k.trim()).filter(Boolean),
+              });
+              setNewName(''); setNewDomain(''); setNewIndustry(''); setNewKeywords('');
+              setShowAdd(false);
+            }}
+            className="px-4 py-2 rounded-[8px] bg-[#0a2414] text-[#ffffff] text-[13px] font-semibold hover:bg-[#17b267] transition-all"
+          >
+            Add
+          </button>
+        </div>
+      )}
 
       {/* Filter Row */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 p-4 bg-[#ffffff] rounded-[10px] border border-[#0a2414]/10">
@@ -168,11 +217,11 @@ export const OrganizationsView: React.FC<OrganizationsViewProps> = ({ organizati
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
-                        if (onAddOrgToCampaign) onAddOrgToCampaign(org);
+                        onDeleteOrganization?.(org.id);
                       }}
-                      className="px-3 py-1.5 rounded-[10px] bg-[#ffffff] border border-[#0a2414]/12 hover:bg-[#0a2414] hover:text-[#ffffff] text-[#0a2414] text-[12px] font-semibold transition-all"
+                      className="px-3 py-1.5 rounded-[10px] bg-[#ffffff] border border-[#0a2414]/12 hover:bg-[#ffbac3]/30 hover:text-[#360003] text-[#0a2414] text-[12px] font-semibold transition-all"
                     >
-                      Track Intent
+                      Remove
                     </button>
                   </td>
                 </tr>
@@ -244,7 +293,7 @@ export const OrganizationsView: React.FC<OrganizationsViewProps> = ({ organizati
               </button>
               <button
                 onClick={() => {
-                  if (onAddOrgToCampaign) onAddOrgToCampaign(selectedOrg);
+                  onDeleteOrganization?.(selectedOrg.id);
                   setSelectedOrg(null);
                 }}
                 className="px-4 py-2 rounded-[10px] bg-[#1ad379] hover:bg-[#17b267] text-[#0a2414] text-[13px] font-semibold"

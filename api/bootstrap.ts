@@ -9,7 +9,7 @@ export default async function handler(req: any, res: any) {
   if (!user) return fail(res, 401, 'Your session has expired — please sign in again.');
 
   const supa = getAdmin();
-  const [profile, settings, personas, senders, campaigns, leads, drafts, sent] =
+  const [profile, settings, personas, senders, campaigns, leads, drafts, sent, orgs] =
     await Promise.all([
       supa.from('profiles').select('*').eq('id', user.id).single(),
       supa.from('user_settings').select('*').eq('user_id', user.id).single(),
@@ -19,6 +19,7 @@ export default async function handler(req: any, res: any) {
       supa.from('leads').select('*').eq('user_id', user.id).order('created_at', { ascending: false }),
       supa.from('email_drafts').select('*').eq('user_id', user.id).order('created_at', { ascending: false }),
       supa.from('sent_emails').select('*').eq('user_id', user.id).order('sent_at', { ascending: false }),
+      supa.from('organizations').select('*').eq('user_id', user.id).order('score', { ascending: false }),
     ]);
 
   const campaignRows = campaigns.data || [];
@@ -73,6 +74,26 @@ export default async function handler(req: any, res: any) {
       ).length,
     })),
     senders: senderRows.map((x: any) => mapSender(x, sentTodayBySender)),
+    organizations: (orgs.data || []).map((o: any) => ({
+      id: o.id,
+      name: o.name,
+      domain: o.domain || '',
+      industry: o.industry || '',
+      keywords: o.keywords || [],
+      score: o.score ?? 0,
+      state: o.state || 'watching',
+      lastSignalAt: o.last_signal_at,
+      employees: 0,
+      peopleCount: 0,
+      teamsCount: 0,
+      jobsCount: 0,
+      lastPost: o.last_signal_at || '',
+      industries: o.industry ? [o.industry] : [],
+      orgTags: [],
+      isStarred: false,
+      activeSignal: '',
+      signalType: 'hiring',
+    })),
     campaigns: campaignRows.map((c: any) => mapCampaign(c, leadRows, sentRows)),
     drafts: draftRows.map((d: any) => mapDraft(d, campaignRows, leadRows)),
     sentEmails: sentRows.map((x: any) => mapSent(x, campaignRows, leadRows, senderRows)),

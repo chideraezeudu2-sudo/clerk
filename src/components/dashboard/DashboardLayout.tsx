@@ -37,6 +37,9 @@ interface DashboardLayoutProps {
   senders: SenderMailbox[];
   personas: Persona[];
   organizations?: Organization[];
+  onAddOrganization?: (input: { name: string; domain: string; industry: string; keywords: string[] }) => void;
+  onDeleteOrganization?: (id: string) => void;
+  onScout?: () => void;
   assistantMessages: AssistantMessage[];
   settings: UserSettings;
 
@@ -85,6 +88,9 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
   senders,
   personas,
   organizations = [],
+  onAddOrganization,
+  onDeleteOrganization,
+  onScout,
   assistantMessages,
   settings,
   subscription = {
@@ -250,9 +256,9 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
           {currentTab === 'organizations' && (
             <OrganizationsView
               organizations={organizations}
-              onAddOrgToCampaign={(org) => {
-                onSelectTab('campaigns');
-              }}
+              onAddOrganization={onAddOrganization}
+              onDeleteOrganization={onDeleteOrganization}
+              onScout={onScout}
             />
           )}
 
