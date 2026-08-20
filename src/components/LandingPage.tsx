@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ViewMode, PlanTier } from '../types';
 import { HeroProductMockup } from './HeroProductMockup';
 import { PLANS } from '../data/plansData';
@@ -73,6 +73,26 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, onOpenAuth
       a: 'Yes, anytime, from Settings. Upgrades apply right away. Downgrades apply at the start of your next billing cycle.',
     },
   ];
+
+  // FAQPage JSON-LD for AEO/featured snippets, tied to the real FAQ copy.
+  useEffect(() => {
+    const id = 'ld-faqpage';
+    document.getElementById(id)?.remove();
+    const el = document.createElement('script');
+    el.type = 'application/ld+json';
+    el.id = id;
+    el.text = JSON.stringify({
+      '@context': 'https://schema.org',
+      '@type': 'FAQPage',
+      mainEntity: faqItems.map((f) => ({
+        '@type': 'Question',
+        name: f.q,
+        acceptedAnswer: { '@type': 'Answer', text: f.a },
+      })),
+    });
+    document.head.appendChild(el);
+    return () => document.getElementById(id)?.remove();
+  }, []);
 
   return (
     <div id="landing-page-root" className="w-full bg-[#ffffff] text-[#0a2414]">
