@@ -1,8 +1,9 @@
 import React, { useState, useMemo } from 'react';
-import { Campaign, DashboardTab } from '../../types';
+import { Campaign, DashboardTab, SenderMailbox } from '../../types';
 
 interface HomeViewProps {
   campaigns: Campaign[];
+  senders?: SenderMailbox[];
   onOpenCampaign: (campaignId: string) => void;
   onNavigateTab: (tab: DashboardTab) => void;
 }
@@ -21,6 +22,7 @@ interface DataPoint {
 
 export const HomeView: React.FC<HomeViewProps> = ({
   campaigns,
+  senders = [],
   onOpenCampaign,
   onNavigateTab,
 }) => {
@@ -35,6 +37,11 @@ export const HomeView: React.FC<HomeViewProps> = ({
   const totalBounces = campaigns.reduce((acc, c) => acc + (c.bouncedCount || 0), 0);
   const activeCampaigns = campaigns.filter((c) => c.status === 'active');
   const overallReplyRate = totalSent > 0 ? ((totalReplies / totalSent) * 100).toFixed(1) : '0';
+  // Real deliverability = (sent - bounced)/sent; real daily cap = sum of sender caps
+  const deliverability = totalSent > 0 ? (((totalSent - totalBounces) / totalSent) * 100).toFixed(1) : null;
+  const bounceRate = totalSent > 0 ? ((totalBounces / totalSent) * 100).toFixed(1) : '0';
+  const dailyCap = senders.reduce((acc, s) => acc + (s.dailyCap || 0), 0);
+  const mailboxCount = senders.length;
 
   // Multipliers based on selected time window
   const multiplier = timeRange === '7d' ? 0.35 : timeRange === '14d' ? 0.6 : timeRange === '30d' ? 1.0 : 2.6;
@@ -44,16 +51,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
     new Set(activeCampaigns.flatMap((c) => c.signalKeywords || []))
   );
 
-  const displayTriggers = activeSignalKeywords.length > 0
-    ? activeSignalKeywords
-    : [
-        'Hiring VP Eng',
-        'Raised $8M+',
-        'Migrating from Apollo',
-        'G2 Negative Review',
-        'Reddit r/sales Complaint',
-        'Twitter API Grief',
-      ];
+  const displayTriggers = activeSignalKeywords;
 
   // Generate dynamic interactive chart data points based on live stats and range
   const chartData = useMemo(() => {
@@ -62,9 +60,9 @@ export const HomeView: React.FC<HomeViewProps> = ({
     const height = 170;
     const points: DataPoint[] = [];
 
-    const baseDailySent = Math.max(4, Math.round((totalSent * multiplier) / pointsCount));
-    const baseDailyReplies = Math.max(1, Math.round((totalReplies * multiplier) / pointsCount));
-    const baseDailySignals = Math.max(3, Math.round((totalLeads * multiplier) / pointsCount));
+    const baseDailySent = Math.round((totalSent * multiplier) / pointsCount);
+    const baseDailyReplies = Math.round((totalReplies * multiplier) / pointsCount);
+    const baseDailySignals = Math.round((totalLeads * multiplier) / pointsCount);
 
     const now = new Date();
 
@@ -75,10 +73,9 @@ export const HomeView: React.FC<HomeViewProps> = ({
       const dateStr = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
       const dayLabel = i === pointsCount - 1 ? 'Today' : i === 0 ? `${timeRange} ago` : dateStr;
 
-      const wave = Math.sin((i / pointsCount) * Math.PI) * 0.4 + (i / pointsCount) * 0.9 + 0.5;
-      const sent = Math.round(baseDailySent * wave + (i % 2 === 0 ? 3 : -2));
-      const replies = Math.max(0, Math.round(baseDailyReplies * (0.6 + (i / pointsCount) * 0.8) + (i % 3 === 0 ? 1 : 0)));
-      const signals = Math.max(1, Math.round(baseDailySignals * (0.7 + (i / pointsCount) * 0.7) + (i % 2 === 1 ? 3 : -1)));
+      const sent = Math.round(baseDailySent);
+      const replies = Math.round(baseDailyReplies);
+      const signals = Math.round(baseDailySignals);
 
       const x = (i / (pointsCount - 1)) * (width - 40) + 20;
       const maxSentVal = baseDailySent * 2.2 || 30;
@@ -91,9 +88,9 @@ export const HomeView: React.FC<HomeViewProps> = ({
       points.push({
         dayLabel,
         dateStr,
-        sent: Math.max(1, sent),
-        replies,
-        signals: Math.max(1, signals),
+        sent: Math.max(0, sent),
+        replies: Math.max(0, replies),
+        signals: Math.max(0, signals),
         x,
         sentY: Math.max(20, Math.min(height - 25, sentY)),
         repliesY: Math.max(20, Math.min(height - 25, repliesY)),
@@ -215,15 +212,19 @@ export const HomeView: React.FC<HomeViewProps> = ({
         {/* Triggers list rendered as clean tags with 6px rhythm */}
         <div className="pt-3 border-t border-[#0a2414]/8 flex items-center flex-wrap gap-1.5">
           <span className="text-[12px] font-medium text-[#607166] mr-1.5">Active Triggers:</span>
-          {displayTriggers.map((trig, idx) => (
-            <span
-              key={idx}
-              className="px-2.5 py-1 rounded-[6px] bg-[#ffffff] border border-[#0a2414]/10 text-[11.5px] text-[#283a2e] font-medium inline-flex items-center space-x-1.5"
-            >
-              <span className="w-1.5 h-1.5 rounded-full bg-[#17b267]" />
-              <span>{trig}</span>
-            </span>
-          ))}
+          {displayTriggers.length > 0 ? (
+            displayTriggers.map((trig, idx) => (
+              <span
+                key={idx}
+                className="px-2.5 py-1 rounded-[6px] bg-[#ffffff] border border-[#0a2414]/10 text-[11.5px] text-[#283a2e] font-medium inline-flex items-center space-x-1.5"
+              >
+                <span className="w-1.5 h-1.5 rounded-full bg-[#17b267]" />
+                <span>{trig}</span>
+              </span>
+            ))
+          ) : (
+            <span className="text-[12px] text-[#607166]">No active triggers yet — add signal keywords to a campaign.</span>
+          )}
         </div>
       </div>
 
@@ -238,7 +239,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
             {Math.round(totalLeads * multiplier)}
           </div>
           <div className="text-[12px] text-[#0ea5e9] mt-1.5 font-medium">
-            +{Math.round(14 * multiplier)} new triggers detected
+            {totalLeads > 0 ? `${totalLeads} verified targets detected` : 'No leads yet'}
           </div>
         </div>
 
@@ -251,7 +252,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
             {Math.round(totalSent * multiplier)}
           </div>
           <div className="text-[12px] text-[#607166] mt-1.5">
-            Native Gmail • 35/day cap
+            {mailboxCount > 0 ? `${mailboxCount} mailbox${mailboxCount === 1 ? '' : 'es'} • ${dailyCap}/day cap` : 'No mailbox connected'}
           </div>
         </div>
 
@@ -267,20 +268,22 @@ export const HomeView: React.FC<HomeViewProps> = ({
             </span>
           </div>
           <div className="text-[12px] text-[#17b267] mt-1.5 font-medium">
-            3.8x above cold baseline
+            {totalSent > 0 ? `${overallReplyRate}% reply rate` : 'No replies yet'}
           </div>
         </div>
 
         <div className="p-6 rounded-[10px] bg-[#ffffff] border border-[#0a2414]/10">
           <div className="flex items-center justify-between text-[12.5px] text-[#607166] mb-2 font-medium">
             <span>Deliverability</span>
-            <span className="text-[#17b267] text-[11px] font-semibold">Healthy</span>
+            {deliverability && <span className="text-[#17b267] text-[11px] font-semibold">Healthy</span>}
           </div>
           <div className="text-[30px] font-normal text-[#0a2414] tracking-tight">
-            99.1%
+            {deliverability ? `${deliverability}%` : '—'}
           </div>
           <div className="text-[12px] text-[#607166] mt-1.5">
-            {Math.round(totalBounces * (multiplier > 1 ? 1.4 : 1))} bounces (0.9% rate)
+            {totalSent > 0
+              ? `${Math.round(totalBounces * (multiplier > 1 ? 1.4 : 1))} bounces (${bounceRate}% rate)`
+              : 'Nothing sent yet'}
           </div>
         </div>
       </div>
@@ -338,6 +341,14 @@ export const HomeView: React.FC<HomeViewProps> = ({
 
         {/* Dynamic SVG Visualization with Interactive Hover Points & Tooltip */}
         <div className="h-60 w-full pt-2 relative">
+          {totalSent === 0 && totalLeads === 0 && totalReplies === 0 && (
+            <div className="absolute inset-0 z-10 flex items-center justify-center">
+              <div className="text-center">
+                <div className="text-[15px] font-medium text-[#0a2414]">No activity yet</div>
+                <div className="text-[13px] text-[#607166] mt-1">Create a campaign and generate drafts to see your outreach trends here.</div>
+              </div>
+            </div>
+          )}
           <svg
             className="w-full h-full overflow-visible"
             viewBox="0 0 760 170"

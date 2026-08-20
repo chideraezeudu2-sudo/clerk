@@ -159,6 +159,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
         pendingDraftsCount={pendingDraftsCount}
         activeCampaignsCount={activeCampaignsCount}
         mailboxesCount={senders.length}
+        organizationsCount={organizations.length}
         campaigns={campaigns}
         isOpenMobile={mobileMenuOpen}
         onCloseMobile={() => setMobileMenuOpen(false)}
@@ -235,6 +236,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
           {currentTab === 'home' && (
             <HomeView
               campaigns={campaigns}
+              senders={senders}
               onOpenCampaign={(id) => {
                 onOpenCampaign(id);
                 onSelectTab('campaigns');

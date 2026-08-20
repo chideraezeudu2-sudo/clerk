@@ -8,6 +8,7 @@ interface SidebarProps {
   pendingDraftsCount: number;
   activeCampaignsCount: number;
   mailboxesCount: number;
+  organizationsCount?: number;
   campaigns?: Campaign[];
   isOpenMobile?: boolean;
   onCloseMobile?: () => void;
@@ -20,11 +21,12 @@ export const Sidebar: React.FC<SidebarProps> = ({
   pendingDraftsCount,
   activeCampaignsCount,
   mailboxesCount,
+  organizationsCount = 0,
   campaigns = [],
   isOpenMobile,
   onCloseMobile,
 }) => {
-  const totalWatchedTargets = campaigns.reduce((acc, c) => acc + (c.leadsCount || 0), 0) || 120;
+  const totalWatchedTargets = campaigns.reduce((acc, c) => acc + (c.leadsCount || 0), 0);
   const activeKeywords = Array.from(
     new Set(
       campaigns
@@ -36,7 +38,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
   const signalDescription =
     activeKeywords.length > 0
       ? `Watching ${totalWatchedTargets}+ targets for ${activeKeywords.join(' and ')}.`
-      : `Watching ${totalWatchedTargets}+ targets for hiring surges and competitor discontent.`;
+      : totalWatchedTargets > 0
+      ? `Watching ${totalWatchedTargets} targets.`
+      : 'No targets monitored yet. Create a campaign to start watching.';
 
   const navItems: {
     id: DashboardTab;
@@ -48,7 +52,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
     {
       id: 'organizations',
       label: 'Organizations',
-      badge: '1.7M',
+      badge: organizationsCount > 0 ? organizationsCount : undefined,
       badgeVariant: 'neutral',
     },
     {
