@@ -351,7 +351,7 @@ export const CampaignsView: React.FC<CampaignsViewProps> = ({
                     Waiting for initial signal matches
                   </p>
                   <p className="text-[13px] text-[#607166] max-w-md mx-auto mt-1">
-                    clerk crawls job boards, press releases, and feeds continuously. New verified leads will surface here.
+                    Klerk crawls job boards, press releases, and feeds continuously. New verified leads will surface here.
                   </p>
                 </div>
               ) : (

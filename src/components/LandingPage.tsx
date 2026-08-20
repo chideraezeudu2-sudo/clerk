@@ -54,11 +54,11 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, onOpenAuth
     },
     {
       q: 'Can I connect more than one Gmail account?',
-      a: 'Yes. Add as many as you want. clerk spreads sends across all of them and gives each one its own independent warm-up.',
+      a: 'Yes. Add as many as you want. Klerk spreads sends across all of them and gives each one its own independent warm-up.',
     },
     {
       q: 'What happens when someone replies?',
-      a: 'clerk reads your inbox and matches replies back to the right contact and campaign automatically. A reply also stops any scheduled follow-ups to that person.',
+      a: 'Klerk reads your inbox and matches replies back to the right contact and campaign automatically. A reply also stops any scheduled follow-ups to that person.',
     },
     {
       q: 'What if someone wants to stop hearing from me?',
@@ -89,11 +89,11 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, onOpenAuth
               How it works
             </a>
             <a
-              href="#why-clerk"
-              onClick={(e) => scrollToSection(e, 'why-clerk')}
+              href="#why-Klerk"
+              onClick={(e) => scrollToSection(e, 'why-Klerk')}
               className="hover:text-[#0a2414] transition-colors hidden md:inline-block cursor-pointer"
             >
-              Why clerk
+              Why Klerk
             </a>
             <a
               href="#pricing"
@@ -117,7 +117,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, onOpenAuth
               onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
               className="text-[23px] font-semibold tracking-[-0.04em] text-[#0a2414] hover:opacity-85 transition-opacity inline-flex items-baseline"
             >
-              <span>clerk</span>
+              <span>Klerk</span>
               <span className="w-1.5 h-1.5 rounded-full bg-[#1ad379] inline-block ml-0.5 mb-0.5" />
             </button>
           </div>
@@ -145,7 +145,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, onOpenAuth
         {/* Top Announcement Pill */}
         <div className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-[6px] bg-[#f3fbe9] border border-[#0a2414]/12 text-[13px] text-[#0a2414] mb-8">
           <span className="w-2 h-2 rounded-full bg-[#1ad379]"></span>
-          <span>clerk is now live</span>
+          <span>Klerk is now live</span>
         </div>
 
         {/* Display Headline */}
@@ -155,7 +155,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, onOpenAuth
 
         {/* Subheadline */}
         <p className="text-[17px] sm:text-[19px] leading-[1.4] text-[#283a2e] max-w-[780px] mx-auto mb-9 font-normal">
-          clerk watches the web for companies that are hiring, raising money, or switching tools, then writes the first email for you, citing the exact reason it reached out. You approve it. It sends from your own inbox, at a pace that won't get you flagged.
+          Klerk watches the web for companies that are hiring, raising money, or switching tools, then writes the first email for you, citing the exact reason it reached out. You approve it. It sends from your own inbox, at a pace that won't get you flagged.
         </p>
 
         {/* Action Buttons */}
@@ -198,7 +198,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, onOpenAuth
               Most outreach tools help you send more emails, faster. That's the wrong problem to solve. The real problem is you're emailing people who have no reason to care yet. A generic "hope this finds you well" email to a company that just posted a job opening three weeks ago and a company that hasn't touched their tech stack in five years get treated the same way: ignored.
             </p>
             <p className="font-medium text-[#0a2414]">
-              clerk flips the order. It finds the companies that are already showing signs they need something, and only then writes the email, built around that specific sign.
+              Klerk flips the order. It finds the companies that are already showing signs they need something, and only then writes the email, built around that specific sign.
             </p>
           </div>
         </div>
@@ -211,7 +211,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, onOpenAuth
             The 5-Step Signal Pipeline
           </span>
           <h2 className="text-[36px] sm:text-[48px] font-medium tracking-[-0.02em] leading-tight text-[#0a2414]">
-            How clerk turns real web changes into approved conversations
+            How Klerk turns real web changes into approved conversations
           </h2>
         </div>
 
@@ -220,7 +220,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, onOpenAuth
             {
               step: '1',
               title: 'It watches.',
-              body: 'clerk checks job postings, funding announcements, public reviews, and tech stack changes for the companies that match who you sell to.',
+              body: 'Klerk checks job postings, funding announcements, public reviews, and tech stack changes for the companies that match who you sell to.',
             },
             {
               step: '2',
@@ -262,14 +262,14 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, onOpenAuth
       </section>
 
       {/* 4. WHAT IT WATCHES FOR (4 Cards) */}
-      <section id="why-clerk" className="py-20 px-4 sm:px-6 bg-[#f3fbe9] border-t border-[#0a2414]/10">
+      <section id="why-Klerk" className="py-20 px-4 sm:px-6 bg-[#f3fbe9] border-t border-[#0a2414]/10">
         <div className="max-w-[1200px] mx-auto">
           <div className="max-w-[700px] mb-12">
             <span className="text-[12px] uppercase tracking-wider text-[#17b267] font-semibold block mb-2">
               Verifiable Intent Signals
             </span>
             <h2 className="text-[32px] sm:text-[44px] font-medium tracking-[-0.02em] text-[#0a2414]">
-              What clerk watches for across the web
+              What Klerk watches for across the web
             </h2>
           </div>
 
@@ -339,7 +339,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, onOpenAuth
         </h2>
         <div className="space-y-4 text-[16px] sm:text-[17px] leading-[1.6] text-[#283a2e]">
           <p>
-            clerk will not write an email that opens with a made-up reason. If there is no real signal for a contact, it says so and falls back to the strongest true detail it has instead of inventing one.
+            Klerk will not write an email that opens with a made-up reason. If there is no real signal for a contact, it says so and falls back to the strongest true detail it has instead of inventing one.
           </p>
           <p>
             Every draft includes a short note explaining exactly which signal it used and why, so you're never sending something you can't stand behind if someone writes back and asks "why me?"
@@ -358,7 +358,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, onOpenAuth
               No new domain to warm up, no sketchy sending infrastructure
             </h2>
             <p className="text-[16px] sm:text-[17px] leading-[1.6] text-[#f3fbe9]/85">
-              clerk sends through your actual Gmail accounts using your own app passwords, not a shared server that a thousand other companies are also sending from. New mailboxes start slow and ramp up over two weeks. You can connect more than one mailbox, and clerk spreads your sending across all of them so no single account carries the whole load.
+              Klerk sends through your actual Gmail accounts using your own app passwords, not a shared server that a thousand other companies are also sending from. New mailboxes start slow and ramp up over two weeks. You can connect more than one mailbox, and Klerk spreads your sending across all of them so no single account carries the whole load.
             </p>
           </div>
 
@@ -372,7 +372,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, onOpenAuth
             <div className="p-5 rounded-[9px] bg-[#0a2414]/50 border border-[#f3fbe9]/10">
               <span className="text-[13px] text-[#1ad379] block mb-1 font-medium">02 / Multi-Mailbox Pool</span>
               <p className="text-[14px] text-[#f3fbe9]/90">
-                Connect 2, 5, or 10 mailboxes. clerk distributes the campaign load automatically across all accounts.
+                Connect 2, 5, or 10 mailboxes. Klerk distributes the campaign load automatically across all accounts.
               </p>
             </div>
             <div className="p-5 rounded-[9px] bg-[#0a2414]/50 border border-[#f3fbe9]/10">
@@ -397,7 +397,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, onOpenAuth
             One login, every product you're building
           </h2>
           <p className="text-[16px] sm:text-[17px] leading-[1.6] text-[#283a2e] mb-4">
-            If you're running more than one product, you don't need a separate tool for each one. Set up a campaign per product, each with its own audience, its own voice, and its own sequence, and clerk keeps them all running out of the same inbox pool, the same dashboard, the same login.
+            If you're running more than one product, you don't need a separate tool for each one. Set up a campaign per product, each with its own audience, its own voice, and its own sequence, and Klerk keeps them all running out of the same inbox pool, the same dashboard, the same login.
           </p>
         </div>
       </section>
@@ -628,7 +628,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, onOpenAuth
           {/* Brand Col */}
           <div className="space-y-2">
             <span className="text-[21px] font-semibold tracking-[-0.04em] text-[#0a2414] inline-flex items-baseline">
-              <span>clerk</span>
+              <span>Klerk</span>
               <span className="w-1.5 h-1.5 rounded-full bg-[#1ad379] inline-block ml-0.5 mb-0.5" />
             </span>
             <p className="text-[#607166] text-[13px]">
@@ -691,7 +691,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, onOpenAuth
         </div>
 
         <div className="max-w-[1200px] mx-auto mt-8 pt-6 border-t border-[#0a2414]/6 flex flex-col sm:flex-row items-center justify-between text-[12px] text-[#607166]">
-          <span>© 2026 clerk. All rights reserved.</span>
+          <span>© 2026 Klerk. All rights reserved.</span>
         </div>
       </footer>
     </div>

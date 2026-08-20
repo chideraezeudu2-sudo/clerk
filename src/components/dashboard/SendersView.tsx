@@ -85,7 +85,7 @@ export const SendersView: React.FC<SendersViewProps> = ({
             )}
           </div>
           <p className="text-[13.5px] text-[#607166]">
-            clerk distributes your sends across your connected accounts with 14-day progressive warm-up.
+            Klerk distributes your sends across your connected accounts with 14-day progressive warm-up.
           </p>
         </div>
 
@@ -146,7 +146,7 @@ export const SendersView: React.FC<SendersViewProps> = ({
         <div className="flex items-center space-x-2 text-[#0a2414]">
           <span className="w-2 h-2 rounded-full bg-[#1ad379]" />
           <span>
-            Connected via native OAuth 2.0. clerk never stores your master passwords or reads your personal inbound messages.
+            Connected via native OAuth 2.0. Klerk never stores your master passwords or reads your personal inbound messages.
           </span>
         </div>
         <span className="text-[#17b267] font-semibold shrink-0">Google CASA Tier 2 Certified</span>
@@ -327,7 +327,7 @@ export const SendersView: React.FC<SendersViewProps> = ({
                   required
                   value={newEmail}
                   onChange={(e) => setNewEmail(e.target.value)}
-                  placeholder="chidera@clerk.so"
+                  placeholder="chidera@Klerk.so"
                   className="w-full px-3.5 py-2 rounded-[10px] border border-[#0a2414]/15 text-[14px] outline-none focus:border-[#17b267]"
                 />
               </div>

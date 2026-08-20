@@ -394,7 +394,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
                 onChange={(e) =>
                   setFormSettings({ ...formSettings, mailingAddress: e.target.value })
                 }
-                placeholder="e.g. clerk Systems Inc., 548 Market St, Suite 8201, San Francisco, CA 94104"
+                placeholder="e.g. Klerk Systems Inc., 548 Market St, Suite 8201, San Francisco, CA 94104"
                 className="w-full px-3.5 py-2.5 rounded-[10px] border border-[#0a2414]/15 focus:border-[#17b267] text-[14px] text-[#0a2414] outline-none transition-colors"
               />
             </div>
@@ -411,7 +411,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
                 <p className="leading-relaxed">
                   {formSettings.mailingAddress || 'Your company address'} •{' '}
                   <span className="text-[#17b267] underline cursor-pointer font-medium">Unsubscribe instantly</span> •{' '}
-                  <span className="text-[#607166]">Powered by clerk native sender pool</span>
+                  <span className="text-[#607166]">Powered by Klerk native sender pool</span>
                 </p>
               </div>
             </div>
@@ -557,7 +557,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
                 Developer API Keys & Trigger Webhooks
               </h2>
               <p className="text-[12.5px] text-[#607166]">
-                Trigger clerk autonomous intent crawlers directly from Zapier, Make.com, or your internal CRM.
+                Trigger Klerk autonomous intent crawlers directly from Zapier, Make.com, or your internal CRM.
               </p>
             </div>
 
@@ -638,7 +638,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
               <div className="p-4 font-mono text-[12px] overflow-x-auto text-white/90 leading-relaxed">
                 {apiSnippetLang === 'curl' && (
                   <>
-                    <div><span className="text-[#1ad379]">curl</span> -X POST https://api.clerk.so/v1/signals \</div>
+                    <div><span className="text-[#1ad379]">curl</span> -X POST https://api.Klerk.so/v1/signals \</div>
                     <div className="pl-4 text-white/80">-H <span className="text-[#f9f6f1]">"Authorization: Bearer {formSettings.apiKey}"</span> \</div>
                     <div className="pl-4 text-white/80">-H <span className="text-[#f9f6f1]">"Content-Type: application/json"</span> \</div>
                     <div className="pl-4 text-white/80">-d <span className="text-[#ffbac3]">'{'{"campaign_id": "cmp_1", "target_domain": "stripe.com", "signal_type": "hiring"}'}'</span></div>
@@ -647,7 +647,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
 
                 {apiSnippetLang === 'node' && (
                   <>
-                    <div><span className="text-[#1ad379]">await</span> fetch(<span className="text-[#ffbac3]">'https://api.clerk.so/v1/signals'</span>, {'{'}</div>
+                    <div><span className="text-[#1ad379]">await</span> fetch(<span className="text-[#ffbac3]">'https://api.Klerk.so/v1/signals'</span>, {'{'}</div>
                     <div className="pl-4">method: <span className="text-[#ffbac3]">'POST'</span>,</div>
                     <div className="pl-4">headers: {'{'}</div>
                     <div className="pl-8"><span className="text-[#ffbac3]">'Authorization'</span>: <span className="text-[#ffbac3]">'Bearer {formSettings.apiKey}'</span>,</div>
@@ -662,7 +662,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
                   <>
                     <div><span className="text-[#1ad379]">import</span> requests</div>
                     <div className="mt-1">response = requests.post(</div>
-                    <div className="pl-4"><span className="text-[#ffbac3]">'https://api.clerk.so/v1/signals'</span>,</div>
+                    <div className="pl-4"><span className="text-[#ffbac3]">'https://api.Klerk.so/v1/signals'</span>,</div>
                     <div className="pl-4">headers={'{'}<span className="text-[#ffbac3]">'Authorization'</span>: <span className="text-[#ffbac3]">'Bearer {formSettings.apiKey}'</span>{'}'},</div>
                     <div className="pl-4">json={'{'}<span className="text-[#ffbac3]">'campaign_id'</span>: <span className="text-[#ffbac3]">'cmp_1'</span>, <span className="text-[#ffbac3]">'target_domain'</span>: <span className="text-[#ffbac3]">'stripe.com'</span>{'}'}</div>
                     <div>)</div>

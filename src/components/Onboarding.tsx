@@ -200,7 +200,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete, onNavigate }
             onClick={() => onNavigate('landing')}
             className="text-[23px] font-semibold tracking-[-0.04em] text-[#0a2414] hover:opacity-85 transition-opacity inline-flex items-baseline"
           >
-            <span>clerk</span>
+            <span>Klerk</span>
             <span className="w-1.5 h-1.5 rounded-full bg-[#1ad379] inline-block ml-0.5 mb-0.5" />
           </button>
           {!state.isCompleted && (
@@ -243,7 +243,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete, onNavigate }
                 You're all set up.
               </h1>
               <p className="text-[16px] text-[#283a2e] max-w-[500px] mx-auto leading-relaxed">
-                clerk is now watching live hiring triggers and funding filings. Head to your review queue to inspect your first drafted leads.
+                Klerk is now watching live hiring triggers and funding filings. Head to your review queue to inspect your first drafted leads.
               </p>
             </div>
 
@@ -280,7 +280,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete, onNavigate }
                     Connect your sender mailbox
                   </h1>
                   <p className="text-[15px] text-[#283a2e]">
-                    clerk dispatches directly from your native mailbox with dedicated IP isolation. Connect one to get started.
+                    Klerk dispatches directly from your native mailbox with dedicated IP isolation. Connect one to get started.
                   </p>
                 </div>
 
@@ -374,7 +374,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete, onNavigate }
                           <ol className="list-decimal pl-4 space-y-1 text-[#607166]">
                             <li>Turn on <strong>2-Step Verification</strong> first (Google Account → Security) — it's required, not optional.</li>
                             <li>Then open <a href="https://myaccount.google.com/apppasswords" target="_blank" rel="noopener noreferrer" className="text-[#17b267] underline">myaccount.google.com/apppasswords</a>.</li>
-                            <li>Name it "clerk", click Create, and paste the 16-character code here.</li>
+                            <li>Name it "Klerk", click Create, and paste the 16-character code here.</li>
                           </ol>
                           <p className="text-[12px] text-[#607166] pt-1">
                             See "not available for your account"? 2-Step Verification isn't fully on, or it's a Workspace account with app passwords disabled by your admin — or the account uses passkey-only sign-in. Use a regular @gmail.com with 2FA on.
@@ -489,7 +489,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete, onNavigate }
                     className="w-full px-3.5 py-2.5 rounded-[6px] border border-[#0a2414]/15 focus:border-[#17b267] focus:ring-1 focus:ring-[#17b267] text-[14px] text-[#0a2414] outline-none"
                   />
                   <span className="text-[12px] text-[#607166] mt-1 block">
-                    clerk automatically attaches this along with a 1-click opt-out line to protect your mailbox deliverability.
+                    Klerk automatically attaches this along with a 1-click opt-out line to protect your mailbox deliverability.
                   </span>
                 </div>
 
@@ -535,7 +535,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete, onNavigate }
                       onChange={(e) =>
                         setState({ ...state, personaName: e.target.value })
                       }
-                      placeholder="e.g. clerk Systems"
+                      placeholder="e.g. Klerk Systems"
                       className="w-full px-3.5 py-2 rounded-[6px] border border-[#0a2414]/15 focus:border-[#17b267] text-[14px] outline-none"
                     />
                   </div>
@@ -599,7 +599,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete, onNavigate }
                     Define signals & target audience
                   </h1>
                   <p className="text-[15px] text-[#283a2e]">
-                    Select which verified signals clerk should monitor to trigger personalized outreach.
+                    Select which verified signals Klerk should monitor to trigger personalized outreach.
                   </p>
                 </div>
 
@@ -712,7 +712,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete, onNavigate }
                     Set your email voice
                   </h1>
                   <p className="text-[15px] text-[#283a2e]">
-                    clerk drafts emails that sound like a thoughtful founder or peer, never a generic template.
+                    Klerk drafts emails that sound like a thoughtful founder or peer, never a generic template.
                   </p>
                 </div>
 

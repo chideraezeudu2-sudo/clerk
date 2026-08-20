@@ -189,7 +189,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
               onClick={() => onNavigate('landing')}
               className="text-[20px] font-semibold tracking-[-0.03em] text-[#0a2414] inline-flex items-baseline"
             >
-              <span>clerk</span>
+              <span>Klerk</span>
               <span className="w-1.5 h-1.5 rounded-full bg-[#1ad379] inline-block ml-0.5 mb-0.5" />
             </button>
           </div>

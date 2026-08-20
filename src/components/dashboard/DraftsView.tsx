@@ -149,7 +149,7 @@ export const DraftsView: React.FC<DraftsViewProps> = ({
         <EmptyState
           type="drafts"
           title="Review queue is clear"
-          description="All personalized drafts have been approved or dispatched. When clerk detects new buying triggers across your campaigns, generated emails will appear here for 1-click review."
+          description="All personalized drafts have been approved or dispatched. When Klerk detects new buying triggers across your campaigns, generated emails will appear here for 1-click review."
           secondaryAction={{
             label: 'View Sent Emails History',
             onClick: () => {
@@ -198,7 +198,7 @@ export const DraftsView: React.FC<DraftsViewProps> = ({
             <span className="w-2.5 h-2.5 rounded-full bg-[#0a2414]/20"></span>
           </div>
           <span className="text-[14px] font-medium text-[#0a2414] pl-3 border-l border-[#0a2414]/10">
-            clerk / queue / pending-review
+            Klerk / queue / pending-review
           </span>
         </div>
 
@@ -509,11 +509,11 @@ export const DraftsView: React.FC<DraftsViewProps> = ({
                       Typically when engineering teams ramp GTM data infrastructure, maintaining clean email deliverability and coordinating multi-inbox limits becomes an unnecessary dev distraction.
                     </p>
                     <p className="text-[#283a2e]">
-                      We built clerk to run intent-triggered outreach directly from your own Gmail mailboxes with zero shared-pool contamination and automatic warm-up pacing.
+                      We built Klerk to run intent-triggered outreach directly from your own Gmail mailboxes with zero shared-pool contamination and automatic warm-up pacing.
                     </p>
                     <p>Open to seeing a 2-minute walkthrough of how it monitors engineering signals?</p>
                     <div className="pt-4 text-[13px] text-[#607166] border-t border-[#0a2414]/6">
-                      Best,<br />Chidera • Sent via clerk (native Gmail app pass)
+                      Best,<br />Chidera • Sent via Klerk (native Gmail app pass)
                     </div>
                   </>
                 )}
@@ -582,7 +582,7 @@ export const DraftsView: React.FC<DraftsViewProps> = ({
                 Sender Configuration
               </span>
               <div className="flex items-center justify-between text-[#0a2414]">
-                <span className="text-[13.5px] font-medium">chidera@clerk.so</span>
+                <span className="text-[13.5px] font-medium">chidera@Klerk.so</span>
                 <span className="text-[11px] px-2.5 py-0.5 rounded-[6px] bg-[#f3fbe9] border border-[#17b267]/30 text-[#17b267] font-semibold">
                   Warm-up: Day 9 of 14
                 </span>
@@ -601,7 +601,7 @@ export const DraftsView: React.FC<DraftsViewProps> = ({
           <div className="w-full max-w-md bg-[#ffffff] rounded-[10px] p-6 border border-[#0a2414]/10 space-y-4 shadow-xl">
             <h3 className="text-[18px] font-semibold text-[#0a2414]">Reject Draft & Feed Back</h3>
             <p className="text-[13px] text-[#607166]">
-              Select why this draft was rejected so clerk can adapt future intent filtering.
+              Select why this draft was rejected so Klerk can adapt future intent filtering.
             </p>
 
             <div className="space-y-2">

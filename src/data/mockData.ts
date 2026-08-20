@@ -342,11 +342,11 @@ export const initialPeople: PersonLead[] = [
 export const initialPersonas: Persona[] = [
   {
     id: 'persona-1',
-    name: 'clerk Outbound Engine',
-    companyName: 'clerk Systems',
+    name: 'Klerk Outbound Engine',
+    companyName: 'Klerk Systems',
     description:
       'Autonomous signal-based sales engine that monitors the web for buying intent and drafts context-grounded outreach.',
-    websiteUrl: 'https://clerk.so',
+    websiteUrl: 'https://Klerk.so',
     activeCampaignsCount: 2,
   },
   {
@@ -363,7 +363,7 @@ export const initialPersonas: Persona[] = [
 export const initialSenders: SenderMailbox[] = [
   {
     id: 'sender-1',
-    email: 'chidera@clerk.so',
+    email: 'chidera@Klerk.so',
     status: 'active',
     connectedDays: 9,
     dailyCap: 35,
@@ -548,7 +548,7 @@ export const initialCampaigns: Campaign[] = [
         id: 'vd-3',
         subject: 'Native inbox sending without shared IP pools',
         snippet:
-          'Hey Siddharth, saw your note on domain burn with shared sequencers. We built clerk specifically so you send exclusively via your own Gmail app passwords with automatic multi-inbox ramping...',
+          'Hey Siddharth, saw your note on domain burn with shared sequencers. We built Klerk specifically so you send exclusively via your own Gmail app passwords with automatic multi-inbox ramping...',
         isLiked: true,
       },
     ],
@@ -597,12 +597,12 @@ Saw you posted 3 backend roles this week to scale your data pipelines and outbou
 
 Typically when engineering teams ramp GTM data infrastructure, maintaining clean email deliverability and coordinating multi-inbox limits becomes an unnecessary dev distraction.
 
-We built clerk to run intent-triggered outreach directly from your own Gmail mailboxes with zero shared-pool contamination and automatic warm-up pacing.
+We built Klerk to run intent-triggered outreach directly from your own Gmail mailboxes with zero shared-pool contamination and automatic warm-up pacing.
 
 Open to seeing a 2-minute walkthrough of how it monitors engineering signals?
 
 Best,
-Chidera • Sent via clerk (native Gmail app pass)`,
+Chidera • Sent via Klerk (native Gmail app pass)`,
     signalReason:
       'Signal will not write an email that opens with a made-up reason. Every draft says why it was written before you approve it.',
     signalType: 'hiring',
@@ -625,12 +625,12 @@ Congrats on the $14.5M Series A announcement yesterday.
 
 Saw in the release that scaling enterprise provider acquisition is the core focus for this round. Most GTM leaders at this stage either buy generic lead databases with 40% bounce rates or burn SDR time manually hunting LinkedIn.
 
-clerk monitors healthcare expansion signals across public filings and only writes outreach when a clinic or network is actively upgrading software.
+Klerk monitors healthcare expansion signals across public filings and only writes outreach when a clinic or network is actively upgrading software.
 
-Would it be useful if I sent over the 15 provider leads clerk identified for Kestrel this morning?
+Would it be useful if I sent over the 15 provider leads Klerk identified for Kestrel this morning?
 
 Best,
-Chidera • Sent via clerk (native Gmail app pass)`,
+Chidera • Sent via Klerk (native Gmail app pass)`,
     signalReason:
       'Citing $14.5M Series A press release with stated goal of commercial clinic expansion.',
     signalType: 'funding',
@@ -651,12 +651,12 @@ Chidera • Sent via clerk (native Gmail app pass)`,
 
 Saw your comment on r/sales regarding deliverability dips and domain risk on traditional shared sequencers.
 
-That frustration is exactly why we built clerk. Instead of routing through shared third-party IP blocks that can get burnt by other users, clerk connects directly to your own Gmail app passwords, automatically spreads sends across your inbox pool, and ramps newly connected mailboxes over 14 days.
+That frustration is exactly why we built Klerk. Instead of routing through shared third-party IP blocks that can get burnt by other users, Klerk connects directly to your own Gmail app passwords, automatically spreads sends across your inbox pool, and ramps newly connected mailboxes over 14 days.
 
 Happy to set you up with a sandbox account so you can test inbox placement on a single test mailbox if you’re exploring alternatives.
 
 Best,
-Chidera • Sent via clerk (native Gmail app pass)`,
+Chidera • Sent via Klerk (native Gmail app pass)`,
     signalReason:
       'Citing public Reddit post from r/sales highlighting domain burning on shared pool sequencers.',
     signalType: 'complaints',
@@ -677,12 +677,12 @@ Chidera • Sent via clerk (native Gmail app pass)`,
 
 Noticed Aether Cloud recently updated SPF/DKIM records and opened roles for modern GTM orchestration.
 
-If you’re evaluating intent-first outreach engines that draft emails around verifiable technical triggers rather than canned spray-and-pray sequences, clerk was built for this exact workflow.
+If you’re evaluating intent-first outreach engines that draft emails around verifiable technical triggers rather than canned spray-and-pray sequences, Klerk was built for this exact workflow.
 
 Let me know if you’d like to see how the signal detection pipeline integrates with your current setup.
 
 Best,
-Chidera • Sent via clerk (native Gmail app pass)`,
+Chidera • Sent via Klerk (native Gmail app pass)`,
     signalReason:
       'Citing DNS SPF/DKIM changes and Growth Ops job description mentioning intent tools.',
     signalType: 'tech_changes',
@@ -704,7 +704,7 @@ export const initialSentEmails: SentEmail[] = [
     body: 'Hi Talia, Congrats on the Series A announcement! Noticed you are scaling your backend team...',
     sentAt: 'Today at 09:14 AM',
     status: 'replied',
-    senderMailbox: 'chidera@clerk.so',
+    senderMailbox: 'chidera@Klerk.so',
     replyContent:
       'Hey Chidera, thanks! We actually just felt the pain of manual SDR drafting yesterday. Send over the details or a quick Loom, would love to see how the signal watcher works.',
     replyAt: 'Today at 10:42 AM',
@@ -720,7 +720,7 @@ export const initialSentEmails: SentEmail[] = [
     body: 'Hi Devon, saw your post looking for your first 2 enterprise AEs...',
     sentAt: 'Today at 08:30 AM',
     status: 'opened',
-    senderMailbox: 'chidera@clerk.so',
+    senderMailbox: 'chidera@Klerk.so',
   },
   {
     id: 'sent-3',
@@ -733,7 +733,7 @@ export const initialSentEmails: SentEmail[] = [
     body: 'Hey Claire, saw your note regarding sequencer deliverability drops...',
     sentAt: 'Yesterday at 04:15 PM',
     status: 'replied',
-    senderMailbox: 'chidera@clerk.so',
+    senderMailbox: 'chidera@Klerk.so',
     replyContent:
       'Interesting timing. How does the 14-day warm-up work if we connect 3 separate Gmail accounts?',
     replyAt: 'Yesterday at 06:20 PM',
@@ -749,7 +749,7 @@ export const initialSentEmails: SentEmail[] = [
     body: 'Hi Arthur, noticed your recent GCP migration notice...',
     sentAt: 'Yesterday at 02:00 PM',
     status: 'sent',
-    senderMailbox: 'chidera@clerk.so',
+    senderMailbox: 'chidera@Klerk.so',
   },
   {
     id: 'sent-5',
@@ -776,7 +776,7 @@ export const initialChatThreads: import('../types').ChatThread[] = [
       {
         id: 'msg-1',
         sender: 'assistant',
-        text: `Hello Chidera. I am your clerk outbound assistant.
+        text: `Hello Chidera. I am your Klerk outbound assistant.
 
 I continuously monitor job boards, funding filings, tech stack changes, and community discussions. Ask me to find leads for a campaign, review the pending draft queue, or summarize this week’s outreach metrics.`,
         timestamp: '2:15 PM',
@@ -838,7 +838,7 @@ Detected signal:
 • **Claire Zhao** (Nova Systems) discussed shared IP pool deliverability drops on legacy sequencers.
 • Trigger quote: "Our cold email open rates cratered by 60% after vendor migrated shared sending pools."
 
-Generated draft #488 citing this exact public note with zero spam language, emphasizing clerk's 14-day warm-up and private Gmail app password architecture.`,
+Generated draft #488 citing this exact public note with zero spam language, emphasizing Klerk's 14-day warm-up and private Gmail app password architecture.`,
         timestamp: '4:31 PM',
       },
     ],
@@ -876,7 +876,7 @@ Zero spam flags or bounce spikes detected.`,
 export const initialAssistantMessages: AssistantMessage[] = initialChatThreads[0].messages;
 
 export const initialUserSettings: UserSettings = {
-  mailingAddress: 'clerk Systems Inc., 548 Market St, Suite 8201, San Francisco, CA 94104',
+  mailingAddress: 'Klerk Systems Inc., 548 Market St, Suite 8201, San Francisco, CA 94104',
   defaultFollowUpDays: 3,
   dailyCapAcrossAll: 60,
   timezone: 'America/Los_Angeles',

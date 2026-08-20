@@ -244,7 +244,7 @@ export const PersonasView: React.FC<PersonasViewProps> = ({
                 {editingPersona ? 'Edit Persona' : 'Create Product Persona'}
               </h2>
               <p className="text-[13px] text-[#607166]">
-                This gives clerk the context it needs to write natural, value-focused emails that cite real triggers.
+                This gives Klerk the context it needs to write natural, value-focused emails that cite real triggers.
               </p>
             </div>
 
@@ -261,7 +261,7 @@ export const PersonasView: React.FC<PersonasViewProps> = ({
                   required
                   value={formName}
                   onChange={(e) => setFormName(e.target.value)}
-                  placeholder="e.g. clerk Outbound Engine"
+                  placeholder="e.g. Klerk Outbound Engine"
                   className="w-full px-3.5 py-2 rounded-[10px] border border-[#0a2414]/15 text-[14px] outline-none focus:border-[#17b267]"
                 />
               </div>
@@ -274,7 +274,7 @@ export const PersonasView: React.FC<PersonasViewProps> = ({
                   type="text"
                   value={formCompany}
                   onChange={(e) => setFormCompany(e.target.value)}
-                  placeholder="e.g. clerk Systems Inc."
+                  placeholder="e.g. Klerk Systems Inc."
                   className="w-full px-3.5 py-2 rounded-[10px] border border-[#0a2414]/15 text-[14px] outline-none focus:border-[#17b267]"
                 />
               </div>

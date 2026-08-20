@@ -22,7 +22,7 @@ export const HeroProductMockup: React.FC<HeroProductMockupProps> = ({ onApproveD
             <span className="w-2.5 h-2.5 rounded-full bg-[#0a2414]/15"></span>
           </div>
           <span className="text-[13px] font-medium tracking-tight text-[#0a2414] pl-2 border-l border-[#0a2414]/10">
-            clerk / queue / series-a-hiring
+            Klerk / queue / series-a-hiring
           </span>
         </div>
 
@@ -71,11 +71,11 @@ export const HeroProductMockup: React.FC<HeroProductMockupProps> = ({ onApproveD
               Typically when engineering teams ramp GTM data infrastructure, maintaining clean email deliverability and coordinating multi-inbox limits becomes an unnecessary dev distraction.
             </p>
             <p className="text-[#283a2e]">
-              We built clerk to run intent-triggered outreach directly from your own Gmail mailboxes with zero shared-pool contamination and automatic warm-up pacing.
+              We built Klerk to run intent-triggered outreach directly from your own Gmail mailboxes with zero shared-pool contamination and automatic warm-up pacing.
             </p>
             <p>Open to seeing a 2-minute walkthrough of how it monitors engineering signals?</p>
             <div className="pt-3 text-[13px] text-[#607166] border-t border-[#0a2414]/6">
-              Best,<br />Chidera • Sent via clerk (native Gmail app pass)
+              Best,<br />Chidera • Sent via Klerk (native Gmail app pass)
             </div>
           </div>
 
@@ -141,7 +141,7 @@ export const HeroProductMockup: React.FC<HeroProductMockupProps> = ({ onApproveD
               Sender Configuration
             </span>
             <div className="flex items-center justify-between text-[#0a2414]">
-              <span className="text-[13px] font-medium">chidera@clerk.so</span>
+              <span className="text-[13px] font-medium">chidera@Klerk.so</span>
               <span className="text-[11px] px-2 py-0.5 rounded-[4px] bg-[#ffffff] border border-[#0a2414]/10 text-[#17b267]">
                 Warm-up: Day 9 of 14
               </span>

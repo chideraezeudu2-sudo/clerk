@@ -62,7 +62,7 @@ export function exportCampaignsToCSV(campaigns: Campaign[], personas: Persona[] 
   link.setAttribute('href', url);
 
   const dateStamp = new Date().toISOString().split('T')[0];
-  link.setAttribute('download', `clerk-campaign-performance-${dateStamp}.csv`);
+  link.setAttribute('download', `Klerk-campaign-performance-${dateStamp}.csv`);
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);

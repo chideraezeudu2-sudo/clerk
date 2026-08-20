@@ -14,7 +14,7 @@ export const LegalPage: React.FC<LegalPageProps> = ({ mode, onNavigate }) => {
           onClick={() => onNavigate('landing')}
           className="inline-flex items-center text-[14px] text-[#607166] hover:text-[#0a2414] mb-8 font-medium transition-colors"
         >
-          Back to clerk
+          Back to Klerk
         </button>
 
         {mode === 'terms' ? (
@@ -29,27 +29,27 @@ export const LegalPage: React.FC<LegalPageProps> = ({ mode, onNavigate }) => {
               <section className="space-y-2">
                 <h2 className="text-[18px] font-medium text-[#0a2414]">1. Who this is for</h2>
                 <p>
-                  clerk is a tool for finding and contacting business leads by email using verified web intent signals. By using it, you agree to these terms.
+                  Klerk is a tool for finding and contacting business leads by email using verified web intent signals. By using it, you agree to these terms.
                 </p>
               </section>
 
               <section className="space-y-2">
                 <h2 className="text-[18px] font-medium text-[#0a2414]">2. Your account</h2>
                 <p>
-                  You need an account to use clerk. You're responsible for keeping your login secure and for anything that happens under your account.
+                  You need an account to use Klerk. You're responsible for keeping your login secure and for anything that happens under your account.
                 </p>
               </section>
 
               <section className="space-y-2">
                 <h2 className="text-[18px] font-medium text-[#0a2414]">3. Connecting your email</h2>
                 <p>
-                  clerk sends email through mailboxes you connect using your own credentials and application passwords. You're responsible for making sure you have the right to send from any account you connect, and for following the sending limits and rules of your email provider.
+                  Klerk sends email through mailboxes you connect using your own credentials and application passwords. You're responsible for making sure you have the right to send from any account you connect, and for following the sending limits and rules of your email provider.
                 </p>
               </section>
 
               <section className="space-y-2">
                 <h2 className="text-[18px] font-medium text-[#0a2414]">4. Acceptable use</h2>
-                <p>You agree not to use clerk to:</p>
+                <p>You agree not to use Klerk to:</p>
                 <ul className="list-disc pl-5 space-y-1.5">
                   <li>Send unsolicited email in violation of CAN-SPAM, GDPR, or any other applicable law.</li>
                   <li>Contact people who have opted out or asked not to be contacted.</li>
@@ -61,14 +61,14 @@ export const LegalPage: React.FC<LegalPageProps> = ({ mode, onNavigate }) => {
               <section className="space-y-2">
                 <h2 className="text-[18px] font-medium text-[#0a2414]">5. Content you send</h2>
                 <p>
-                  You're responsible for the content of every email clerk sends on your behalf, including AI-drafted emails you approve. Reviewing a draft before it sends means you're accepting responsibility for what it says.
+                  You're responsible for the content of every email Klerk sends on your behalf, including AI-drafted emails you approve. Reviewing a draft before it sends means you're accepting responsibility for what it says.
                 </p>
               </section>
 
               <section className="space-y-2">
                 <h2 className="text-[18px] font-medium text-[#0a2414]">6. No guarantee of results</h2>
                 <p>
-                  clerk helps you find and contact leads based on real web signals. It does not guarantee replies, meetings, or sales.
+                  Klerk helps you find and contact leads based on real web signals. It does not guarantee replies, meetings, or sales.
                 </p>
               </section>
 
@@ -89,14 +89,14 @@ export const LegalPage: React.FC<LegalPageProps> = ({ mode, onNavigate }) => {
               <section className="space-y-2">
                 <h2 className="text-[18px] font-medium text-[#0a2414]">9. Limitation of liability</h2>
                 <p>
-                  clerk is provided as-is. To the fullest extent allowed by law, clerk and its operator are not liable for indirect, incidental, or consequential damages arising from its use.
+                  Klerk is provided as-is. To the fullest extent allowed by law, Klerk and its operator are not liable for indirect, incidental, or consequential damages arising from its use.
                 </p>
               </section>
 
               <section className="space-y-2">
                 <h2 className="text-[18px] font-medium text-[#0a2414]">10. Contact</h2>
                 <p>
-                  Questions about these terms: legal@clerk.so
+                  Questions about these terms: legal@Klerk.so
                 </p>
               </section>
             </div>
@@ -113,7 +113,7 @@ export const LegalPage: React.FC<LegalPageProps> = ({ mode, onNavigate }) => {
               <section className="space-y-2">
                 <h2 className="text-[18px] font-medium text-[#0a2414]">1. What this covers</h2>
                 <p>
-                  This policy explains what information clerk collects and how it's used.
+                  This policy explains what information Klerk collects and how it's used.
                 </p>
               </section>
 
@@ -122,7 +122,7 @@ export const LegalPage: React.FC<LegalPageProps> = ({ mode, onNavigate }) => {
                 <ul className="list-disc pl-5 space-y-1.5">
                   <li><strong>Account information:</strong> your name, email, and login details.</li>
                   <li><strong>Email credentials:</strong> app passwords for mailboxes you connect, stored encrypted.</li>
-                  <li><strong>Contact and company data:</strong> information about the people and companies clerk finds and helps you contact.</li>
+                  <li><strong>Contact and company data:</strong> information about the people and companies Klerk finds and helps you contact.</li>
                   <li><strong>Email content:</strong> drafts, sent emails, and replies processed to run outreach and track engagement.</li>
                   <li><strong>Usage data:</strong> how you use the app, for improving it and fixing bugs.</li>
                 </ul>
@@ -149,7 +149,7 @@ export const LegalPage: React.FC<LegalPageProps> = ({ mode, onNavigate }) => {
               <section className="space-y-2">
                 <h2 className="text-[18px] font-medium text-[#0a2414]">5. Third-party services</h2>
                 <p>
-                  clerk uses outside services to operate, including AI providers for drafting and analysis, and infrastructure providers for hosting and storage. These providers only receive the data needed to perform their specific function.
+                  Klerk uses outside services to operate, including AI providers for drafting and analysis, and infrastructure providers for hosting and storage. These providers only receive the data needed to perform their specific function.
                 </p>
               </section>
 
@@ -170,7 +170,7 @@ export const LegalPage: React.FC<LegalPageProps> = ({ mode, onNavigate }) => {
               <section className="space-y-2">
                 <h2 className="text-[18px] font-medium text-[#0a2414]">8. Your rights</h2>
                 <p>
-                  You can access, correct, or delete your data at any time by contacting privacy@clerk.so.
+                  You can access, correct, or delete your data at any time by contacting privacy@Klerk.so.
                 </p>
               </section>
             </div>

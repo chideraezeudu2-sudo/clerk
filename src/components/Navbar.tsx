@@ -32,15 +32,17 @@ export const Navbar: React.FC<NavbarProps> = ({
       className="sticky top-0 z-50 w-full bg-[#ffffff] border-b border-[#0a2414]/10 transition-all"
     >
       <div className="max-w-[1200px] mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
-        {/* Left: Brand Name Only - Pure text "clerk", no icons, no symbols */}
+        {/* Left: Brand Name Only - Pure text "Klerk", no icons, no symbols */}
         <div className="flex items-center space-x-6">
           <button
             id="brand-logo-button"
             onClick={() => onNavigate('landing')}
             className="text-[23px] font-semibold tracking-[-0.04em] text-[#0a2414] hover:opacity-85 transition-opacity select-none font-sans inline-flex items-baseline"
-            aria-label="clerk home"
+            aria-label="Klerk home"
           >
-            <span>clerk</span>
+            <span>Klerk</span>
+          {/* C→K logo mark (simple, distinctive) */}
+          <span className="inline-flex items-center justify-center w-5 h-5 rounded-[6px] bg-[#1ad379] text-[#0a2414] text-[14px] font-bold leading-none ml-1 select-none">K</span>
             <span className="w-1.5 h-1.5 rounded-full bg-[#1ad379] inline-block ml-0.5 mb-0.5" />
           </button>
 

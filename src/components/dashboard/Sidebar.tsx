@@ -104,7 +104,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               onClick={() => onNavigate('landing')}
               className="text-[23px] font-semibold tracking-[-0.04em] text-[#0a2414] hover:opacity-80 transition-opacity inline-flex items-baseline"
             >
-              <span>clerk</span>
+              <span>Klerk</span>
               <span className="w-1.5 h-1.5 rounded-full bg-[#1ad379] inline-block ml-0.5 mb-0.5" />
             </button>
           </div>
@@ -170,7 +170,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               </div>
               <div className="truncate text-left">
                 <div className="font-semibold text-[#0a2414] truncate text-[13px]">Chidera Ezeudu</div>
-                <div className="text-[11.5px] text-[#607166] truncate">chidera@clerk.so</div>
+                <div className="text-[11.5px] text-[#607166] truncate">chidera@Klerk.so</div>
               </div>
             </div>
           </div>

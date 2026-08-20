@@ -86,7 +86,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
 
         <div className="text-center mb-5">
           <h2 className="text-[28px] font-semibold tracking-[-0.03em] text-[#0a2414] mb-1">
-            clerk
+            Klerk
           </h2>
           <p className="text-[14px] text-[#607166]">
             {mode === 'signup'

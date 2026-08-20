@@ -14,4 +14,4 @@ Allow: /
 User-agent: Google-Extended
 Allow: /
 
-Sitemap: https://clerk-vert.vercel.app/sitemap.xml
+Sitemap: https://Klerk-vert.vercel.app/sitemap.xml

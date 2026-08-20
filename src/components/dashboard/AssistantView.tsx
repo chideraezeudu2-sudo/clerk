@@ -18,7 +18,7 @@ const makeEmptyThread = (): ChatThread => ({
     {
       id: `msg-${Date.now()}`,
       sender: 'assistant',
-      text: `Hello. I'm your clerk outbound assistant.\n\nAsk me to scout verified intent triggers, inspect a target company, review your pending draft queue, or summarize this week's outreach.`,
+      text: `Hello. I'm your Klerk outbound assistant.\n\nAsk me to scout verified intent triggers, inspect a target company, review your pending draft queue, or summarize this week's outreach.`,
       timestamp: 'Just now',
     },
   ],
@@ -253,7 +253,7 @@ export const AssistantView: React.FC<AssistantViewProps> = ({
         </div>
 
         <div className="p-3 border-t border-[#0a2414]/10 text-[12px] text-[#607166] flex items-center justify-between">
-          <span>clerk Assistant</span>
+          <span>Klerk Assistant</span>
           <span className="text-[11px] px-1.5 py-0.5 rounded-[4px] bg-[#f3fbe9] text-[#17b267] font-medium">
             Active
           </span>
@@ -292,7 +292,7 @@ export const AssistantView: React.FC<AssistantViewProps> = ({
                   What would you like to scout or draft?
                 </h1>
                 <p className="text-[16px] font-normal leading-[1.5] text-[#607166] max-w-[560px] mx-auto">
-                  clerk monitors job postings, funding news, and executive moves to generate verified outreach drafts. Every draft stays in review until you approve.
+                  Klerk monitors job postings, funding news, and executive moves to generate verified outreach drafts. Every draft stays in review until you approve.
                 </p>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-[10px] pt-4 text-left">
                   {promptSuggestions.map((item, idx) => (
@@ -317,7 +317,7 @@ export const AssistantView: React.FC<AssistantViewProps> = ({
                 return (
                   <div key={msg.id} className={`flex flex-col ${isUser ? 'items-end' : 'items-start'} space-y-1.5`}>
                     <div className="flex items-center space-x-2 px-1 text-[13px] font-medium text-[#607166]">
-                      <span>{isUser ? 'You' : 'clerk'}</span>
+                      <span>{isUser ? 'You' : 'Klerk'}</span>
                       <span className="text-[12px] opacity-60 font-normal">{msg.timestamp}</span>
                     </div>
                     <div
@@ -354,7 +354,7 @@ export const AssistantView: React.FC<AssistantViewProps> = ({
               {isSending && (
                 <div className="flex flex-col items-start space-y-1.5">
                   <div className="flex items-center space-x-2 px-1 text-[13px] font-medium text-[#607166]">
-                    <span>clerk</span>
+                    <span>Klerk</span>
                   </div>
                   <div className="max-w-[82%] rounded-[10px] p-4 bg-[#f9f6f1] border border-[#0a2414]/10">
                     <span className="inline-block w-4 h-4 border-2 border-[#17b267] border-t-transparent rounded-full animate-spin" />
@@ -383,7 +383,7 @@ export const AssistantView: React.FC<AssistantViewProps> = ({
                   e.target.style.height = `${Math.min(e.target.scrollHeight, 140)}px`;
                 }}
                 onKeyDown={handleKeyDown}
-                placeholder="Ask clerk to scout signals, write drafts for a target company, or refine campaign voice..."
+                placeholder="Ask Klerk to scout signals, write drafts for a target company, or refine campaign voice..."
                 className="w-full text-[15px] font-normal leading-[1.5] text-[#0a2414] placeholder-[#607166]/70 outline-none resize-none bg-transparent"
               />
               <div className="flex items-center justify-end pt-2 border-t border-[#0a2414]/6">
@@ -401,7 +401,7 @@ export const AssistantView: React.FC<AssistantViewProps> = ({
               </div>
             </form>
             <p className="text-[12px] text-[#607166] text-center mt-2 leading-[1.43]">
-              clerk drafts require founder or operator review before any message is dispatched.
+              Klerk drafts require founder or operator review before any message is dispatched.
             </p>
           </div>
         </footer>
