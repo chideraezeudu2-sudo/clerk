@@ -23,6 +23,7 @@ import { DashboardLayout } from './components/dashboard/DashboardLayout';
 import { AuthModal } from './components/AuthModal';
 import { TermsPage, PrivacyPage } from './components/LegalPages';
 import { UndoToast, UndoItem } from './components/UndoToast';
+import { BlogRouter } from './components/Blog';
 
 export default function App() {
   const [viewMode, setViewMode] = useState<ViewMode>('landing');
@@ -544,8 +545,15 @@ export default function App() {
     }
   };
 
+  const isBlog = window.location.hash.startsWith('#/blog');
+
   return (
     <div className="min-h-screen bg-[#f3fbe9] text-[#0a2414] font-sans selection:bg-[#ffbac3] selection:text-[#360003]">
+      {/* Public blog (no auth) — hash-routed for the SPA */}
+      {isBlog ? (
+        <BlogRouter />
+      ) : (
+      <>
       {/* 1. Landing Page View */}
       {viewMode === 'landing' && (
         <LandingPage
@@ -631,6 +639,8 @@ export default function App() {
         onDismiss={() => setUndoItem(null)}
         durationSeconds={5}
       />
+      </>
+      )}
     </div>
   );
 }
