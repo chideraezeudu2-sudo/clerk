@@ -1,5 +1,5 @@
 import { requireUser, ok, fail } from './_lib.js';
-import { scoutForUser, applyDecay } from './engine.js';
+import { scoutForUser, applyDecay } from './_engine.js';
 
 // POST /api/scout  { campaignId? }  -> run a signal scout pass for the user.
 // POST /api/scout  { decay: true }  -> apply daily score decay.
