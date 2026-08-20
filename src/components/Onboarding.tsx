@@ -130,6 +130,13 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete, onNavigate }
   };
 
   const handleNext = () => {
+    // Gate each required step: never advance on a broken/empty requirement.
+    if (state.currentStep === 1) {
+      if (!state.isMailboxConnected) {
+        setError('Connect your mailbox first — we cannot move to the next step until it is linked.');
+        return;
+      }
+    }
     setError('');
     if (state.currentStep === 5) {
       submitOnboarding();
@@ -677,7 +684,21 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete, onNavigate }
             )}
 
             {/* STEP 5: Set Your Voice with Interactive Tone Tester */}
-            {state.currentStep === 5 && (
+            {state.currentStep === 5 && (() => {
+              const TONE_OPTIONS = [
+                { id: 'casual', label: 'Founder Direct', desc: 'Short & punchy' },
+                { id: 'formal', label: 'Executive', desc: 'Refined & clear' },
+                { id: 'concise', label: 'Under 75 Words', desc: 'Zero fluff' },
+                { id: 'storytelling', label: 'Trigger First', desc: 'Context-heavy' },
+              ];
+              const TONE_EXPLAIN: Record<string, string> = {
+                casual: 'Reads like a founder texting a peer. Short sentences, contractions, no formalities.',
+                formal: 'Polished, professional, precise. Full sentences and a measured tone.',
+                concise: '75 words max. Cuts greeting and sign-off padding; gets to the ask fast.',
+                storytelling: 'Leads with the specific verified trigger, then 2-3 lines on why that makes this relevant now.',
+              };
+              const activeTone = TONE_OPTIONS.find((t) => t.id === state.voiceTone);
+              return (
               <div className="space-y-6">
                 <div>
                   <h1 className="text-[24px] sm:text-[28px] font-medium tracking-tight text-[#0a2414] mb-2">
@@ -690,12 +711,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete, onNavigate }
 
                 {/* Tone selector */}
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                  {[
-                    { id: 'casual', label: 'Founder Direct', desc: 'Short & punchy' },
-                    { id: 'formal', label: 'Executive', desc: 'Refined & clear' },
-                    { id: 'concise', label: 'Under 75 Words', desc: 'Zero fluff' },
-                    { id: 'storytelling', label: 'Trigger First', desc: 'Context-heavy' },
-                  ].map((t) => (
+                  {TONE_OPTIONS.map((t) => (
                     <button
                       key={t.id}
                       type="button"
@@ -730,10 +746,10 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete, onNavigate }
 
                   <div className="p-3 bg-[#f3fbe9] rounded-[6px] border border-[#17b267]/25 text-[13px] text-[#0a2414] space-y-1">
                     <span className="font-semibold block text-[12px] uppercase text-[#17b267]">
-                      Signal Rule:
+                      {activeTone ? activeTone.label : 'Voice'}:
                     </span>
                     <span>
-                      Every drafted email opens with the exact verified trigger (e.g. job posting or funding round) so recipients immediately understand why you're reaching out.
+                      {TONE_EXPLAIN[state.voiceTone] || 'Pick a tone above to see what your drafts will sound like.'}
                     </span>
                   </div>
                 </div>
@@ -762,7 +778,8 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete, onNavigate }
                   </div>
                 )}
               </div>
-            )}
+              );
+            })()}
           </div>
         )}
       </div>
