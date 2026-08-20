@@ -99,8 +99,10 @@ export interface Campaign {
   signalKeywords: string[];
   signals: SignalItem[];
   sequence: CampaignSequenceStep[];
-  voiceNotes: string;
-  voiceDrafts: VoiceDraftSample[];
+  voiceNotes?: string;
+  voiceDrafts?: VoiceDraftSample[];
+  voiceStyle?: string;
+  voiceSamples?: string[];
 }
 
 export interface DraftEmail {
@@ -110,15 +112,18 @@ export interface DraftEmail {
   recipientName: string;
   recipientEmail: string;
   recipientCompany: string;
-  recipientRole: string;
+  recipientRole?: string;
   subject: string;
   body: string;
-  signalReason: string;
-  signalType: SignalType;
-  detectedDetail: string;
+  signalReason?: string;
+  signalType?: SignalType;
+  signalSnippet?: string;
+  detectedDetail?: string;
   status: 'pending' | 'approved' | 'rejected';
   rejectionReason?: string;
-  createdAt: string;
+  rejectReason?: string;
+  createdAt?: string;
+  generatedAt?: string;
 }
 
 export interface SentEmail {
@@ -140,13 +145,14 @@ export interface SentEmail {
 export interface SenderMailbox {
   id: string;
   email: string;
+  provider?: 'google' | 'microsoft';
   status: 'active' | 'paused' | 'warming';
   connectedDays: number;
   dailyCap: number;
-  maxCap: number;
+  maxCap?: number;
   sentToday: number;
   healthScore: number;
-  addedAt: string;
+  addedAt?: string;
 }
 
 export interface Persona {
@@ -161,7 +167,8 @@ export interface Persona {
 export interface AssistantMessage {
   id: string;
   sender: 'user' | 'assistant';
-  text: string;
+  text?: string;
+  content?: string;
   timestamp: string;
   actionTaken?: {
     type: 'drafts_created' | 'leads_found' | 'campaign_updated' | 'summary';
@@ -200,6 +207,37 @@ export interface UserSettings {
   timezone: string;
   apiKey: string;
   accountEmail: string;
+}
+
+export type PlanTier = 'starter' | 'growth' | 'scale';
+
+export interface PlanInfo {
+  id: PlanTier;
+  name: string;
+  price: number;
+  description: string;
+  features: string[];
+  maxMailboxes: number;
+  maxCampaigns: number;
+  maxMonthlyLeads: number;
+  maxLeadsPerMonth?: number;
+  isPopular?: boolean;
+}
+
+export interface UserSubscription {
+  plan: PlanTier;
+  status?: 'trial' | 'active' | 'cancelled';
+  isTrial: boolean;
+  trialDaysRemaining: number;
+  trialExpiresAt?: string;
+  trialEndsAt?: string;
+  currentPeriodStart?: string;
+  currentPeriodEnd?: string;
+  monthlyLeadsUsed?: number;
+  leadsUsedThisMonth?: number;
+  maxLeads?: number;
+  cancelAtPeriodEnd?: boolean;
+  canceledAt?: string | null;
 }
 
 export interface AppSettings {

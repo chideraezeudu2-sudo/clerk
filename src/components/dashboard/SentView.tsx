@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { SentEmail, Campaign } from '../../types';
+import { EmptyState } from '../EmptyState';
 
 interface SentViewProps {
   sentEmails: SentEmail[];
@@ -114,56 +115,78 @@ export const SentView: React.FC<SentViewProps> = ({ sentEmails, campaigns }) => 
         </div>
       </div>
 
-      {/* Table */}
-      <div className="rounded-[10px] bg-[#ffffff] border border-[#0a2414]/10 overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
-            <thead>
-              <tr className="border-b border-[#0a2414]/8 bg-[#fafaf9] text-[11.5px] uppercase text-[#607166] font-semibold">
-                <th className="py-3 px-5">Recipient</th>
-                <th className="py-3 px-4">Subject</th>
-                <th className="py-3 px-4">Campaign</th>
-                <th className="py-3 px-4">Status</th>
-                <th className="py-3 px-4">Sent At</th>
-                <th className="py-3 px-4 text-right">Thread</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-[#0a2414]/6 text-[13.5px]">
-              {filteredEmails.map((item) => (
-                <tr
-                  key={item.id}
-                  onClick={() => setActiveThreadEmail(item)}
-                  className="hover:bg-[#fafaf9] transition-colors cursor-pointer group"
-                >
-                  <td className="py-3.5 px-5">
-                    <div className="font-medium text-[#0a2414]">
-                      {item.recipientName}
-                    </div>
-                    <div className="text-[12px] text-[#607166]">
-                      {item.recipientCompany} • {item.recipientEmail}
-                    </div>
-                  </td>
-                  <td className="py-3.5 px-4 text-[#283a2e] max-w-[260px] truncate">
-                    {item.subject}
-                  </td>
-                  <td className="py-3.5 px-4 text-[13px] text-[#607166] max-w-[180px] truncate">
-                    {item.campaignName}
-                  </td>
-                  <td className="py-3.5 px-4">{getStatusBadge(item.status)}</td>
-                  <td className="py-3.5 px-4 text-[12px] text-[#607166]">
-                    {item.sentAt}
-                  </td>
-                  <td className="py-3.5 px-4 text-right">
-                    <span className="text-[#607166] group-hover:text-[#0a2414] inline-flex items-center space-x-1 text-[13px] font-medium">
-                      <span>Inspect</span>
-                    </span>
-                  </td>
+      {/* Table or EmptyState */}
+      {sentEmails.length === 0 ? (
+        <EmptyState
+          type="sent"
+          title="No emails sent yet"
+          description="Approved drafts sent through your connected Gmail inboxes will appear here with delivery timestamps, open tracking, and reply detection."
+        />
+      ) : filteredEmails.length === 0 ? (
+        <EmptyState
+          type="search"
+          title="No sent emails match your filter"
+          description={`No sent emails found for query "${searchQuery}" or status "${selectedStatus}".`}
+          secondaryAction={{
+            label: 'Clear search filters',
+            onClick: () => {
+              setSearchQuery('');
+              setSelectedCampaign('all');
+              setSelectedStatus('all');
+            },
+          }}
+        />
+      ) : (
+        <div className="rounded-[10px] bg-[#ffffff] border border-[#0a2414]/10 overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full text-left border-collapse">
+              <thead>
+                <tr className="border-b border-[#0a2414]/8 bg-[#fafaf9] text-[11.5px] uppercase text-[#607166] font-semibold">
+                  <th className="py-3 px-5">Recipient</th>
+                  <th className="py-3 px-4">Subject</th>
+                  <th className="py-3 px-4">Campaign</th>
+                  <th className="py-3 px-4">Status</th>
+                  <th className="py-3 px-4">Sent At</th>
+                  <th className="py-3 px-4 text-right">Thread</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody className="divide-y divide-[#0a2414]/6 text-[13.5px]">
+                {filteredEmails.map((item) => (
+                  <tr
+                    key={item.id}
+                    onClick={() => setActiveThreadEmail(item)}
+                    className="hover:bg-[#fafaf9] transition-colors cursor-pointer group"
+                  >
+                    <td className="py-3.5 px-5">
+                      <div className="font-medium text-[#0a2414]">
+                        {item.recipientName}
+                      </div>
+                      <div className="text-[12px] text-[#607166]">
+                        {item.recipientCompany} • {item.recipientEmail}
+                      </div>
+                    </td>
+                    <td className="py-3.5 px-4 text-[#283a2e] max-w-[260px] truncate">
+                      {item.subject}
+                    </td>
+                    <td className="py-3.5 px-4 text-[13px] text-[#607166] max-w-[180px] truncate">
+                      {item.campaignName}
+                    </td>
+                    <td className="py-3.5 px-4">{getStatusBadge(item.status)}</td>
+                    <td className="py-3.5 px-4 text-[12px] text-[#607166]">
+                      {item.sentAt}
+                    </td>
+                    <td className="py-3.5 px-4 text-right">
+                      <span className="text-[#607166] group-hover:text-[#0a2414] inline-flex items-center space-x-1 text-[13px] font-medium">
+                        <span>Inspect</span>
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
-      </div>
+      )}
 
       {/* THREAD DRAWER / MODAL */}
       {activeThreadEmail && (

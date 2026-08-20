@@ -1,18 +1,31 @@
 import React, { useState } from 'react';
-import { ViewMode } from '../types';
+import { ViewMode, PlanTier } from '../types';
 import { HeroProductMockup } from './HeroProductMockup';
+import { PLANS } from '../data/plansData';
 
 interface LandingPageProps {
   onNavigate: (view: ViewMode) => void;
-  onOpenAuth?: (mode: 'login' | 'signup') => void;
+  onOpenAuth?: (mode: 'login' | 'signup', plan?: PlanTier) => void;
 }
 
 export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, onOpenAuth }) => {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
 
-  const handleStartOnboarding = () => {
+  const scrollToSection = (e: React.MouseEvent, sectionId: string) => {
+    e.preventDefault();
+    const elem = document.getElementById(sectionId);
+    if (elem) {
+      elem.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
+
+  const handleStartOnboarding = (plan?: PlanTier | unknown) => {
+    const validPlan: PlanTier =
+      typeof plan === 'string' && (plan === 'starter' || plan === 'growth' || plan === 'scale')
+        ? plan
+        : 'starter';
     if (onOpenAuth) {
-      onOpenAuth('signup');
+      onOpenAuth('signup', validPlan);
     } else {
       onNavigate('signup');
     }
@@ -51,6 +64,14 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, onOpenAuth
       q: 'What if someone wants to stop hearing from me?',
       a: 'Every email includes an opt-out line. Anyone who replies asking to stop gets added to a suppression list and will never be contacted again by any campaign.',
     },
+    {
+      q: 'What happens after the trial?',
+      a: 'If you start on the Starter 7-day free trial, your card is charged on day 8. Cancel anytime before then and you won’t be charged.',
+    },
+    {
+      q: 'Can I switch plans later?',
+      a: 'Yes, anytime, from Settings. Upgrades apply right away. Downgrades apply at the start of your next billing cycle.',
+    },
   ];
 
   return (
@@ -60,13 +81,32 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, onOpenAuth
         <div className="max-w-[1200px] mx-auto px-4 sm:px-6 h-16 relative flex items-center justify-between">
           {/* Left: Navigation Links */}
           <nav className="flex items-center space-x-6 text-[14px] text-[#607166]">
-            <a href="#how-it-works" className="hover:text-[#0a2414] transition-colors hidden sm:inline-block">
+            <a
+              href="#how-it-works"
+              onClick={(e) => scrollToSection(e, 'how-it-works')}
+              className="hover:text-[#0a2414] transition-colors hidden sm:inline-block cursor-pointer"
+            >
               How it works
             </a>
-            <a href="#why-clerk" className="hover:text-[#0a2414] transition-colors hidden md:inline-block">
+            <a
+              href="#why-clerk"
+              onClick={(e) => scrollToSection(e, 'why-clerk')}
+              className="hover:text-[#0a2414] transition-colors hidden md:inline-block cursor-pointer"
+            >
               Why clerk
             </a>
-            <a href="#faq" className="hover:text-[#0a2414] transition-colors hidden md:inline-block">
+            <a
+              href="#pricing"
+              onClick={(e) => scrollToSection(e, 'pricing')}
+              className="hover:text-[#0a2414] transition-colors hidden sm:inline-block cursor-pointer"
+            >
+              Pricing
+            </a>
+            <a
+              href="#faq"
+              onClick={(e) => scrollToSection(e, 'faq')}
+              className="hover:text-[#0a2414] transition-colors hidden md:inline-block cursor-pointer"
+            >
               FAQ
             </a>
           </nav>
@@ -91,7 +131,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, onOpenAuth
               Log in
             </button>
             <button
-              onClick={handleStartOnboarding}
+              onClick={() => handleStartOnboarding()}
               className="px-4 py-2 rounded-[6px] bg-[#1ad379] hover:bg-[#17b267] text-[#0a2414] text-[14px] font-medium tracking-tight transition-all active:scale-[0.98] shadow-sm"
             >
               Get started
@@ -123,7 +163,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, onOpenAuth
           <div className="flex flex-wrap items-center justify-center gap-3">
             <button
               id="hero-cta-signup"
-              onClick={handleStartOnboarding}
+              onClick={() => handleStartOnboarding()}
               className="px-10 py-3.5 rounded-[6px] bg-[#1ad379] hover:bg-[#17b267] text-[#0a2414] text-[16px] font-medium tracking-tight transition-all active:scale-[0.98] shadow-sm min-w-[200px]"
             >
               Get started
@@ -222,7 +262,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, onOpenAuth
       </section>
 
       {/* 4. WHAT IT WATCHES FOR (4 Cards) */}
-      <section className="py-20 px-4 sm:px-6 bg-[#f3fbe9] border-t border-[#0a2414]/10">
+      <section id="why-clerk" className="py-20 px-4 sm:px-6 bg-[#f3fbe9] border-t border-[#0a2414]/10">
         <div className="max-w-[1200px] mx-auto">
           <div className="max-w-[700px] mb-12">
             <span className="text-[12px] uppercase tracking-wider text-[#17b267] font-semibold block mb-2">
@@ -362,8 +402,172 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, onOpenAuth
         </div>
       </section>
 
-      {/* 8. FAQ SECTION */}
-      <section className="py-20 px-4 sm:px-6 bg-[#f9f6f1] border-t border-[#0a2414]/10">
+      {/* 8. PRICING SECTION */}
+      <section id="pricing" className="py-20 px-4 sm:px-6 bg-[#fafaf9] border-t border-[#0a2414]/10">
+        <div className="max-w-[1200px] mx-auto">
+          <div className="text-center max-w-[800px] mx-auto mb-14">
+            <h2 className="text-[32px] sm:text-[44px] font-medium tracking-[-0.025em] text-[#0a2414] leading-tight mb-4">
+              Pricing that scales with how much outreach you're actually running
+            </h2>
+            <p className="text-[16px] sm:text-[17.5px] leading-[1.5] text-[#283a2e]">
+              Start with a free 7-day trial.
+            </p>
+          </div>
+
+          {/* Pricing Cards Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-[1100px] mx-auto">
+            {/* Starter */}
+            <div className="rounded-[12px] p-7 bg-[#ffffff] border border-[#0a2414]/10 flex flex-col justify-between hover:border-[#0a2414]/25 transition-all shadow-xs">
+              <div>
+                <div className="flex items-center justify-between mb-1.5">
+                  <h3 className="text-[22px] font-semibold text-[#0a2414]">Starter</h3>
+                  <span className="px-2 py-0.5 rounded-[4px] bg-[#1ad379]/20 text-[#0a2414] font-semibold text-[11px]">
+                    7-day trial
+                  </span>
+                </div>
+                <p className="text-[13.5px] text-[#607166] min-h-[40px] mb-4">
+                  For someone testing this out on one product.
+                </p>
+
+                <div className="flex items-baseline space-x-1 mb-6 pb-6 border-b border-[#0a2414]/8">
+                  <span className="text-[38px] font-semibold tracking-tight text-[#0a2414]">$29</span>
+                  <span className="text-[14px] text-[#607166]">/month</span>
+                </div>
+
+                <ul className="space-y-3 text-[13.5px] text-[#283a2e] mb-8">
+                  <li className="flex items-start space-x-2.5">
+                    <span className="text-[#17b267] font-bold shrink-0 mt-0.5">✓</span>
+                    <span>1 connected mailbox</span>
+                  </li>
+                  <li className="flex items-start space-x-2.5">
+                    <span className="text-[#17b267] font-bold shrink-0 mt-0.5">✓</span>
+                    <span>1 campaign</span>
+                  </li>
+                  <li className="flex items-start space-x-2.5">
+                    <span className="text-[#17b267] font-bold shrink-0 mt-0.5">✓</span>
+                    <span>Up to 100 signal-matched leads a month</span>
+                  </li>
+                  <li className="flex items-start space-x-2.5">
+                    <span className="text-[#17b267] font-bold shrink-0 mt-0.5">✓</span>
+                    <span>AI-drafted outreach and follow-ups</span>
+                  </li>
+                  <li className="flex items-start space-x-2.5">
+                    <span className="text-[#17b267] font-bold shrink-0 mt-0.5">✓</span>
+                    <span>Reply and bounce tracking</span>
+                  </li>
+                </ul>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => handleStartOnboarding('starter')}
+                className="w-full py-3 px-4 rounded-[8px] bg-[#1ad379] hover:bg-[#17b267] text-[#0a2414] text-[14px] font-semibold tracking-tight transition-all active:scale-[0.98] shadow-sm"
+              >
+                Start free trial
+              </button>
+            </div>
+
+            {/* Growth - Most Popular */}
+            <div className="rounded-[12px] p-7 bg-[#f3fbe9]/50 border-2 border-[#17b267] flex flex-col justify-between relative shadow-md">
+              <span className="absolute -top-3.5 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full bg-[#1ad379] text-[#0a2414] text-[11.5px] font-bold tracking-tight uppercase border border-[#0a2414]/10 shadow-xs">
+                Most popular
+              </span>
+
+              <div>
+                <h3 className="text-[22px] font-semibold text-[#0a2414] mb-1.5">Growth</h3>
+                <p className="text-[13.5px] text-[#607166] min-h-[40px] mb-4">
+                  For someone running this seriously across a couple of things.
+                </p>
+
+                <div className="flex items-baseline space-x-1 mb-6 pb-6 border-b border-[#0a2414]/8">
+                  <span className="text-[38px] font-semibold tracking-tight text-[#0a2414]">$99</span>
+                  <span className="text-[14px] text-[#607166]">/month</span>
+                </div>
+
+                <ul className="space-y-3 text-[13.5px] text-[#283a2e] mb-8">
+                  <li className="flex items-start space-x-2.5">
+                    <span className="text-[#17b267] font-bold shrink-0 mt-0.5">✓</span>
+                    <span>Up to 3 connected mailboxes</span>
+                  </li>
+                  <li className="flex items-start space-x-2.5">
+                    <span className="text-[#17b267] font-bold shrink-0 mt-0.5">✓</span>
+                    <span>Up to 5 campaigns</span>
+                  </li>
+                  <li className="flex items-start space-x-2.5">
+                    <span className="text-[#17b267] font-bold shrink-0 mt-0.5">✓</span>
+                    <span>Up to 500 signal-matched leads a month</span>
+                  </li>
+                  <li className="flex items-start space-x-2.5">
+                    <span className="text-[#17b267] font-bold shrink-0 mt-0.5">✓</span>
+                    <span>Everything in Starter</span>
+                  </li>
+                  <li className="flex items-start space-x-2.5">
+                    <span className="text-[#17b267] font-bold shrink-0 mt-0.5">✓</span>
+                    <span>Faster signal scanning (checks for new signals more often)</span>
+                  </li>
+                </ul>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => handleStartOnboarding('growth')}
+                className="w-full py-3 px-4 rounded-[8px] bg-[#0a2414] hover:bg-[#283a2e] text-[#ffffff] text-[14px] font-semibold tracking-tight transition-all active:scale-[0.98] shadow-sm"
+              >
+                Get started
+              </button>
+            </div>
+
+            {/* Scale */}
+            <div className="rounded-[12px] p-7 bg-[#ffffff] border border-[#0a2414]/10 flex flex-col justify-between hover:border-[#0a2414]/25 transition-all shadow-xs">
+              <div>
+                <h3 className="text-[22px] font-semibold text-[#0a2414] mb-1.5">Scale</h3>
+                <p className="text-[13.5px] text-[#607166] min-h-[40px] mb-4">
+                  For someone running several products or a heavier volume.
+                </p>
+
+                <div className="flex items-baseline space-x-1 mb-6 pb-6 border-b border-[#0a2414]/8">
+                  <span className="text-[38px] font-semibold tracking-tight text-[#0a2414]">$299</span>
+                  <span className="text-[14px] text-[#607166]">/month</span>
+                </div>
+
+                <ul className="space-y-3 text-[13.5px] text-[#283a2e] mb-8">
+                  <li className="flex items-start space-x-2.5">
+                    <span className="text-[#17b267] font-bold shrink-0 mt-0.5">✓</span>
+                    <span>Unlimited mailboxes</span>
+                  </li>
+                  <li className="flex items-start space-x-2.5">
+                    <span className="text-[#17b267] font-bold shrink-0 mt-0.5">✓</span>
+                    <span>Unlimited campaigns</span>
+                  </li>
+                  <li className="flex items-start space-x-2.5">
+                    <span className="text-[#17b267] font-bold shrink-0 mt-0.5">✓</span>
+                    <span>Up to 2,000 signal-matched leads a month</span>
+                  </li>
+                  <li className="flex items-start space-x-2.5">
+                    <span className="text-[#17b267] font-bold shrink-0 mt-0.5">✓</span>
+                    <span>Everything in Growth</span>
+                  </li>
+                  <li className="flex items-start space-x-2.5">
+                    <span className="text-[#17b267] font-bold shrink-0 mt-0.5">✓</span>
+                    <span>A 30-minute setup call with you, personally</span>
+                  </li>
+                </ul>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => handleStartOnboarding('scale')}
+                className="w-full py-3 px-4 rounded-[8px] border border-[#0a2414]/15 bg-[#ffffff] hover:bg-[#fafaf9] text-[#0a2414] text-[14px] font-semibold tracking-tight transition-all active:scale-[0.98]"
+              >
+                Get started
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 9. FAQ SECTION */}
+      <section id="faq" className="py-20 px-4 sm:px-6 bg-[#f9f6f1] border-t border-[#0a2414]/10">
         <div className="max-w-[800px] mx-auto">
           <h2 className="text-[32px] sm:text-[40px] font-medium tracking-[-0.02em] text-[#0a2414] mb-8 text-center">
             Frequently Asked Questions
@@ -409,7 +613,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, onOpenAuth
           </p>
           <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
             <button
-              onClick={handleStartOnboarding}
+              onClick={() => handleStartOnboarding()}
               className="px-10 py-3.5 rounded-[6px] bg-[#1ad379] hover:bg-[#17b267] text-[#0a2414] text-[16px] font-medium tracking-tight transition-all active:scale-[0.98] shadow-sm min-w-[200px]"
             >
               Get started
@@ -428,7 +632,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, onOpenAuth
               <span className="w-1.5 h-1.5 rounded-full bg-[#1ad379] inline-block ml-0.5 mb-0.5" />
             </span>
             <p className="text-[#607166] text-[13px]">
-              Signal-grounded outreach that protects your inbox reputation.
+               Signal-grounded outreach that protects your inbox reputation.
             </p>
           </div>
 
@@ -439,8 +643,18 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, onOpenAuth
             </span>
             <ul className="space-y-1.5 text-[#0a2414]">
               <li>
-                <a href="#how-it-works" className="hover:text-[#17b267] transition-colors">
+                <a href="#how-it-works" onClick={(e) => scrollToSection(e, 'how-it-works')} className="hover:text-[#17b267] transition-colors">
                   How it works
+                </a>
+              </li>
+              <li>
+                <a href="#pricing" onClick={(e) => scrollToSection(e, 'pricing')} className="hover:text-[#17b267] transition-colors">
+                  Pricing
+                </a>
+              </li>
+              <li>
+                <a href="#faq" onClick={(e) => scrollToSection(e, 'faq')} className="hover:text-[#17b267] transition-colors">
+                  FAQ
                 </a>
               </li>
               <li>
@@ -449,7 +663,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, onOpenAuth
                 </button>
               </li>
               <li>
-                <button onClick={handleStartOnboarding} className="hover:text-[#17b267] transition-colors">
+                <button onClick={() => handleStartOnboarding()} className="hover:text-[#17b267] transition-colors">
                   Get started
                 </button>
               </li>

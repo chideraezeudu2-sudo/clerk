@@ -9,6 +9,8 @@ import {
   Persona,
   AssistantMessage,
   UserSettings,
+  UserSubscription,
+  PlanTier,
 } from '../../types';
 import { Sidebar } from './Sidebar';
 import { HomeView } from './HomeView';
@@ -20,6 +22,8 @@ import { SentView } from './SentView';
 import { SendersView } from './SendersView';
 import { PersonasView } from './PersonasView';
 import { SettingsView } from './SettingsView';
+import { PlanUpgradeModal } from '../PlanUpgradeModal';
+import { PLANS } from '../../data/plansData';
 
 interface DashboardLayoutProps {
   currentTab: DashboardTab;
@@ -34,12 +38,18 @@ interface DashboardLayoutProps {
   assistantMessages: AssistantMessage[];
   settings: UserSettings;
 
+  // Subscription
+  subscription?: UserSubscription;
+  onUpdateSubscription?: (sub: Partial<UserSubscription>) => void;
+
   // Actions
   onSendMessage: (text: string) => void;
   onOpenCampaign: (id: string | null) => void;
   selectedCampaignId: string | null;
   onToggleCampaignStatus: (id: string) => void;
   onDeleteCampaign: (id: string) => void;
+  onBatchToggleCampaignStatus?: (ids: string[], newStatus: 'active' | 'paused') => void;
+  onBatchDeleteCampaigns?: (ids: string[]) => void;
   onCreateCampaign: (camp: Partial<Campaign>) => void;
   onUpdateVoiceFeedback: (campaignId: string, draftId: string, isLiked: boolean) => void;
 
@@ -47,6 +57,9 @@ interface DashboardLayoutProps {
   onApproveAllDrafts: () => void;
   onEditDraft: (id: string, subject: string, body: string) => void;
   onRejectDraft: (id: string, reason: string) => void;
+  onBatchApproveDrafts?: (ids: string[]) => void;
+  onBatchRejectDrafts?: (ids: string[], reason: string) => void;
+  onBatchDiscardDrafts?: (ids: string[]) => void;
 
   onAddSender: (email: string) => void;
   onToggleSenderStatus: (id: string) => void;
@@ -70,17 +83,34 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
   personas,
   assistantMessages,
   settings,
+  subscription = {
+    plan: 'starter',
+    status: 'trial',
+    isTrial: true,
+    trialDaysRemaining: 7,
+    trialEndsAt: 'Aug 26, 2026',
+    currentPeriodEnd: 'Aug 26, 2026',
+    cancelAtPeriodEnd: false,
+    leadsUsedThisMonth: 38,
+    maxLeads: 100,
+  },
+  onUpdateSubscription,
   onSendMessage,
   onOpenCampaign,
   selectedCampaignId,
   onToggleCampaignStatus,
   onDeleteCampaign,
+  onBatchToggleCampaignStatus,
+  onBatchDeleteCampaigns,
   onCreateCampaign,
   onUpdateVoiceFeedback,
   onApproveDraft,
   onApproveAllDrafts,
   onEditDraft,
   onRejectDraft,
+  onBatchApproveDrafts,
+  onBatchRejectDrafts,
+  onBatchDiscardDrafts,
   onAddSender,
   onToggleSenderStatus,
   onRemoveSender,
@@ -90,9 +120,31 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
   onSaveSettings,
 }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [upgradeModalOpen, setUpgradeModalOpen] = useState(false);
+  const [upgradeReason, setUpgradeReason] = useState<string | undefined>(undefined);
+  const [trialBannerDismissed, setTrialBannerDismissed] = useState(false);
 
   const pendingDraftsCount = drafts.filter((d) => d.status === 'pending').length;
   const activeCampaignsCount = campaigns.filter((c) => c.status === 'active').length;
+  const currentPlan = PLANS[subscription.plan];
+
+  const handleOpenUpgradeModal = (reason?: string) => {
+    setUpgradeReason(reason);
+    setUpgradeModalOpen(true);
+  };
+
+  const handleSelectPlan = (newPlan: PlanTier) => {
+    const planConfig = PLANS[newPlan];
+    const isStarter = newPlan === 'starter';
+    if (onUpdateSubscription) {
+      onUpdateSubscription({
+        plan: newPlan,
+        isTrial: isStarter ? subscription.isTrial : false,
+        status: isStarter && subscription.isTrial ? 'trial' : 'active',
+        maxLeads: planConfig.maxLeadsPerMonth,
+      });
+    }
+  };
 
   return (
     <div className="min-h-screen bg-[#ffffff] text-[#0a2414] flex font-sans antialiased">
@@ -111,17 +163,16 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
 
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col min-w-0 lg:pl-64">
-        {/* Mobile Header Bar with centered logo */}
+        {/* Mobile Header Bar */}
         <header className="lg:hidden flex items-center justify-between px-6 py-3 bg-[#ffffff] border-b border-[#0a2414]/10 sticky top-0 z-30">
-          <button
-            onClick={() => setMobileMenuOpen(true)}
-            className="px-3 py-1.5 rounded-[10px] border border-[#0a2414]/10 bg-[#ffffff] text-[#0a2414] text-[13px] font-medium hover:bg-[#fafaf9] transition-colors"
-            aria-label="Open navigation menu"
-          >
-            Menu
-          </button>
-
-          <div className="flex-1 flex justify-center">
+          <div className="flex items-center space-x-3">
+            <button
+              onClick={() => setMobileMenuOpen(true)}
+              className="px-3 py-1.5 rounded-[10px] border border-[#0a2414]/10 bg-[#ffffff] text-[#0a2414] text-[13px] font-medium hover:bg-[#fafaf9] transition-colors"
+              aria-label="Open navigation menu"
+            >
+              Menu
+            </button>
             <button
               onClick={() => onNavigate('landing')}
               className="text-[20px] font-semibold tracking-[-0.03em] text-[#0a2414] inline-flex items-baseline"
@@ -131,12 +182,44 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
             </button>
           </div>
 
-          <div className="w-[52px] flex justify-end">
+          <div className="flex items-center space-x-2">
             <span className="text-[12px] text-[#607166] capitalize font-medium">
               {currentTab}
             </span>
           </div>
         </header>
+
+        {/* 7-DAY TRIAL BANNER (Clean, Non-Intrusive, Dismissible - Starter only) */}
+        {subscription.isTrial && subscription.plan === 'starter' && !trialBannerDismissed && (
+          <div className="bg-[#f3fbe9] border-b border-[#17b267]/30 px-6 py-2.5 flex items-center justify-between gap-4 text-[13px] z-20">
+            <div className="flex items-center space-x-2.5 text-[#0a2414]">
+              <span className="w-2 h-2 rounded-full bg-[#1ad379] shrink-0" />
+              <span>
+                <strong>{subscription.trialDaysRemaining} days left</strong> in your free trial of the{' '}
+                <strong className="capitalize">{currentPlan.name} Plan</strong> (${currentPlan.price}/mo). You will be billed on{' '}
+                {subscription.trialEndsAt || 'Aug 26, 2026'} unless cancelled.
+              </span>
+            </div>
+
+            <div className="flex items-center space-x-3 shrink-0">
+              <button
+                type="button"
+                onClick={() => handleOpenUpgradeModal()}
+                className="font-semibold text-[#17b267] hover:underline underline-offset-2"
+              >
+                Change Plan / Upgrade →
+              </button>
+              <button
+                type="button"
+                onClick={() => setTrialBannerDismissed(true)}
+                className="text-[#607166] hover:text-[#0a2414] px-1 text-[13px]"
+                aria-label="Dismiss trial banner"
+              >
+                ✕
+              </button>
+            </div>
+          </div>
+        )}
 
         {/* Tab View Container with 24px rhythm */}
         <main
@@ -183,8 +266,12 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
               onSelectCampaign={onOpenCampaign}
               onToggleStatus={onToggleCampaignStatus}
               onDeleteCampaign={onDeleteCampaign}
+              onBatchToggleStatus={onBatchToggleCampaignStatus}
+              onBatchDeleteCampaigns={onBatchDeleteCampaigns}
               onCreateCampaign={onCreateCampaign}
               onUpdateVoiceFeedback={onUpdateVoiceFeedback}
+              subscription={subscription}
+              onOpenUpgradeModal={handleOpenUpgradeModal}
             />
           )}
 
@@ -196,6 +283,11 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
               onApproveAll={onApproveAllDrafts}
               onEditDraft={onEditDraft}
               onRejectDraft={onRejectDraft}
+              onBatchApproveDrafts={onBatchApproveDrafts}
+              onBatchRejectDrafts={onBatchRejectDrafts}
+              onBatchDiscardDrafts={onBatchDiscardDrafts}
+              subscription={subscription}
+              onOpenUpgradeModal={handleOpenUpgradeModal}
             />
           )}
 
@@ -209,6 +301,8 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
               onAddSender={onAddSender}
               onToggleStatus={onToggleSenderStatus}
               onRemoveSender={onRemoveSender}
+              subscription={subscription}
+              onOpenUpgradeModal={handleOpenUpgradeModal}
             />
           )}
 
@@ -222,10 +316,30 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
           )}
 
           {currentTab === 'settings' && (
-            <SettingsView settings={settings} onSaveSettings={onSaveSettings} />
+            <SettingsView
+              settings={settings}
+              onSaveSettings={onSaveSettings}
+              subscription={subscription}
+              onUpdateSubscription={onUpdateSubscription}
+              onOpenUpgradeModal={handleOpenUpgradeModal}
+              campaigns={campaigns}
+              senders={senders}
+            />
           )}
         </main>
       </div>
+
+      {/* Plan Upgrade Modal */}
+      <PlanUpgradeModal
+        isOpen={upgradeModalOpen}
+        currentSubscription={subscription}
+        onClose={() => {
+          setUpgradeModalOpen(false);
+          setUpgradeReason(undefined);
+        }}
+        onSelectPlan={handleSelectPlan}
+        reasonMessage={upgradeReason}
+      />
     </div>
   );
 };

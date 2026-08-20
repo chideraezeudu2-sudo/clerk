@@ -1,36 +1,48 @@
 import React, { useState } from 'react';
+import { PlanTier } from '../types';
+import { PLANS } from '../data/plansData';
 
 interface AuthModalProps {
   isOpen: boolean;
   initialMode?: 'login' | 'signup';
+  initialPlan?: PlanTier;
   onClose: () => void;
-  onSuccess: () => void;
+  onSuccess: (plan?: PlanTier) => void;
 }
 
 export const AuthModal: React.FC<AuthModalProps> = ({
   isOpen,
   initialMode = 'login',
+  initialPlan = 'starter',
   onClose,
   onSuccess,
 }) => {
   const [mode, setMode] = useState<'login' | 'signup'>(initialMode);
+  const [selectedPlan, setSelectedPlan] = useState<PlanTier>(
+    initialPlan === 'starter' || initialPlan === 'growth' || initialPlan === 'scale' ? initialPlan : 'starter'
+  );
   const [email, setEmail] = useState('chideraezeudu2@gmail.com');
   const [password, setPassword] = useState('••••••••••••');
   const [isLoading, setIsLoading] = useState(false);
 
-  // Sync mode when initialMode prop changes
+  // Sync mode and plan when props change
   React.useEffect(() => {
     setMode(initialMode);
-  }, [initialMode]);
+    if (initialPlan && (initialPlan === 'starter' || initialPlan === 'growth' || initialPlan === 'scale')) {
+      setSelectedPlan(initialPlan);
+    }
+  }, [initialMode, initialPlan]);
 
   if (!isOpen) return null;
+
+  const planInfo = PLANS[selectedPlan] || PLANS.starter;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     setTimeout(() => {
       setIsLoading(false);
-      onSuccess();
+      onSuccess(selectedPlan);
     }, 500);
   };
 
@@ -38,7 +50,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
     setIsLoading(true);
     setTimeout(() => {
       setIsLoading(false);
-      onSuccess();
+      onSuccess(selectedPlan);
     }, 500);
   };
 
@@ -53,7 +65,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
           Close
         </button>
 
-        <div className="text-center mb-6">
+        <div className="text-center mb-5">
           <h2 className="text-[28px] font-semibold tracking-[-0.03em] text-[#0a2414] mb-1">
             clerk
           </h2>
@@ -62,6 +74,38 @@ export const AuthModal: React.FC<AuthModalProps> = ({
               ? 'Create your account to start watching for buying signals.'
               : 'Welcome back. Sign in to your outreach dashboard.'}
           </p>
+
+          {mode === 'signup' && (
+            <div
+              className={`mt-3 p-2.5 rounded-[8px] flex items-center justify-between text-[12.5px] border ${
+                selectedPlan === 'starter'
+                  ? 'bg-[#f3fbe9] border-[#17b267]/30'
+                  : 'bg-[#fafaf9] border-[#0a2414]/10'
+              }`}
+            >
+              {selectedPlan === 'starter' ? (
+                <>
+                  <div className="text-left">
+                    <span className="font-semibold text-[#0a2414]">7-day free trial on Starter</span>
+                    <span className="block text-[#607166] text-[11.5px]">${planInfo.price}/mo on day 8 • Cancel anytime</span>
+                  </div>
+                  <span className="px-2 py-0.5 rounded-[4px] bg-[#1ad379] text-[#0a2414] font-bold text-[10.5px] uppercase">
+                    Free Trial
+                  </span>
+                </>
+              ) : (
+                <>
+                  <div className="text-left">
+                    <span className="font-semibold text-[#0a2414]">{planInfo.name} Plan</span>
+                    <span className="block text-[#607166] text-[11.5px]">${planInfo.price}/month • Cancel anytime</span>
+                  </div>
+                  <span className="px-2 py-0.5 rounded-[4px] bg-[#0a2414]/5 text-[#0a2414] font-semibold text-[10.5px]">
+                    Billed Monthly
+                  </span>
+                </>
+              )}
+            </div>
+          )}
         </div>
 
         {/* Google Continue */}

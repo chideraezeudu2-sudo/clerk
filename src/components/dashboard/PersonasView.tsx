@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Persona } from '../../types';
+import { EmptyState } from '../EmptyState';
 
 interface PersonasViewProps {
   personas: Persona[];
@@ -124,9 +125,20 @@ export const PersonasView: React.FC<PersonasViewProps> = ({
         </div>
       </div>
 
-      {/* Grid of Personas */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {personas.map((persona) => {
+      {/* Grid of Personas or Empty State */}
+      {personas.length === 0 ? (
+        <EmptyState
+          type="personas"
+          title="No product personas added"
+          description="Create your first product persona to set the identity, value proposition, and peer-to-peer sending voice for campaign outreach."
+          primaryAction={{
+            label: '+ Create your first persona',
+            onClick: handleOpenAdd,
+          }}
+        />
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {personas.map((persona) => {
           const initials = persona.companyName
             ? persona.companyName.substring(0, 2).toUpperCase()
             : persona.name.substring(0, 2).toUpperCase();
@@ -220,7 +232,8 @@ export const PersonasView: React.FC<PersonasViewProps> = ({
             </div>
           );
         })}
-      </div>
+        </div>
+      )}
 
       {/* ADD / EDIT MODAL */}
       {(showAddModal || editingPersona) && (
