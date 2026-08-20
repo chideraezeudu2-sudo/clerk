@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   ViewMode,
   DashboardTab,
@@ -13,6 +13,7 @@ import {
   PlanTier,
 } from './types';
 import { PLANS } from './data/plansData';
+import { supabase, isSupabaseConfigured } from './lib/supabase';
 import {
   initialCampaigns,
   initialDrafts,
@@ -66,6 +67,37 @@ export default function App() {
     initialAssistantMessages
   );
   const [settings, setSettings] = useState<UserSettings>(initialUserSettings);
+
+  // Real session state (Google OAuth + email/password)
+  const [sessionUser, setSessionUser] = useState<{ id: string; email?: string } | null>(null);
+  const [authReady, setAuthReady] = useState(false);
+
+  useEffect(() => {
+    if (!isSupabaseConfigured) {
+      setAuthReady(true);
+      return;
+    }
+    // Pick up an existing session and the OAuth redirect return
+    supabase.auth.getSession().then(({ data }) => {
+      const user = data.session?.user ?? null;
+      setSessionUser(user);
+      setAuthReady(true);
+      if (user) {
+        setViewMode((prev) => (prev === 'landing' ? 'dashboard' : prev));
+      }
+    });
+    const { data: { subscription: authSub } } = supabase.auth.onAuthStateChange((_event, session) => {
+      const user = session?.user ?? null;
+      setSessionUser(user);
+      if (user) {
+        setIsAuthOpen(false);
+        setViewMode((prev) => (prev === 'landing' || prev === 'terms' || prev === 'privacy' ? 'dashboard' : prev));
+      } else {
+        setViewMode('landing');
+      }
+    });
+    return () => authSub.unsubscribe();
+  }, []);
 
   // Navigation handlers
   const handleOpenAuth = (mode: 'login' | 'signup', plan?: PlanTier) => {

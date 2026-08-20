@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { PlanTier } from '../types';
 import { PLANS } from '../data/plansData';
+import { supabase } from '../lib/supabase';
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -21,9 +22,10 @@ export const AuthModal: React.FC<AuthModalProps> = ({
   const [selectedPlan, setSelectedPlan] = useState<PlanTier>(
     initialPlan === 'starter' || initialPlan === 'growth' || initialPlan === 'scale' ? initialPlan : 'starter'
   );
-  const [email, setEmail] = useState('chideraezeudu2@gmail.com');
-  const [password, setPassword] = useState('••••••••••••');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
 
   // Sync mode and plan when props change
   React.useEffect(() => {
@@ -37,21 +39,38 @@ export const AuthModal: React.FC<AuthModalProps> = ({
 
   const planInfo = PLANS[selectedPlan] || PLANS.starter;
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    setTimeout(() => {
-      setIsLoading(false);
+    setError('');
+    try {
+      const { error: authError } =
+        mode === 'signup'
+          ? await supabase.auth.signUp({ email, password })
+          : await supabase.auth.signInWithPassword({ email, password });
+      if (authError) throw authError;
       onSuccess(selectedPlan);
-    }, 500);
+    } catch (err: any) {
+      setError(err?.message || 'Authentication failed. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const handleGoogle = () => {
+  const handleGoogle = async () => {
     setIsLoading(true);
-    setTimeout(() => {
+    setError('');
+    try {
+      const { error: authError } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: { redirectTo: window.location.origin },
+      });
+      if (authError) throw authError;
+      // Browser redirects to Google; session is picked up on return.
+    } catch (err: any) {
+      setError(err?.message || 'Google sign-in failed. Please try again.');
       setIsLoading(false);
-      onSuccess(selectedPlan);
-    }, 500);
+    }
   };
 
   return (
@@ -107,6 +126,12 @@ export const AuthModal: React.FC<AuthModalProps> = ({
             </div>
           )}
         </div>
+
+        {error && (
+          <div className="mb-4 rounded-[6px] border border-red-200 bg-red-50 px-3.5 py-2.5 text-[13px] text-red-700">
+            {error}
+          </div>
+        )}
 
         {/* Google Continue */}
         <button
