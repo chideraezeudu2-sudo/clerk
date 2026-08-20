@@ -88,11 +88,20 @@ export default function App() {
         apiKey: '',
         accountEmail: sessionUser?.email || '',
       });
+      return data;
     } catch (err) {
       console.error('Failed to load data:', err);
+      return null;
     } finally {
       setDataLoaded(true);
     }
+  };
+
+  // Decide routing from the real onboarded flag: not onboarded -> onboarding, else dashboard
+  const routeAfterAuth = async () => {
+    const data = await loadData();
+    const onboarded = data?.user?.onboarded === true;
+    setViewMode(onboarded ? 'dashboard' : 'onboarding');
   };
 
   useEffect(() => {
@@ -106,8 +115,7 @@ export default function App() {
       setSessionUser(user);
       setAuthReady(true);
       if (user) {
-        setViewMode((prev) => (prev === 'landing' ? 'dashboard' : prev));
-        loadData();
+        routeAfterAuth();
       }
     });
     const { data: { subscription: authSub } } = supabase.auth.onAuthStateChange((_event, session) => {
@@ -115,8 +123,7 @@ export default function App() {
       setSessionUser(user);
       if (user) {
         setIsAuthOpen(false);
-        setViewMode((prev) => (prev === 'landing' || prev === 'terms' || prev === 'privacy' ? 'dashboard' : prev));
-        loadData();
+        routeAfterAuth();
       } else {
         setViewMode('landing');
       }
@@ -152,12 +159,10 @@ export default function App() {
       maxLeads: planConfig.maxLeadsPerMonth,
     }));
 
-    // If signup, route to onboarding; if login, route directly to dashboard
-    if (authMode === 'signup') {
-      setViewMode('onboarding');
-    } else {
-      setViewMode('dashboard');
-    }
+    // Route by the real onboarded flag: new (not onboarded) -> onboarding, else dashboard.
+    // The session is already set; onAuthStateChange will also fire routeAfterAuth,
+    // but we call it here too so plan state is applied before routing.
+    routeAfterAuth();
   };
 
   const handleUpdateSubscription = (updated: Partial<UserSubscription>) => {
@@ -519,7 +524,10 @@ export default function App() {
       {/* 2. Onboarding Flow View */}
       {viewMode === 'onboarding' && (
         <Onboarding
-          onComplete={() => setViewMode('dashboard')}
+          onComplete={() => {
+            loadData();
+            setViewMode('dashboard');
+          }}
           onNavigate={setViewMode}
         />
       )}

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { OnboardingState, ViewMode } from '../types';
+import { apiFetch } from '../lib/api';
 
 interface OnboardingProps {
   onComplete: () => void;
@@ -90,18 +91,15 @@ export const Logos = {
 export const Onboarding: React.FC<OnboardingProps> = ({ onComplete, onNavigate }) => {
   const [state, setState] = useState<OnboardingState>({
     currentStep: 1,
-    mailboxEmail: 'chidera@clerk.so',
-    mailboxPassword: 'abcd efgh ijkl mnop',
+    mailboxEmail: '',
+    mailboxPassword: '',
     isMailboxConnected: false,
-    mailingAddress: 'clerk Systems Inc., 548 Market St, Suite 8201, San Francisco, CA 94104',
-    personaName: 'clerk Outbound Engine',
-    personaDescription:
-      'Autonomous signal-based outreach engine that monitors hiring surges and funding triggers to generate verified peer-to-peer drafts.',
-    personaWebsite: 'https://clerk.so',
-    targetAudience:
-      'VP of Engineering, Head of Sales Ops, and Founders at Series A-B B2B tech companies who are scaling outbound or suffering deliverability issues.',
-    voiceSample:
-      'Direct, peer-to-peer, concise (under 90 words). Always cite the exact verified trigger in the opening sentence. No buzzwords or marketing fluff.',
+    mailingAddress: '',
+    personaName: '',
+    personaDescription: '',
+    personaWebsite: '',
+    targetAudience: '',
+    voiceSample: '',
     voiceTone: 'casual',
     isCompleted: false,
   });
@@ -109,26 +107,61 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete, onNavigate }
   const [provider, setProvider] = useState<'gmail' | 'outlook'>('gmail');
   const [showAppPassHelp, setShowAppPassHelp] = useState(false);
   const [isConnecting, setIsConnecting] = useState(false);
-  const [activeSignalPicks, setActiveSignalPicks] = useState<string[]>([
-    'hiring_surges',
-    'funding_series_a',
-    'competitor_discontent',
-  ]);
+  const [isSaving, setIsSaving] = useState(false);
+  const [error, setError] = useState('');
+  const [activeSignalPicks, setActiveSignalPicks] = useState<string[]>([]);
 
-  const handleConnectMailbox = (e: React.FormEvent) => {
+  const handleConnectMailbox = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsConnecting(true);
-    setTimeout(() => {
-      setIsConnecting(false);
+    setError('');
+    try {
+      // Verify + save the mailbox via the senders endpoint
+      await apiFetch('/api/senders', {
+        method: 'POST',
+        body: { email: state.mailboxEmail, password: state.mailboxPassword, provider },
+      });
       setState((prev) => ({ ...prev, isMailboxConnected: true }));
-    }, 600);
+    } catch (err: any) {
+      setError(err?.message || 'Could not connect mailbox. For Gmail use a 16-character App Password.');
+    } finally {
+      setIsConnecting(false);
+    }
   };
 
   const handleNext = () => {
+    setError('');
     if (state.currentStep === 5) {
-      setState((prev) => ({ ...prev, isCompleted: true }));
+      submitOnboarding();
     } else {
       setState((prev) => ({ ...prev, currentStep: prev.currentStep + 1 }));
+    }
+  };
+
+  const submitOnboarding = async () => {
+    setIsSaving(true);
+    setError('');
+    try {
+      await apiFetch('/api/onboarding', {
+        method: 'POST',
+        body: {
+          mailboxEmail: state.mailboxEmail,
+          mailboxPassword: state.mailboxPassword,
+          provider,
+          mailingAddress: state.mailingAddress,
+          personaName: state.personaName,
+          personaDescription: state.personaDescription,
+          personaWebsite: state.personaWebsite,
+          targetAudience: state.targetAudience,
+          voiceSample: state.voiceSample,
+          voiceTone: state.voiceTone,
+        },
+      });
+      setState((prev) => ({ ...prev, isCompleted: true }));
+    } catch (err: any) {
+      setError(err?.message || 'Could not finish setup. Please try again.');
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -206,13 +239,13 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete, onNavigate }
                 <span>Initial Signals Engine Active</span>
               </div>
               <p className="text-[#607166]">
-                Connected mailbox:{' '}
-                <span className="text-[#0a2414] font-medium">{state.mailboxEmail}</span>{' '}
-                (Safe ramp rate: 15/day limit).
+                {state.isMailboxConnected
+                  ? <>Connected mailbox: <span className="text-[#0a2414] font-medium">{state.mailboxEmail}</span> (Safe ramp rate: 15/day limit).</>
+                  : 'Mailbox not connected yet — you can add one later from the Senders tab.'}
               </p>
               <div className="pt-2 border-t border-[#0a2414]/6 flex items-center justify-between text-[12px] text-[#607166]">
-                <span>Mailing compliance attached</span>
-                <span className="text-[#17b267] font-medium">CAN-SPAM Verified</span>
+                <span>{state.mailingAddress ? 'Mailing compliance attached' : 'Mailing address not set'}</span>
+                {state.mailingAddress && <span className="text-[#17b267] font-medium">CAN-SPAM Verified</span>}
               </div>
             </div>
 
@@ -275,6 +308,11 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete, onNavigate }
                     </div>
 
                     <form onSubmit={handleConnectMailbox} className="space-y-4">
+                      {error && (
+                        <div className="rounded-[6px] border border-red-200 bg-red-50 px-3.5 py-2.5 text-[13px] text-red-700">
+                          {error}
+                        </div>
+                      )}
                       <div>
                         <label className="block text-[13px] font-medium text-[#0a2414] mb-1">
                           {provider === 'gmail' ? 'Google Workspace / Gmail Address' : 'Outlook / Exchange Address'}
@@ -709,11 +747,17 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete, onNavigate }
                   <button
                     type="button"
                     onClick={handleNext}
-                    className="px-6 py-2.5 rounded-[6px] bg-[#1ad379] hover:bg-[#17b267] text-[#0a2414] text-[14px] font-medium"
+                    disabled={isSaving}
+                    className="px-6 py-2.5 rounded-[6px] bg-[#1ad379] hover:bg-[#17b267] text-[#0a2414] text-[14px] font-medium disabled:opacity-60"
                   >
-                    Finish setup
+                    {isSaving ? 'Finishing...' : 'Finish setup'}
                   </button>
                 </div>
+                {error && (
+                  <div className="mt-3 rounded-[6px] border border-red-200 bg-red-50 px-3.5 py-2.5 text-[13px] text-red-700">
+                    {error}
+                  </div>
+                )}
               </div>
             )}
           </div>
