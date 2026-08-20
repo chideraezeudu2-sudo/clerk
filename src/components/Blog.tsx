@@ -152,7 +152,9 @@ export function BlogRouter() {
     return () => window.removeEventListener('hashchange', onHash);
   }, []);
 
-  const slug = path.replace('#/blog/', '').replace('#/blog', '').replace(/^\/+/, '').replace(/\/+$/, '');
+  const slug = decodeURIComponent(
+    (window.location.hash || '').replace(/^#\/?blog\/?/, '').replace(/\/+$/, '')
+  );
   const post = BLOG_POSTS.find((p) => p.slug === slug);
   const isIndex = !slug || slug === '';
 
