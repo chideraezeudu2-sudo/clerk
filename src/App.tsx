@@ -14,15 +14,7 @@ import {
 } from './types';
 import { PLANS } from './data/plansData';
 import { supabase, isSupabaseConfigured } from './lib/supabase';
-import {
-  initialCampaigns,
-  initialDrafts,
-  initialSentEmails,
-  initialSenders,
-  initialPersonas,
-  initialAssistantMessages,
-  initialUserSettings,
-} from './data/mockData';
+import { apiFetch } from './lib/api';
 
 import { LandingPage } from './components/LandingPage';
 import { Onboarding } from './components/Onboarding';
@@ -57,20 +49,51 @@ export default function App() {
   const [authMode, setAuthMode] = useState<'login' | 'signup'>('login');
   const [authPlan, setAuthPlan] = useState<PlanTier>('starter');
 
-  // Application Data State
-  const [campaigns, setCampaigns] = useState<Campaign[]>(initialCampaigns);
-  const [drafts, setDrafts] = useState<DraftEmail[]>(initialDrafts);
-  const [sentEmails, setSentEmails] = useState<SentEmail[]>(initialSentEmails);
-  const [senders, setSenders] = useState<SenderMailbox[]>(initialSenders);
-  const [personas, setPersonas] = useState<Persona[]>(initialPersonas);
-  const [assistantMessages, setAssistantMessages] = useState<AssistantMessage[]>(
-    initialAssistantMessages
-  );
-  const [settings, setSettings] = useState<UserSettings>(initialUserSettings);
+  // Application Data State — starts EMPTY (blank slate); loaded from the API
+  const [campaigns, setCampaigns] = useState<Campaign[]>([]);
+  const [drafts, setDrafts] = useState<DraftEmail[]>([]);
+  const [sentEmails, setSentEmails] = useState<SentEmail[]>([]);
+  const [senders, setSenders] = useState<SenderMailbox[]>([]);
+  const [personas, setPersonas] = useState<Persona[]>([]);
+  const [assistantMessages, setAssistantMessages] = useState<AssistantMessage[]>([]);
+  const [settings, setSettings] = useState<UserSettings>({
+    mailingAddress: '',
+    defaultFollowUpDays: 3,
+    dailyCapAcrossAll: 50,
+    timezone: 'UTC',
+    apiKey: '',
+    accountEmail: '',
+  });
+  const [dataLoaded, setDataLoaded] = useState(false);
 
   // Real session state (Google OAuth + email/password)
   const [sessionUser, setSessionUser] = useState<{ id: string; email?: string } | null>(null);
   const [authReady, setAuthReady] = useState(false);
+
+  // Load all data from the backend API (blank slate for new users)
+  const loadData = async () => {
+    setDataLoaded(false);
+    try {
+      const data = await apiFetch('/api/bootstrap');
+      setCampaigns(data.campaigns || []);
+      setDrafts(data.drafts || []);
+      setSentEmails(data.sentEmails || []);
+      setSenders(data.senders || []);
+      setPersonas(data.personas || []);
+      setSettings(data.settings || {
+        mailingAddress: '',
+        defaultFollowUpDays: 3,
+        dailyCapAcrossAll: 50,
+        timezone: 'UTC',
+        apiKey: '',
+        accountEmail: sessionUser?.email || '',
+      });
+    } catch (err) {
+      console.error('Failed to load data:', err);
+    } finally {
+      setDataLoaded(true);
+    }
+  };
 
   useEffect(() => {
     if (!isSupabaseConfigured) {
@@ -84,6 +107,7 @@ export default function App() {
       setAuthReady(true);
       if (user) {
         setViewMode((prev) => (prev === 'landing' ? 'dashboard' : prev));
+        loadData();
       }
     });
     const { data: { subscription: authSub } } = supabase.auth.onAuthStateChange((_event, session) => {
@@ -92,6 +116,7 @@ export default function App() {
       if (user) {
         setIsAuthOpen(false);
         setViewMode((prev) => (prev === 'landing' || prev === 'terms' || prev === 'privacy' ? 'dashboard' : prev));
+        loadData();
       } else {
         setViewMode('landing');
       }
@@ -139,38 +164,28 @@ export default function App() {
     setSubscription((prev) => ({ ...prev, ...updated }));
   };
 
-  // Draft approval workflow
-  const handleApproveDraft = (draftId: string) => {
+  // Draft approval workflow — approve triggers a real send through /api/send
+  const handleApproveDraft = async (draftId: string) => {
     const draft = drafts.find((d) => d.id === draftId);
     if (!draft) return;
-
-    // Mark as approved and move to Sent
-    setDrafts((prev) =>
-      prev.map((d) => (d.id === draftId ? { ...d, status: 'approved' } : d))
-    );
-
-    const newSent: SentEmail = {
-      id: `sent-${Date.now()}`,
-      campaignId: draft.campaignId,
-      campaignName: draft.campaignName,
-      recipientName: draft.recipientName,
-      recipientCompany: draft.recipientCompany,
-      recipientEmail: draft.recipientEmail,
-      subject: draft.subject,
-      body: draft.body,
-      sentAt: 'Just now',
-      status: 'sent',
-      senderMailbox: senders[0]?.email || 'chidera@clerk.so',
-    };
-
-    setSentEmails((prev) => [newSent, ...prev]);
-
-    // Update campaign counts
-    setCampaigns((prev) =>
-      prev.map((c) =>
-        c.id === draft.campaignId ? { ...c, sentCount: c.sentCount + 1 } : c
-      )
-    );
+    try {
+      const { sent } = await apiFetch('/api/send', {
+        method: 'POST',
+        body: { draftId },
+      });
+      setDrafts((prev) =>
+        prev.map((d) => (d.id === draftId ? { ...d, status: 'approved' } : d))
+      );
+      setSentEmails((prev) => [sent, ...prev]);
+      setCampaigns((prev) =>
+        prev.map((c) =>
+          c.id === draft.campaignId ? { ...c, sentCount: c.sentCount + 1 } : c
+        )
+      );
+    } catch (err) {
+      console.error('Send failed:', err);
+      alert('Failed to send this email. Connect a sender mailbox first.');
+    }
   };
 
   const handleApproveAllDrafts = () => {
@@ -184,20 +199,36 @@ export default function App() {
     ids.forEach((id) => handleApproveDraft(id));
   };
 
-  const handleEditDraft = (draftId: string, subject: string, body: string) => {
+  const handleEditDraft = async (draftId: string, subject: string, body: string) => {
     setDrafts((prev) =>
       prev.map((d) =>
         d.id === draftId ? { ...d, subject, body } : d
       )
     );
+    try {
+      await apiFetch('/api/drafts', {
+        method: 'PATCH',
+        body: { id: draftId, action: 'edit', subject, body },
+      });
+    } catch (err) {
+      console.error('Edit draft failed:', err);
+    }
   };
 
-  const handleRejectDraft = (draftId: string, reason: string) => {
+  const handleRejectDraft = async (draftId: string, reason: string) => {
     setDrafts((prev) =>
       prev.map((d) =>
         d.id === draftId ? { ...d, status: 'rejected', rejectReason: reason } : d
       )
     );
+    try {
+      await apiFetch('/api/drafts', {
+        method: 'PATCH',
+        body: { id: draftId, action: 'reject', reason },
+      });
+    } catch (err) {
+      console.error('Reject draft failed:', err);
+    }
   };
 
   const handleBatchRejectDrafts = (ids: string[], reason: string) => {
@@ -213,14 +244,16 @@ export default function App() {
   };
 
   // Campaign management
-  const handleToggleCampaignStatus = (id: string) => {
-    setCampaigns((prev) =>
-      prev.map((c) =>
-        c.id === id
-          ? { ...c, status: c.status === 'active' ? 'paused' : 'active' }
-          : c
-      )
-    );
+  const handleToggleCampaignStatus = async (id: string) => {
+    const camp = campaigns.find((c) => c.id === id);
+    if (!camp) return;
+    const next = camp.status === 'active' ? 'paused' : 'active';
+    setCampaigns((prev) => prev.map((c) => (c.id === id ? { ...c, status: next } : c)));
+    try {
+      await apiFetch('/api/campaigns', { method: 'PATCH', body: { id, status: next } });
+    } catch (err) {
+      console.error('Toggle campaign failed:', err);
+    }
   };
 
   const handleBatchToggleCampaignStatus = (ids: string[], newStatus: 'active' | 'paused') => {
@@ -238,6 +271,9 @@ export default function App() {
     if (selectedCampaignId === id) {
       setSelectedCampaignId(null);
     }
+    apiFetch(`/api/campaigns?id=${id}`, { method: 'DELETE' }).catch((err) =>
+      console.error('Delete campaign failed:', err)
+    );
 
     setUndoItem({
       id: `undo-camp-${Date.now()}`,
@@ -256,6 +292,11 @@ export default function App() {
     if (selectedCampaignId && ids.includes(selectedCampaignId)) {
       setSelectedCampaignId(null);
     }
+    ids.forEach((id) =>
+      apiFetch(`/api/campaigns?id=${id}`, { method: 'DELETE' }).catch((err) =>
+        console.error('Delete campaign failed:', err)
+      )
+    );
 
     if (deletedItems.length === 1) {
       setUndoItem({
@@ -268,87 +309,30 @@ export default function App() {
     }
   };
 
-  const handleCreateCampaign = (campData: Partial<Campaign>) => {
-    const newCamp: Campaign = {
-      id: `camp-${Date.now()}`,
-      name: campData.name || 'New Intent Campaign',
-      personaId: campData.personaId || personas[0].id,
-      status: 'active',
-      leadsCount: 1,
-      sentCount: 0,
-      repliedCount: 0,
-      bouncedCount: 0,
-      createdAt: 'Just now',
-      signalKeywords: campData.signalKeywords || ['Hiring VP Eng'],
-      signals: [
-        {
-          id: `sig-${Date.now()}`,
-          type: 'hiring',
-          title: 'Hiring Lead Backend Architect',
-          company: 'Acme Cloud Inc.',
-          contactName: 'Sarah Jenkins',
-          contactRole: 'VP of Engineering',
-          contactEmail: 'sjenkins@acmecloud.io',
-          detectedAt: 'Just now',
-          confidenceScore: 96,
-          detail: 'New job posting on Greenhouse highlighting migration from legacy mail pipelines.',
+  const handleCreateCampaign = async (campData: Partial<Campaign>) => {
+    try {
+      const { campaign } = await apiFetch('/api/campaigns', {
+        method: 'POST',
+        body: {
+          name: campData.name || 'New Campaign',
+          personaId: campData.personaId || null,
+          signalKeywords: campData.signalKeywords || [],
         },
-      ],
-      sequence: [
-        {
-          stepNumber: 1,
-          label: 'Signal Introduction',
-          delayDays: 0,
-          sentCount: 0,
-          templateSnippet: 'Noticed your posting for Backend Architect...',
-          openRate: 0,
-          replyRate: 0,
-        },
-        {
-          stepNumber: 2,
-          label: 'Relevant Case Study',
-          delayDays: 3,
-          sentCount: 0,
-          templateSnippet: 'Quick follow-up on the delivery infrastructure...',
-          openRate: 0,
-          replyRate: 0,
-        },
-        {
-          stepNumber: 3,
-          label: 'Final Friendly Check-in',
-          delayDays: 5,
-          sentCount: 0,
-          templateSnippet: 'Wanted to bubble this to top of inbox before closing loop...',
-          openRate: 0,
-          replyRate: 0,
-        },
-      ],
-      voiceStyle: 'Direct, peer-to-peer engineering tone. No marketing fluff.',
-      voiceSamples: [
-        'Hey Sarah — saw your team is ramping backend mail pipelines at Acme.',
-        'We built clerk to solve native deliverability with peer-to-peer warm-up.',
-      ],
-    };
+      });
+      setCampaigns((prev) => [campaign, ...prev]);
 
-    setCampaigns((prev) => [newCamp, ...prev]);
-
-    // Also auto-generate a sample draft in queue for this campaign
-    const newDraft: DraftEmail = {
-      id: `draft-${Date.now()}`,
-      campaignId: newCamp.id,
-      campaignName: newCamp.name,
-      recipientName: 'Sarah Jenkins',
-      recipientCompany: 'Acme Cloud Inc.',
-      recipientRole: 'VP of Engineering',
-      recipientEmail: 'sjenkins@acmecloud.io',
-      signalSnippet: 'Acme posted Backend Architect job 2 hours ago (Greenhouse)',
-      subject: 'Acme backend mail pipelines & native deliverability',
-      body: `Hey Sarah,\n\nSaw Acme is hiring a Backend Architect on Greenhouse to modernize delivery systems.\n\nQuick thought: our team built clerk to automate signal-based outreach with native mailbox warm-up, so teams scale outbound without hitting spam traps or burn domains.\n\nOpen to taking a quick look this week?\n\nBest,\nChidera`,
-      status: 'pending',
-      generatedAt: 'Just now',
-    };
-
-    setDrafts((prev) => [newDraft, ...prev]);
+      // Generate AI drafts for the new campaign (Groq)
+      const { drafts: newDrafts } = await apiFetch('/api/drafts-generate', {
+        method: 'POST',
+        body: { campaignId: campaign.id, max: subscription.maxLeads || 10 },
+      }).catch(() => ({ drafts: [] }));
+      if (newDrafts && newDrafts.length) {
+        setDrafts((prev) => [...newDrafts, ...prev]);
+      }
+    } catch (err) {
+      console.error('Create campaign failed:', err);
+      alert('Failed to create campaign. Please try again.');
+    }
   };
 
   const handleUpdateVoiceFeedback = (
@@ -369,90 +353,106 @@ export default function App() {
     ]);
   };
 
-  // Assistant messaging
-  const handleSendMessage = (text: string) => {
+  // Assistant messaging — real AI via /api/chat
+  const handleSendMessage = async (text: string) => {
     const userMsg: AssistantMessage = {
       id: `msg-${Date.now()}`,
       sender: 'user',
       content: text,
       timestamp: 'Just now',
     };
-
     setAssistantMessages((prev) => [...prev, userMsg]);
 
-    // Simulate AI clerk agent response
-    setTimeout(() => {
-      const lower = text.toLowerCase();
-      let replyContent = `Understood. I have adjusted your active crawls and queued up new verified prospects matching your prompt.`;
-
-      if (lower.includes('campaign') || lower.includes('create')) {
-        replyContent = `Created a new campaign draft targeted to your query. I've populated the sequence templates and scanned the latest hiring signals. Head over to the Campaigns tab to review!`;
-      } else if (lower.includes('draft') || lower.includes('queue') || lower.includes('approve')) {
-        replyContent = `Checked your queue. You have ${
-          drafts.filter((d) => d.status === 'pending').length
-        } drafts awaiting review. You can approve them individually or use "Approve All" to schedule immediate dispatch.`;
-      } else if (lower.includes('sender') || lower.includes('mailbox') || lower.includes('inbox')) {
-        replyContent = `All ${senders.length} connected mailboxes are currently healthy with optimal reputation scores and active progressive ramp warmups.`;
-      } else if (lower.includes('persona')) {
-        replyContent = `Your personas are active. I am currently matching company headcount and tech stack against your target ICP parameters.`;
-      }
-
+    try {
+      const { reply } = await apiFetch('/api/chat', {
+        method: 'POST',
+        body: { message: text },
+      });
       const botMsg: AssistantMessage = {
         id: `bot-${Date.now()}`,
         sender: 'assistant',
-        content: replyContent,
+        content: reply || 'Done.',
         timestamp: 'Just now',
       };
-
       setAssistantMessages((prev) => [...prev, botMsg]);
-    }, 600);
+      // The assistant may have created campaigns/drafts — refresh data
+      loadData();
+    } catch (err) {
+      console.error('Chat failed:', err);
+      setAssistantMessages((prev) => [
+        ...prev,
+        {
+          id: `bot-${Date.now()}`,
+          sender: 'assistant',
+          content: 'Sorry, I ran into an error processing that. Please try again.',
+          timestamp: 'Just now',
+        },
+      ]);
+    }
   };
 
-  // Senders management
-  const handleAddSender = (email: string) => {
-    const newSender: SenderMailbox = {
-      id: `sender-${Date.now()}`,
-      email,
-      provider: email.includes('gmail') ? 'google' : 'microsoft',
-      status: 'warming',
-      healthScore: 98,
-      dailyCap: 20,
-      sentToday: 0,
-      connectedDays: 1,
-    };
-    setSenders((prev) => [newSender, ...prev]);
+  // Senders management — real API
+  const handleAddSender = async (email: string, token: string, provider: 'gmail' | 'outlook') => {
+    try {
+      const { sender } = await apiFetch('/api/senders', {
+        method: 'POST',
+        body: { email, password: token, provider },
+      });
+      setSenders((prev) => [sender, ...prev]);
+    } catch (err) {
+      console.error('Add sender failed:', err);
+      alert('Failed to connect mailbox. Check the email + app password and try again.');
+    }
   };
 
-  const handleToggleSenderStatus = (id: string) => {
-    setSenders((prev) =>
-      prev.map((s) =>
-        s.id === id
-          ? { ...s, status: s.status === 'active' ? 'paused' : 'active' }
-          : s
-      )
-    );
+  const handleToggleSenderStatus = async (id: string) => {
+    const s = senders.find((x) => x.id === id);
+    if (!s) return;
+    const next = s.status === 'active' ? 'paused' : 'active';
+    setSenders((prev) => prev.map((x) => (x.id === id ? { ...x, status: next } : x)));
+    try {
+      await apiFetch('/api/senders', { method: 'PATCH', body: { id, status: next } });
+    } catch (err) {
+      console.error('Toggle sender failed:', err);
+    }
   };
 
   const handleRemoveSender = (id: string) => {
     setSenders((prev) => prev.filter((s) => s.id !== id));
+    apiFetch(`/api/senders?id=${id}`, { method: 'DELETE' }).catch((err) =>
+      console.error('Remove sender failed:', err)
+    );
   };
 
-  // Personas management
-  const handleAddPersona = (
+  // Personas management — real API
+  const handleAddPersona = async (
     newP: Omit<Persona, 'id' | 'activeCampaignsCount'>
   ) => {
-    const created: Persona = {
-      ...newP,
-      id: `persona-${Date.now()}`,
-      activeCampaignsCount: 0,
-    };
-    setPersonas((prev) => [...prev, created]);
+    try {
+      const { persona } = await apiFetch('/api/personas', {
+        method: 'POST',
+        body: {
+          name: newP.name,
+          companyName: newP.companyName,
+          description: newP.description,
+          websiteUrl: newP.websiteUrl,
+        },
+      });
+      setPersonas((prev) => [...prev, persona]);
+    } catch (err) {
+      console.error('Add persona failed:', err);
+    }
   };
 
-  const handleEditPersona = (id: string, updated: Partial<Persona>) => {
+  const handleEditPersona = async (id: string, updated: Partial<Persona>) => {
     setPersonas((prev) =>
       prev.map((p) => (p.id === id ? { ...p, ...updated } : p))
     );
+    try {
+      await apiFetch('/api/personas', { method: 'PATCH', body: { id, ...updated } });
+    } catch (err) {
+      console.error('Edit persona failed:', err);
+    }
   };
 
   const handleDeletePersona = (id: string) => {
@@ -461,6 +461,9 @@ export default function App() {
     if (!personaToDelete) return;
 
     setPersonas((prev) => prev.filter((p) => p.id !== id));
+    apiFetch(`/api/personas?id=${id}`, { method: 'DELETE' }).catch((err) =>
+      console.error('Delete persona failed:', err)
+    );
 
     setUndoItem({
       id: `undo-pers-${Date.now()}`,
@@ -496,6 +499,11 @@ export default function App() {
 
   const handleSaveSettings = (updated: Partial<UserSettings>) => {
     setSettings((prev) => ({ ...prev, ...updated }));
+    const { mailingAddress, defaultFollowUpDays, dailyCapAcrossAll, timezone } = updated;
+    apiFetch('/api/settings', {
+      method: 'PATCH',
+      body: { mailingAddress, defaultFollowUpDays, dailyCapAcrossAll, timezone },
+    }).catch((err) => console.error('Save settings failed:', err));
   };
 
   return (

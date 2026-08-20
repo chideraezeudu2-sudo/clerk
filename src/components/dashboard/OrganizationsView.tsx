@@ -1,13 +1,12 @@
 import React, { useState } from 'react';
 import { Organization } from '../../types';
-import { initialOrganizations } from '../../data/mockData';
 
 interface OrganizationsViewProps {
+  organizations: Organization[];
   onAddOrgToCampaign?: (org: Organization) => void;
 }
 
-export const OrganizationsView: React.FC<OrganizationsViewProps> = ({ onAddOrgToCampaign }) => {
-  const [organizations, setOrganizations] = useState<Organization[]>(initialOrganizations);
+export const OrganizationsView: React.FC<OrganizationsViewProps> = ({ organizations, onAddOrgToCampaign }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedTag, setSelectedTag] = useState<string>('all');
   const [selectedSignalFilter, setSelectedSignalFilter] = useState<string>('all');
@@ -28,11 +27,10 @@ export const OrganizationsView: React.FC<OrganizationsViewProps> = ({ onAddOrgTo
     return matchesSearch && matchesTag && matchesSignal;
   });
 
-  const toggleStar = (orgId: string, e: React.MouseEvent) => {
+  // Stars are a view-only nicety; there's no persisted favorites backend.
+  // Kept as a no-op to avoid crashing; organizations come from the parent (empty until you add targets).
+  const toggleStar = (e: React.MouseEvent) => {
     e.stopPropagation();
-    setOrganizations((prev) =>
-      prev.map((o) => (o.id === orgId ? { ...o, isStarred: !o.isStarred } : o))
-    );
   };
 
   return (
@@ -121,7 +119,7 @@ export const OrganizationsView: React.FC<OrganizationsViewProps> = ({ onAddOrgTo
                 >
                   <td className="py-4 px-5">
                     <button
-                      onClick={(e) => toggleStar(org.id, e)}
+                      onClick={(e) => toggleStar(e)}
                       className={`text-[12.5px] font-semibold transition-colors ${
                         org.isStarred ? 'text-[#17b267]' : 'text-[#607166]/40 hover:text-[#0a2414]'
                       }`}

@@ -5,7 +5,7 @@ import { PLANS } from '../../data/plansData';
 
 interface SendersViewProps {
   senders: SenderMailbox[];
-  onAddSender: (email: string) => void;
+  onAddSender: (email: string, token: string, provider: 'gmail' | 'outlook') => void;
   onToggleStatus: (id: string) => void;
   onRemoveSender: (id: string) => void;
   subscription?: UserSubscription;
@@ -53,14 +53,12 @@ export const SendersView: React.FC<SendersViewProps> = ({
     }
 
     setIsSubmitting(true);
-    setTimeout(() => {
-      onAddSender(newEmail);
-      setNewEmail('');
-      setNewPassword('');
-      setIsSubmitting(false);
-      setShowAddModal(false);
-      triggerToast('Mailbox connected successfully! Initial 15-day safe ramp initiated.');
-    }, 600);
+    onAddSender(newEmail, newPassword, selectedProvider);
+    setNewEmail('');
+    setNewPassword('');
+    setIsSubmitting(false);
+    setShowAddModal(false);
+    triggerToast('Mailbox connecting...');
   };
 
   return (

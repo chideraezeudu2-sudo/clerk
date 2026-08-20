@@ -11,6 +11,7 @@ import {
   UserSettings,
   UserSubscription,
   PlanTier,
+  Organization,
 } from '../../types';
 import { Sidebar } from './Sidebar';
 import { HomeView } from './HomeView';
@@ -35,6 +36,7 @@ interface DashboardLayoutProps {
   sentEmails: SentEmail[];
   senders: SenderMailbox[];
   personas: Persona[];
+  organizations?: Organization[];
   assistantMessages: AssistantMessage[];
   settings: UserSettings;
 
@@ -81,6 +83,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
   sentEmails,
   senders,
   personas,
+  organizations = [],
   assistantMessages,
   settings,
   subscription = {
@@ -242,6 +245,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
 
           {currentTab === 'organizations' && (
             <OrganizationsView
+              organizations={organizations}
               onAddOrgToCampaign={(org) => {
                 onSelectTab('campaigns');
               }}
