@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { OnboardingState, ViewMode } from '../types';
 import { apiFetch } from '../lib/api';
+import { supabase } from '../lib/supabase';
 
 interface OnboardingProps {
   onComplete: () => void;
@@ -123,7 +124,13 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete, onNavigate }
       });
       setState((prev) => ({ ...prev, isMailboxConnected: true }));
     } catch (err: any) {
-      setError(err?.message || 'Could not connect mailbox. For Gmail use a 16-character App Password.');
+      const msg = err?.message || '';
+      if (/session has expired|not signed in|unauthorized/i.test(msg)) {
+        await supabase.auth.signOut();
+        onNavigate('landing');
+        return;
+      }
+      setError(msg || 'Could not connect mailbox. For Gmail use a 16-character App Password.');
     } finally {
       setIsConnecting(false);
     }

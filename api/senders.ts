@@ -2,7 +2,7 @@ import { requireUser, getAdmin, ok, fail, senderTransport, mapSender } from './_
 
 export default async function handler(req: any, res: any) {
   const user = await requireUser(req);
-  if (!user) return fail(res, 401, 'Unauthorized');
+  if (!user) return fail(res, 401, 'Your session has expired — please sign in again.');
   const supa = getAdmin();
 
   if (req.method === 'POST') {

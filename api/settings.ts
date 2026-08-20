@@ -3,7 +3,7 @@ import { requireUser, getAdmin, ok, fail } from './_lib.js';
 export default async function handler(req: any, res: any) {
   if (req.method !== 'PATCH') return fail(res, 405, 'Method not allowed');
   const user = await requireUser(req);
-  if (!user) return fail(res, 401, 'Unauthorized');
+  if (!user) return fail(res, 401, 'Your session has expired — please sign in again.');
 
   const { mailingAddress, defaultFollowUpDays, dailyCapAcrossAll, timezone } = req.body || {};
   const patch: any = { updated_at: new Date().toISOString() };
