@@ -13,7 +13,8 @@ export default async function handler(req: any, res: any) {
 
   const supa = getAdmin();
 
-  // 1. Sender mailbox (verify SMTP before saving)
+  // 1. Sender mailbox — only insert if this exact email isn't already saved
+  //    (the onboarding connect step already persisted + verified it via /api/senders).
   if (mailboxEmail?.trim() && mailboxPassword?.trim()) {
     const host = provider === 'outlook' ? 'smtp.office365.com' : 'smtp.gmail.com';
     const port = provider === 'outlook' ? 587 : 465;
@@ -24,16 +25,24 @@ export default async function handler(req: any, res: any) {
       smtp_user: mailboxEmail.trim(),
       smtp_pass: mailboxPassword.trim(),
     };
-    try {
-      await senderTransport(candidate).verify();
-    } catch (e: any) {
-      return fail(
-        res,
-        400,
-        `Could not authenticate mailbox: ${e.message}. For Gmail use a 16-character App Password.`
-      );
+    const { data: existing } = await supa
+      .from('senders')
+      .select('id')
+      .eq('user_id', user.id)
+      .ilike('email', candidate.email)
+      .maybeSingle();
+    if (!existing) {
+      try {
+        await senderTransport(candidate).verify();
+      } catch (e: any) {
+        return fail(
+          res,
+          400,
+          `Could not authenticate mailbox: ${e.message}. For Gmail use a 16-character App Password.`
+        );
+      }
+      await supa.from('senders').insert({ user_id: user.id, provider: provider || 'gmail', ...candidate });
     }
-    await supa.from('senders').insert({ user_id: user.id, provider: provider || 'gmail', ...candidate });
   }
 
   // 2. Persona

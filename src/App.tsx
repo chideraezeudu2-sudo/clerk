@@ -37,7 +37,7 @@ export default function App() {
     trialEndsAt: 'Aug 26, 2026',
     currentPeriodEnd: 'Aug 26, 2026',
     cancelAtPeriodEnd: false,
-    leadsUsedThisMonth: 38,
+    leadsUsedThisMonth: 0,
     maxLeads: 100,
   });
 
@@ -88,6 +88,9 @@ export default function App() {
         apiKey: '',
         accountEmail: sessionUser?.email || '',
       });
+      // Sync plan usage to the real lead count
+      const realLeads = (data.campaigns || []).reduce((acc: number, c: any) => acc + (c.leadsCount || 0), 0);
+      setSubscription((prev) => ({ ...prev, leadsUsedThisMonth: realLeads }));
       return data;
     } catch (err) {
       console.error('Failed to load data:', err);
@@ -548,6 +551,7 @@ export default function App() {
           subscription={subscription}
           onUpdateSubscription={handleUpdateSubscription}
           onSendMessage={handleSendMessage}
+          onDataChanged={loadData}
           onOpenCampaign={setSelectedCampaignId}
           selectedCampaignId={selectedCampaignId}
           onToggleCampaignStatus={handleToggleCampaignStatus}

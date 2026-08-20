@@ -681,8 +681,11 @@ export const CampaignsView: React.FC<CampaignsViewProps> = ({
                 placeholder="Search campaigns or triggers..."
                 className="w-full px-3.5 py-2 pl-8 rounded-[10px] border border-[#0a2414]/12 bg-white text-[13px] text-[#0a2414] outline-none focus:border-[#17b267]"
               />
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#607166] text-[12px]">
-                🔍
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#607166]">
+                <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="11" cy="11" r="8" />
+                  <path d="m21 21-4.3-4.3" />
+                </svg>
               </span>
             </div>
           </div>

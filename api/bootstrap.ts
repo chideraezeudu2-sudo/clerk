@@ -25,8 +25,17 @@ export default async function handler(req: any, res: any) {
   const leadRows = leads.data || [];
   const draftRows = drafts.data || [];
   const sentRows = sent.data || [];
-  const senderRows = senders.data || [];
+  const senderRowsRaw = senders.data || [];
   const personaRows = personas.data || [];
+
+  // Dedupe senders by email (legacy double-saves created identical rows).
+  const seenEmails = new Set<string>();
+  const senderRows = senderRowsRaw.filter((x: any) => {
+    const key = (x.email || '').toLowerCase().trim();
+    if (seenEmails.has(key)) return false;
+    seenEmails.add(key);
+    return true;
+  });
 
   const todayStart = new Date();
   todayStart.setHours(0, 0, 0, 0);

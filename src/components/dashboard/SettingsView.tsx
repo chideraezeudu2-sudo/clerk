@@ -16,15 +16,15 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
   settings,
   onSaveSettings,
   subscription = {
-    plan: 'growth',
+    plan: 'starter',
     status: 'trial',
     isTrial: true,
-    trialDaysRemaining: 4,
-    trialEndsAt: 'Aug 23, 2026',
-    currentPeriodEnd: 'Aug 23, 2026',
+    trialDaysRemaining: 7,
+    trialEndsAt: '',
+    currentPeriodEnd: '',
     cancelAtPeriodEnd: false,
-    leadsUsedThisMonth: 184,
-    maxLeads: 250,
+    leadsUsedThisMonth: 0,
+    maxLeads: 100,
   },
   onUpdateSubscription,
   onOpenUpgradeModal,
@@ -95,7 +95,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
   // Calculate usage stats
   const activeCampaignsCount = campaigns.filter((c) => c.status === 'active').length;
   const connectedMailboxesCount = senders.length;
-  const leadsUsed = subscription.leadsUsedThisMonth || 184;
+  const leadsUsed = subscription.leadsUsedThisMonth ?? 0;
   const maxLeads = currentPlan.maxLeadsPerMonth;
   const leadsPercent = Math.min(100, Math.round((leadsUsed / maxLeads) * 100));
   const mailboxPercent = Math.min(100, Math.round((connectedMailboxesCount / currentPlan.maxMailboxes) * 100));
@@ -305,34 +305,29 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
               </div>
             </div>
 
-            {/* Payment Method & Invoices */}
+            {/* Payment Method & Invoices — shown only once Stripe is connected */}
             <div className="pt-4 border-t border-[#0a2414]/6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
               <div className="flex items-center space-x-3">
-                <div className="w-10 h-7 rounded-[4px] bg-[#0a2414] text-[#ffffff] flex items-center justify-center font-mono text-[11px] font-bold tracking-wider">
-                  VISA
+                <div className="w-10 h-7 rounded-[4px] bg-[#0a2414]/8 text-[#607166] flex items-center justify-center font-mono text-[11px] font-bold tracking-wider">
+                  —
                 </div>
                 <div>
                   <div className="text-[13px] font-semibold text-[#0a2414]">
-                    Visa ending in •••• 4242
+                    No payment method on file
                   </div>
-                  <div className="text-[11.5px] text-[#607166]">Expires 12/28 • Default payment card</div>
+                  <div className="text-[11.5px] text-[#607166]">
+                    Billing isn't connected yet — you're on the free trial. Stripe integration is coming.
+                  </div>
                 </div>
               </div>
 
               <div className="flex items-center space-x-2">
                 <button
                   type="button"
-                  onClick={() => triggerToast('Stripe customer portal opened.')}
+                  onClick={() => triggerToast('Card management will be available once Stripe is connected.')}
                   className="px-3.5 py-1.5 rounded-[8px] border border-[#0a2414]/15 hover:bg-[#fafaf9] text-[#0a2414] text-[12.5px] font-medium transition-colors"
                 >
-                  Update Card
-                </button>
-                <button
-                  type="button"
-                  onClick={() => triggerToast('Invoices & billing receipts fetched from Stripe.')}
-                  className="px-3.5 py-1.5 rounded-[8px] border border-[#0a2414]/15 hover:bg-[#fafaf9] text-[#0a2414] text-[12.5px] font-medium transition-colors"
-                >
-                  View Receipts
+                  Add Card
                 </button>
               </div>
             </div>

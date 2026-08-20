@@ -45,7 +45,8 @@ interface DashboardLayoutProps {
   onUpdateSubscription?: (sub: Partial<UserSubscription>) => void;
 
   // Actions
-  onSendMessage: (text: string) => void;
+  onSendMessage?: (text: string) => void;
+  onDataChanged?: () => void;
   onOpenCampaign: (id: string | null) => void;
   selectedCampaignId: string | null;
   onToggleCampaignStatus: (id: string) => void;
@@ -99,6 +100,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
   },
   onUpdateSubscription,
   onSendMessage,
+  onDataChanged,
   onOpenCampaign,
   selectedCampaignId,
   onToggleCampaignStatus,
@@ -256,11 +258,10 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
 
           {currentTab === 'assistant' && (
             <AssistantView
-              messages={assistantMessages}
-              onSendMessage={onSendMessage}
               campaigns={campaigns}
               pendingDraftsCount={pendingDraftsCount}
               onNavigateToDrafts={() => onSelectTab('drafts')}
+              onDataChanged={onDataChanged}
             />
           )}
 
