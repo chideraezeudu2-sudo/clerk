@@ -359,7 +359,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete, onNavigate }
                           <p className="font-medium text-[#0a2414]">Quick 30-second setup:</p>
                           <ol className="list-decimal pl-4 space-y-1 text-[#607166]">
                             <li>Turn on 2-Step Verification if it's off (Google Account → Security).</li>
-                            <li>Go to <a href="https://myaccount.google.com/apppasswords" target="_blank" rel="noopener noreferrer" className="text-[#17b267] underline">myaccount.google.com/apppasswords</a> — you can't reach it from the menus anymore.</li>
+                            <li>Go to <a href="https://myaccount.google.com/apppasswords" target="_blank" rel="noopener noreferrer" className="text-[#17b267] underline">myaccount.google.com/apppasswords</a>.</li>
                             <li>Name it "clerk", click Create, and paste the 16-character code here.</li>
                           </ol>
                         </div>
