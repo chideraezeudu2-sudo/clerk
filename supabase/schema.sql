@@ -61,6 +61,7 @@ create table if not exists public.leads (
   id uuid primary key default gen_random_uuid(),
   user_id uuid not null references auth.users (id) on delete cascade,
   campaign_id uuid not null references public.campaigns (id) on delete cascade,
+  organization_id uuid references public.organizations (id) on delete set null,
   name text not null,
   email text not null,
   company text not null default '',
@@ -69,9 +70,41 @@ create table if not exists public.leads (
   signal_title text not null default '',
   signal_detail text not null default '',
   source_url text,
+  score int not null default 0,
   status text not null default 'new' check (status in ('new', 'drafted', 'sent')),
   created_at timestamptz not null default now()
 );
+
+-- Watchlist of target companies the engine monitors for buying signals.
+create table if not exists public.organizations (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid not null references auth.users (id) on delete cascade,
+  name text not null,
+  domain text not null default '',
+  industry text not null default '',
+  keywords text[] not null default '{}',   -- role/intent terms to watch (e.g. "backend engineer")
+  score int not null default 0,            -- compound signal score
+  state text not null default 'watching' check (state in ('watching','triggered','archived')),
+  last_signal_at timestamptz,
+  created_at timestamptz not null default now()
+);
+
+-- Individual detected buying signals (hiring, funding, etc.) feeding the compound score.
+create table if not exists public.signal_events (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid not null references auth.users (id) on delete cascade,
+  organization_id uuid references public.organizations (id) on delete cascade,
+  type text not null default 'hiring',
+  title text not null default '',
+  detail text not null default '',
+  source_url text,
+  weight int not null default 1,
+  detected_at timestamptz not null default now()
+);
+
+create index if not exists orgs_user_idx on public.organizations (user_id);
+create index if not exists signals_org_idx on public.signal_events (organization_id);
+create index if not exists leads_org_idx on public.leads (organization_id);
 
 create table if not exists public.email_drafts (
   id uuid primary key default gen_random_uuid(),
@@ -142,6 +175,8 @@ alter table public.personas enable row level security;
 alter table public.senders enable row level security;
 alter table public.campaigns enable row level security;
 alter table public.leads enable row level security;
+alter table public.organizations enable row level security;
+alter table public.signal_events enable row level security;
 alter table public.email_drafts enable row level security;
 alter table public.sent_emails enable row level security;
 
@@ -167,6 +202,14 @@ create policy "own campaigns" on public.campaigns
 
 drop policy if exists "own leads" on public.leads;
 create policy "own leads" on public.leads
+  for all using (auth.uid() = user_id) with check (auth.uid() = user_id);
+
+drop policy if exists "own organizations" on public.organizations;
+create policy "own organizations" on public.organizations
+  for all using (auth.uid() = user_id) with check (auth.uid() = user_id);
+
+drop policy if exists "own signal_events" on public.signal_events;
+create policy "own signal_events" on public.signal_events
   for all using (auth.uid() = user_id) with check (auth.uid() = user_id);
 
 drop policy if exists "own drafts" on public.email_drafts;
