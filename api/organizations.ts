@@ -1,4 +1,4 @@
-import { requireUser, getAdmin, ok, fail } from './_lib.js';
+import { requireUser, getAdmin, ok, fail } from './_lib.ts';
 
 function mapOrg(o: any) {
   return {

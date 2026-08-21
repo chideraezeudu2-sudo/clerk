@@ -1,4 +1,4 @@
-import { requireUser, getAdmin, ok, fail, groqChat } from './_lib.js';
+import { requireUser, getAdmin, ok, fail, groqChat } from './_lib.ts';
 
 const SIGNAL_IDS = ['hiring_surges', 'funding_series_a', 'competitor_discontent', 'tech_changes'];
 

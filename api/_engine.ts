@@ -1,11 +1,11 @@
-import { getAdmin } from './_lib.js';
+import { getAdmin } from './_lib.ts';
 import {
   hiringSignalsForOrg,
   fundingSignalsForOrg,
   techStackForOrg,
   lookupEmail,
   gatherSignals,
-} from './_sources.js';
+} from './_sources.ts';
 
 // ---------------------------------------------------------------------------
 // Signal engine (free-first). Hiring/funding are free; tech-stack is only run

@@ -1,4 +1,4 @@
-import { requireUser, getAdmin, ok, fail, senderTransport } from './_lib.js';
+import { requireUser, getAdmin, ok, fail, senderTransport } from './_lib.ts';
 
 export default async function handler(req: any, res: any) {
   if (req.method !== 'POST') return fail(res, 405, 'Method not allowed');

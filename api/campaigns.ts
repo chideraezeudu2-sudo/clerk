@@ -1,4 +1,4 @@
-import { requireUser, getAdmin, ok, fail, mapCampaign } from './_lib.js';
+import { requireUser, getAdmin, ok, fail, mapCampaign } from './_lib.ts';
 
 export default async function handler(req: any, res: any) {
   const user = await requireUser(req);
