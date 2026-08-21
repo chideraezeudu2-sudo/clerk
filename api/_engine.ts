@@ -90,11 +90,28 @@ export async function scoutForUser(userId: string, campaignId?: string) {
   }
 
   let targetCampaignId = campaignId || null;
-  if (!targetCampaignId) {
-    const { data: camp } = await supa
-      .from('campaigns').select('id').eq('user_id', userId).eq('status', 'active')
-      .order('created_at', { ascending: true }).limit(1).maybeSingle();
-    targetCampaignId = camp?.id || null;
+  let watchedTypes: string[] | null = null; // null = watch everything
+  {
+    let camp: any = null;
+    if (targetCampaignId) {
+      const { data } = await supa.from('campaigns').select('id, signal_keywords').eq('id', targetCampaignId).single();
+      camp = data;
+    } else {
+      const { data } = await supa
+        .from('campaigns').select('id, signal_keywords').eq('user_id', userId).eq('status', 'active')
+        .order('created_at', { ascending: true }).limit(1).maybeSingle();
+      camp = data;
+      targetCampaignId = camp?.id || null;
+    }
+    // Campaign signal_keywords holds option IDs (hiring_surges, funding_series_a);
+    // map to signal types. Empty selection = watch all (don't block everything).
+    const ID_TO_TYPE: Record<string, string> = {
+      hiring_surges: 'hiring', funding_series_a: 'funding',
+      competitor_discontent: 'competitor_discontent', tech_changes: 'tech_changes',
+    };
+    const kw: string[] = Array.isArray(camp?.signal_keywords) ? camp.signal_keywords : [];
+    watchedTypes = kw.length ? kw.map((k) => ID_TO_TYPE[k]).filter(Boolean) : null;
+    if (watchedTypes && watchedTypes.length === 0) watchedTypes = null;
   }
 
   let newSignals = 0, triggered = 0, leadsCreated = 0, techSpend = 0;
@@ -107,7 +124,9 @@ export async function scoutForUser(userId: string, campaignId?: string) {
     const { freeSignals, tech } = await gatherSignals(org.name, org.domain, true, competitors).catch(() => ({ freeSignals: [] as any[], tech: null }));
 
     // 2) Insert hiring/funding/competitor signals, weight them, update org score.
+    // Enforce campaign scope: skip signal types this campaign isn't watching.
     for (const sig of freeSignals.slice(0, 12)) {
+      if (watchedTypes && !watchedTypes.includes(sig.type)) continue;
       const title = sig.type === 'hiring' ? `Hiring: ${sig.title}` : sig.title;
       const weight =
         sig.type === 'funding' ? FUNDING_WEIGHT :
@@ -193,9 +212,13 @@ export async function scoutForUser(userId: string, campaignId?: string) {
           email = hit?.email || '';
         }
 
+        // Don't create a lead with no usable contact — a blank email or a
+        // name that never resolved to a real person is an incomplete record.
+        if (!email || !personName) continue;
+
         const { error } = await supa.from('leads').insert({
           user_id: userId, campaign_id: targetCampaignId, organization_id: org.id,
-          name: contact.name, email, company: org.name, role: contact.role,
+          name: personName, email, company: org.name, role: contact.role,
           signal_type: primaryType,
           signal_title: top?.title || `Signals at ${org.name}`,
           signal_detail: detail, source_url: top?.source_url || null,

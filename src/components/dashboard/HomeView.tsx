@@ -40,7 +40,14 @@ export const HomeView: React.FC<HomeViewProps> = ({
   // Real deliverability = (sent - bounced)/sent; real daily cap = sum of sender caps
   const deliverability = totalSent > 0 ? (((totalSent - totalBounces) / totalSent) * 100).toFixed(1) : null;
   const bounceRate = totalSent > 0 ? ((totalBounces / totalSent) * 100).toFixed(1) : '0';
-  const dailyCap = senders.reduce((acc, s) => acc + (s.dailyCap || 0), 0);
+  // Overview must show today's actual warmup limit, not the eventual full cap.
+  // Mirror the ramp in SendersView/api/send.ts so both pages agree.
+  const rampedCap = (s: { connectedDays?: number; dailyCap?: number }) => {
+    const d = s.connectedDays ?? 0;
+    const ramp = d <= 3 ? 5 : d <= 7 ? 10 : d <= 14 ? 20 : 40;
+    return Math.min(ramp, s.dailyCap || 0);
+  };
+  const dailyCap = senders.reduce((acc, s) => acc + (s.status === 'active' ? rampedCap(s) : 0), 0);
   const mailboxCount = senders.length;
 
   // Multipliers based on selected time window

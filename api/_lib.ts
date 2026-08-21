@@ -249,6 +249,25 @@ export async function generateDraftsForCampaign(userId: string, campaignId: stri
   const created: any[] = [];
 
   for (const lead of leads) {
+    // Skip leads with no usable contact, and never draft the same company +
+    // signal twice — prevents the "same lead drafted twice" duplicates.
+    if (!lead.email || !lead.company) {
+      await supa.from('leads').update({ status: 'no_contact' }).eq('id', lead.id);
+      continue;
+    }
+    const { data: dupe } = await supa
+      .from('email_drafts')
+      .select('id, leads!inner(company, signal_type)')
+      .eq('campaign_id', campaignId)
+      .in('status', ['pending', 'approved'])
+      .eq('leads.company', lead.company)
+      .eq('leads.signal_type', lead.signal_type)
+      .limit(1);
+    if (dupe && dupe.length) {
+      await supa.from('leads').update({ status: 'duplicate' }).eq('id', lead.id);
+      continue;
+    }
+
     const prompt = `You are an expert B2B cold email writer working for the product described below.
 
 PRODUCT / SENDER PERSONA:
@@ -263,17 +282,18 @@ Role: ${lead.role}
 Company: ${lead.company}
 Signal type: ${lead.signal_type}
 Signal: ${lead.signal_title}
-Signal detail: ${lead.signal_detail}
+Signal context (for your understanding only — never quote this in the email): ${lead.signal_detail}
 
-WRITING STYLE DIRECTIVE:
+WRITING STYLE DIRECTIVE — follow this exactly, it overrides all other tone guidance:
 ${campaign.voice_notes || 'Short, peer-to-peer, under 90 words. Cite the exact signal in the opening line. No buzzwords.'}
 
 RULES:
-- Reference the exact signal above in the opening sentence.
+- Reference the exact signal in the opening sentence, in your own words.
+- NEVER quote source metadata in the body: no point counts, "Hacker News story", "GDELT", "SEC EDGAR", platform names, or URLs. Write like a human who heard the news.
 - Plain-text email, no markdown, no bullet-point feature dumps.
 - End with a soft, low-friction question as the call to action.
 - Do NOT invent facts beyond what is given.
-- Sign off with a first name only (use the sender's first name if obvious, otherwise a generic founder sign-off).
+- Sign off with a first name only.
 
 Return ONLY valid JSON: {"subject": "...", "body": "..."}`;
 
