@@ -1,4 +1,4 @@
-import { getAdmin } from './_lib.ts';
+import { getAdmin, groqChat } from './_lib.ts';
 import {
   hiringSignalsForOrg,
   fundingSignalsForOrg,
@@ -6,6 +6,45 @@ import {
   lookupEmail,
   gatherSignals,
 } from './_sources.ts';
+
+// Pick the right contact for a signal. Hiring → current manager of the open
+// role's function (not the future hire). Funding → founder/CEO. Tech → tool
+// owner. Exported for tests.
+export async function pickContactForSignal(
+  signalType: string,
+  signalTitle: string,
+  orgName: string,
+): Promise<{ name: string; role: string }> {
+  const fallback = { name: 'Hiring Manager', role: 'Hiring Manager' };
+  const prompt = [
+    'Pick the single best job title to contact at a company, given the buying signal below.',
+    'The contact is the person who feels the pain the signal points to and can buy a tool, not the person being hired.',
+    'Rules by signal type:',
+    '- hiring: the current manager of the function with the open role (e.g. a Sales Ops Manager posting → target the VP of Sales or Head of RevOps). Never the open role itself.',
+    '- funding: the founder or CEO.',
+    '- tech_changes: whoever owns the tool being changed (e.g. Head of Engineering / CTO).',
+    '- anything else: a senior operator (VP/Director/Head) in the function most related to the signal.',
+    'Return ONLY JSON: {"role": string}. A job title, not a person name.',
+    '',
+    `Company: ${orgName}`,
+    `Signal type: ${signalType}`,
+    `Signal: ${signalTitle}`,
+  ].join('\n');
+
+  try {
+    const raw = await groqChat([{ role: 'user', content: prompt }], {
+      temperature: 0.1,
+      json: true,
+      maxTokens: 80,
+    });
+    const parsed = JSON.parse(raw);
+    const role = String(parsed?.role || '').trim();
+    if (!role) return fallback;
+    return { name: role, role };
+  } catch {
+    return fallback;
+  }
+}
 
 // ---------------------------------------------------------------------------
 // Signal engine (free-first). Hiring/funding are free; tech-stack is only run
@@ -112,16 +151,23 @@ export async function scoutForUser(userId: string, campaignId?: string) {
         const top = (orgSignals || [])[0];
         const detail = (orgSignals || []).map((s: any) => s.detail).filter(Boolean).join(' | ');
 
+        const primaryType = (orgSignals || [])[0]?.type || 'hiring';
+        const contact = await pickContactForSignal(
+          primaryType,
+          top?.title || `Signals at ${org.name}`,
+          org.name
+        );
+
         let email = '';
         if (org.domain) {
-          const hit = await lookupEmail('Hiring Manager', org.domain).catch(() => null);
+          const hit = await lookupEmail(contact.role, org.domain).catch(() => null);
           email = hit?.email || '';
         }
 
         const { error } = await supa.from('leads').insert({
           user_id: userId, campaign_id: targetCampaignId, organization_id: org.id,
-          name: 'Hiring Manager', email, company: org.name, role: 'Hiring Manager',
-          signal_type: (orgSignals || [])[0]?.type || 'hiring',
+          name: contact.name, email, company: org.name, role: contact.role,
+          signal_type: primaryType,
           signal_title: top?.title || `Signals at ${org.name}`,
           signal_detail: detail, source_url: top?.source_url || null,
           score: org.score, status: 'new',
