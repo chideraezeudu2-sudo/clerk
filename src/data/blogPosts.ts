@@ -194,6 +194,92 @@ export const BLOG_POSTS: BlogPost[] = [
     ],
   },
   {
+    slug: 'real-warmup-vs-fake-networks',
+    kind: 'blog',
+    title: "Real Gmail Warmup vs. Fake Warmup Networks: What's Actually Happening to Your Inbox",
+    description:
+      "Most warmup tools hook your mailbox into a network of strangers' inboxes sending scripted emails to each other. Real warmup means sending actual emails to actual people, starting slow. The difference matters more than most guides admit.",
+    published: '2026-08-21',
+    updated: '2026-08-21',
+    readingMinutes: 6,
+    image: '/covers/real-vs-fake-warmup.svg',
+    body: [
+      {
+        p: "If you've looked into cold email at all, you've probably seen a dozen tools bragging about their \"warmup network.\" Thousands of connected inboxes, all emailing each other, all day, every day. It sounds smart. It sounds like a shortcut. Let's look at what's actually happening under the hood, and why it might be quietly working against you.",
+      },
+      { h: 'What a warmup network actually is' },
+      {
+        p: "The honest version: a warmup network is a big pool of email accounts, usually thousands, belonging to different companies using the same tool. The tool connects your new mailbox to that pool. Then, behind the scenes, other people's inboxes in that pool start emailing your inbox, and yours starts emailing theirs. Nobody reads these emails. Nobody meant to send them. A script sends them, a script opens them, a script writes a fake reply, and the whole thing repeats hundreds of times a day.",
+      },
+      {
+        p: "The idea is that Gmail sees your account getting emails, opening them, and getting replies, and reads that as \"this is a normal, trusted account.\" On paper it makes sense, Gmail is trying to figure out if you're a real person doing real email things. A network like this is trying to fake the appearance of that.",
+      },
+      { h: 'Why this used to work better than it does now' },
+      {
+        p: "A few years ago the trick worked reasonably well, because providers weren't great at distinguishing a real conversation from a scripted one. Gmail's spam detection has gotten much better at spotting patterns that look automated, even when the automation is trying to look human.",
+      },
+      {
+        p: "Look at a fake warmup conversation from Gmail's side: two accounts that never had a real relationship suddenly email each other constantly, every day, forever. Replies come back fast, often too fast for a human to have read and responded. Subject lines and message patterns repeat across thousands of account pairs because it's the same tool running the same script for everyone. None of that is subtle to a spam filter built to notice exactly those patterns.",
+      },
+      {
+        p: "Reports keep surfacing across cold email communities of accounts with a \"perfect\" warmup score, according to the tool measuring it, still landing straight in spam once real campaigns start. That disconnect is the whole problem: the tool measures whether the fake network liked your emails, not whether Gmail actually trusts you.",
+      },
+      { h: 'What real warmup looks like instead' },
+      {
+        p: "Real warmup skips the fake network entirely. You send actual emails to actual people, starting small and building slowly. No pool of strangers' inboxes, no scripted replies, just your mailbox doing what a normal growing business's mailbox would do: a little at first, more as time goes on.",
+      },
+      {
+        list: [
+          'Days 1-3: around 5 emails per day',
+          'Days 4-7: around 10 emails per day',
+          'Days 8-14: around 20 emails per day',
+          'Day 15 onward: normal volume, roughly 30-50 per day for a single Gmail account',
+        ],
+      },
+      {
+        p: "This works because it isn't trying to trick Gmail into thinking something fake is real. It is actually being the thing Gmail is looking for: a mailbox with a slow, steady, believable history.",
+      },
+      { h: 'The part that matters most: real engagement' },
+      {
+        p: "Volume alone isn't the whole story. What convinces Gmail your account is trustworthy is engagement: opens, replies, and not getting marked as spam by recipients. A fake network can fake opens and replies. What it can't fake is a real person who was interested enough to write back with something a human would actually write.",
+      },
+      {
+        p: "That's the hidden cost of the network approach even when it \"works.\" You spent two weeks building a reputation on interactions that taught Gmail nothing true about how real people respond to your actual emails. Real warmup, sending to real people from day one at however small a volume, starts building the thing that actually matters for a cold email business: evidence that real humans engage with what you send.",
+      },
+      { h: 'So does that mean warmup networks never work?' },
+      {
+        p: "Not never. Plenty of accounts warmed up that way are sending fine right now. The point isn't guaranteed failure, it's that you're betting on Gmail's detection not catching up to a well-known trick, and that bet has been getting worse over time, not better. Real warmup doesn't need Gmail to fail to notice anything. It isn't hiding from detection, because there's nothing to detect; it's what a legitimate sender's history actually looks like.",
+      },
+      {
+        p: "If you're comparing warmup approaches across cold email tools, that's the real question to ask: is this tool trying to fool the spam filter, or is it just doing the slow, boring, correct thing that never needed to fool anyone?",
+      },
+      { h: 'What this means if you run more than one mailbox' },
+      {
+        p: "The same logic holds for one Gmail account or five. Each mailbox needs its own real history and its own real ramp from its own connection date. Adding a second account doesn't transfer trust from the first one, and it shouldn't be plugged into a fake network either, for the same reasons. The upside of running several real, individually warmed mailboxes is spreading total outreach volume across all of them, so no single account ever gets pushed past what it can believably handle.",
+      },
+      {
+        faq: [
+          {
+            q: "Are warmup networks actually against Gmail's rules?",
+            a: "Gmail's policies focus on unsolicited or low-quality content and automated abuse. A warmup network's traffic is automated and, by design, not real correspondence between people who know each other. That's closer to what those policies exist to catch than most warmup tools like to admit.",
+          },
+          {
+            q: 'If my account has a high warmup score, doesn\'t that prove it\'s working?',
+            a: "It proves the tool's internal scoring is happy. That score measures engagement inside its own fake network, not how Gmail's actual spam filter will treat your real campaigns. A high score on one guarantees nothing about the other.",
+          },
+          {
+            q: 'Is real warmup slower than using a network?',
+            a: "Not really. Both use roughly the same two-week ramp. The difference isn't speed, it's what's happening during those two weeks: real interactions building a real history, versus scripted interactions building a fake one.",
+          },
+          {
+            q: 'Can I mix the two, use a network briefly then switch to real sending?',
+            a: "You can, but then your real sending starts with a history built on fake engagement. If anything looked off to Gmail during the network phase, that risk carries forward into your real campaigns instead of being left behind.",
+          },
+        ],
+      },
+    ],
+  },
+  {
     slug: 'gmail-warmup',
     kind: 'blog',
     title: 'How to Warm Up a Gmail Account for Cold Email',

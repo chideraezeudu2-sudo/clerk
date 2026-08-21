@@ -5,7 +5,14 @@
     <link>https://klerk-vert.vercel.app/blog</link>
     <description>Signal-based outreach, deliverability, and go-to-market notes.</description>
     <language>en-us</language>
-    <lastBuildDate>Wed, 19 Aug 2026 00:00:00 GMT</lastBuildDate>
+    <lastBuildDate>Fri, 21 Aug 2026 00:00:00 GMT</lastBuildDate>
+    <item>
+      <title>Real Gmail Warmup vs. Fake Warmup Networks: What&#39;s Actually Happening to Your Inbox</title>
+      <link>https://klerk-vert.vercel.app/blog/real-warmup-vs-fake-networks</link>
+      <guid>https://klerk-vert.vercel.app/blog/real-warmup-vs-fake-networks</guid>
+      <pubDate>Fri, 21 Aug 2026 00:00:00 GMT</pubDate>
+      <description>Most warmup tools hook your mailbox into a network of strangers&#39; inboxes sending scripted emails to each other. Real warmup means sending actual emails to actual people, starting slow. The difference matters more than most guides admit.</description>
+    </item>
     <item>
       <title>Instantly Alternative: Klerk vs Instantly for Cold Outbound</title>
       <link>https://klerk-vert.vercel.app/blog/instantly-alternative</link>
