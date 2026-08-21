@@ -47,15 +47,21 @@ describe('pickContactForSignal', () => {
     expect(msg.content).toContain('founder or CEO');
   });
 
-  it('falls back to Hiring Manager when the model returns nothing usable', async () => {
+  it('falls back to a hiring-appropriate role when the model returns nothing usable', async () => {
     groqMock.mockResolvedValue('not json');
     const c = await pickContactForSignal('hiring', 'Backend Engineer — NYC', 'Gamma');
-    expect(c.role).toBe('Hiring Manager');
+    expect(c.role).toBe('VP of Sales');
   });
 
-  it('falls back when the LLM call throws', async () => {
+  it('falls back to a tech-appropriate role when the LLM call throws', async () => {
     groqMock.mockRejectedValue(new Error('groq down'));
     const c = await pickContactForSignal('tech_changes', 'Migrating to Postgres', 'Delta');
-    expect(c.role).toBe('Hiring Manager');
+    expect(c.role).toBe('Head of Engineering');
+  });
+
+  it('falls back to CEO for funding signals', async () => {
+    groqMock.mockRejectedValue(new Error('groq down'));
+    const c = await pickContactForSignal('funding', 'Raises $45M Series A', 'Epsilon');
+    expect(c.role).toBe('CEO');
   });
 });
