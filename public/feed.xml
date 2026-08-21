@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0">
   <channel>
-    <title>Klerk — Blog</title>
+    <title>Klerk Blog</title>
     <link>https://klerk-vert.vercel.app/blog</link>
     <description>Signal-based outreach, deliverability, and go-to-market notes.</description>
     <language>en-us</language>
@@ -11,7 +11,7 @@
       <link>https://klerk-vert.vercel.app/blog/instantly-alternative</link>
       <guid>https://klerk-vert.vercel.app/blog/instantly-alternative</guid>
       <pubDate>Sat, 01 Aug 2026 00:00:00 GMT</pubDate>
-      <description>Instantly sends high volume with sending infrastructure (~$30–47/mo, real cost often $150–400 with add-ons). Klerk watches hiring, funding, and tech-stack signals and drafts a cited email per real reason — smaller deliberate volume, $29/mo all-in.</description>
+      <description>Instantly sends high volume with sending infrastructure (~$30–47/mo, real cost often $150–400 with add-ons). Klerk watches hiring, funding, and tech-stack signals and drafts a cited email per real reason: smaller deliberate volume, $29/mo all-in.</description>
     </item>
     <item>
       <title>How to Warm Up a Gmail Account for Cold Email</title>
