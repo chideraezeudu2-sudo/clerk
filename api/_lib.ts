@@ -214,6 +214,30 @@ export function mapSender(s: any, sentTodayBySender: Record<string, number>): an
 
 // ---------- Draft generation (shared by /api/drafts-generate and /api/chat) ----------
 
+// Rules that keep source metadata out of the email body. Exported so a test can
+// assert the HN-citation ban stays in place.
+export const EMAIL_BODY_RULES =
+  '- Reference the exact signal in the opening sentence, in your own words.\n' +
+  '- NEVER quote source metadata in the body: no point counts, "Hacker News story", "GDELT", "SEC EDGAR", platform names, or URLs. Write like a human who heard the news.';
+
+// Pure decision: should this lead get a new draft? Blocks missing contact data
+// and blocks re-drafting a company+signal that already has an active draft.
+// Exported so it's directly testable without a live DB.
+type DraftGuardResult = { ok: true } | { ok: false; rejectAs: 'no_contact' | 'duplicate' };
+
+export function draftGuard(
+  lead: { email?: string | null; company?: string | null; signal_type?: string | null },
+  existingDrafts: Array<{ leads?: any }>
+): DraftGuardResult {
+  if (!lead.email || !lead.company) return { ok: false, rejectAs: 'no_contact' };
+  const dupe = existingDrafts.some((d) => {
+    const l = Array.isArray(d.leads) ? d.leads[0] : d.leads;
+    return l?.company === lead.company && l?.signal_type === lead.signal_type;
+  });
+  if (dupe) return { ok: false, rejectAs: 'duplicate' };
+  return { ok: true };
+}
+
 export async function generateDraftsForCampaign(userId: string, campaignId: string, maxLeads = 10) {
   const supa = getAdmin();
 
@@ -248,23 +272,17 @@ export async function generateDraftsForCampaign(userId: string, campaignId: stri
   const footer = complianceFooter(settings?.mailing_address || '');
   const created: any[] = [];
 
+  // Fetch active drafts once so the guard can dedupe against them.
+  const { data: existingDrafts } = await supa
+    .from('email_drafts')
+    .select('id, leads!inner(company, signal_type)')
+    .eq('campaign_id', campaignId)
+    .in('status', ['pending', 'approved']);
+
   for (const lead of leads) {
-    // Skip leads with no usable contact, and never draft the same company +
-    // signal twice — prevents the "same lead drafted twice" duplicates.
-    if (!lead.email || !lead.company) {
-      await supa.from('leads').update({ status: 'no_contact' }).eq('id', lead.id);
-      continue;
-    }
-    const { data: dupe } = await supa
-      .from('email_drafts')
-      .select('id, leads!inner(company, signal_type)')
-      .eq('campaign_id', campaignId)
-      .in('status', ['pending', 'approved'])
-      .eq('leads.company', lead.company)
-      .eq('leads.signal_type', lead.signal_type)
-      .limit(1);
-    if (dupe && dupe.length) {
-      await supa.from('leads').update({ status: 'duplicate' }).eq('id', lead.id);
+    const gate = draftGuard(lead, existingDrafts || []);
+    if (gate.ok === false) {
+      await supa.from('leads').update({ status: gate.rejectAs }).eq('id', lead.id);
       continue;
     }
 
@@ -288,8 +306,7 @@ WRITING STYLE DIRECTIVE — follow this exactly, it overrides all other tone gui
 ${campaign.voice_notes || 'Short, peer-to-peer, under 90 words. Cite the exact signal in the opening line. No buzzwords.'}
 
 RULES:
-- Reference the exact signal in the opening sentence, in your own words.
-- NEVER quote source metadata in the body: no point counts, "Hacker News story", "GDELT", "SEC EDGAR", platform names, or URLs. Write like a human who heard the news.
+${EMAIL_BODY_RULES}
 - Plain-text email, no markdown, no bullet-point feature dumps.
 - End with a soft, low-friction question as the call to action.
 - Do NOT invent facts beyond what is given.
