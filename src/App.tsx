@@ -24,6 +24,7 @@ import { AuthModal } from './components/AuthModal';
 import { TermsPage, PrivacyPage } from './components/LegalPages';
 import { UndoToast, UndoItem } from './components/UndoToast';
 import { BlogRouter } from './components/Blog';
+import { Analytics } from '@vercel/analytics/react';
 
 export default function App() {
   const [viewMode, setViewMode] = useState<ViewMode>('landing');
@@ -652,6 +653,7 @@ export default function App() {
       />
       </>
       )}
+      <Analytics />
     </div>
   );
 }
