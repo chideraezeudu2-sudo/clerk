@@ -3,10 +3,10 @@
 Signal-based cold outreach. We watch hiring, funding, and tech-stack signals and draft Gmail-powered emails that cite the real reason, with a human review step before send.
 
 ## Product
-- [Landing](https://Klerk-vert.vercel.app/)
-- [Pricing](https://Klerk-vert.vercel.app/#pricing)
-- [FAQ](https://Klerk-vert.vercel.app/#faq)
+- [Landing](https://klerk-vert.vercel.app/)
+- [Pricing](https://klerk-vert.vercel.app/#pricing)
+- [FAQ](https://klerk-vert.vercel.app/#faq)
 
 ## Blog
-- [Instantly alternative](https://Klerk-vert.vercel.app/blog/instantly-alternative)
-- [Gmail warmup guide](https://Klerk-vert.vercel.app/blog/gmail-warmup)
+- [Instantly alternative](https://klerk-vert.vercel.app/blog/instantly-alternative)
+- [Gmail warmup guide](https://klerk-vert.vercel.app/blog/gmail-warmup)

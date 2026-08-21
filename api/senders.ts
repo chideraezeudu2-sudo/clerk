@@ -20,8 +20,8 @@ export default async function handler(req: any, res: any) {
         await transport.sendMail({
           from: sender.email,
           to: sender.email,
-          subject: 'Signal — mailbox test',
-          text: `This is a test email from Signal confirming ${sender.email} is connected and able to send.\n\nYou can delete this message.`,
+          subject: 'Klerk — mailbox test',
+          text: `This is a test email from Klerk confirming ${sender.email} is connected and able to send.\n\nYou can delete this message.`,
         });
         return ok(res, { ok: true, message: `Test email sent to ${sender.email}` });
       } catch (e: any) {

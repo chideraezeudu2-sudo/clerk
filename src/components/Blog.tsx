@@ -12,7 +12,7 @@ function removeJsonLd(id: string) {
   document.getElementById(id)?.remove();
 }
 
-const SITE = 'https://Klerk-vert.vercel.app';
+const SITE = 'https://klerk-vert.vercel.app';
 
 export function BlogIndex() {
   useEffect(() => {

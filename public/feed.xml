@@ -1,22 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0">
   <channel>
-    <title>clerk — Blog</title>
-    <link>https://clerk-vert.vercel.app/blog</link>
+    <title>Klerk — Blog</title>
+    <link>https://klerk-vert.vercel.app/blog</link>
     <description>Signal-based outreach, deliverability, and go-to-market notes.</description>
     <language>en-us</language>
     <lastBuildDate>Wed, 19 Aug 2026 00:00:00 GMT</lastBuildDate>
     <item>
-      <title>Instantly Alternative: Signal vs Instantly for Cold Outbound</title>
-      <link>https://clerk-vert.vercel.app/blog/instantly-alternative</link>
-      <guid>https://clerk-vert.vercel.app/blog/instantly-alternative</guid>
+      <title>Instantly Alternative: Klerk vs Instantly for Cold Outbound</title>
+      <link>https://klerk-vert.vercel.app/blog/instantly-alternative</link>
+      <guid>https://klerk-vert.vercel.app/blog/instantly-alternative</guid>
       <pubDate>Sat, 01 Aug 2026 00:00:00 GMT</pubDate>
-      <description>Instantly sends high volume with sending infrastructure (~$30–47/mo, real cost often $150–400 with add-ons). Signal watches hiring, funding, and tech-stack signals and drafts a cited email per real reason — smaller deliberate volume, $29/mo all-in.</description>
+      <description>Instantly sends high volume with sending infrastructure (~$30–47/mo, real cost often $150–400 with add-ons). Klerk watches hiring, funding, and tech-stack signals and drafts a cited email per real reason — smaller deliberate volume, $29/mo all-in.</description>
     </item>
     <item>
       <title>How to Warm Up a Gmail Account for Cold Email</title>
-      <link>https://clerk-vert.vercel.app/blog/gmail-warmup</link>
-      <guid>https://clerk-vert.vercel.app/blog/gmail-warmup</guid>
+      <link>https://klerk-vert.vercel.app/blog/gmail-warmup</link>
+      <guid>https://klerk-vert.vercel.app/blog/gmail-warmup</guid>
       <pubDate>Sat, 01 Aug 2026 00:00:00 GMT</pubDate>
       <description>Warming up means starting at ~5/day and roughly doubling every 2–3 days over ~14 days so Gmail learns the account before you send at full cap. Skip it and a new mailbox routes to spam or gets suspended.</description>
     </item>

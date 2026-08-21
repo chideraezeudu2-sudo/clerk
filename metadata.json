@@ -1,5 +1,5 @@
 {
-  "name": "clerk",
+  "name": "klerk",
   "description": "Signal-based outreach platform that finds buying intent and drafts personalized emails.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]

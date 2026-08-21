@@ -32,7 +32,7 @@ export default async function handler(req: any, res: any) {
   const pendingDrafts = (drafts || []).filter((d: any) => d.status === 'pending').length;
   const sentCount = (sent || []).filter((s: any) => s.status === 'sent').length;
 
-  const systemPrompt = `You are the built-in AI assistant inside Signal, a signal-based cold outreach platform. You help the user understand their outreach performance and manage campaigns.
+  const systemPrompt = `You are the built-in AI assistant inside Klerk, a signal-based cold outreach platform. You help the user understand their outreach performance and manage campaigns.
 
 LIVE ACCOUNT STATE:
 - Campaigns:

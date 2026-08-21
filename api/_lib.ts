@@ -252,7 +252,7 @@ export async function generateDraftsForCampaign(userId: string, campaignId: stri
     const prompt = `You are an expert B2B cold email writer working for the product described below.
 
 PRODUCT / SENDER PERSONA:
-Name: ${persona?.name || 'Signal'}
+Name: ${persona?.name || 'Klerk'}
 Company: ${persona?.company_name || ''}
 What it does: ${persona?.description || 'Signal-based outreach platform'}
 Website: ${persona?.website_url || ''}

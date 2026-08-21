@@ -604,7 +604,7 @@ Open to seeing a 2-minute walkthrough of how it monitors engineering signals?
 Best,
 Chidera • Sent via Klerk (native Gmail app pass)`,
     signalReason:
-      'Signal will not write an email that opens with a made-up reason. Every draft says why it was written before you approve it.',
+      'Klerk will not write an email that opens with a made-up reason. Every draft says why it was written before you approve it.',
     signalType: 'hiring',
     detectedDetail: 'Senior Infrastructure Engineer (Outbound & API Integrations) — Detected on company careers page & LinkedIn Jobs 2 hours ago.',
     status: 'pending',
