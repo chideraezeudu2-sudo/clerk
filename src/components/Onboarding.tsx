@@ -111,7 +111,9 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete, onNavigate }
   const [isConnecting, setIsConnecting] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState('');
-  const [activeSignalPicks, setActiveSignalPicks] = useState<string[]>([]);
+  // Hiring Surges proved itself the most reliable signal source — on by default.
+  const [activeSignalPicks, setActiveSignalPicks] = useState<string[]>(['hiring_surges']);
+  const [seededCount, setSeededCount] = useState<number | null>(null);
 
   const handleConnectMailbox = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -157,7 +159,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete, onNavigate }
     setIsSaving(true);
     setError('');
     try {
-      await apiFetch('/api/onboarding', {
+      const result = await apiFetch('/api/onboarding', {
         method: 'POST',
         body: {
           mailboxEmail: state.mailboxEmail,
@@ -173,6 +175,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete, onNavigate }
           signalPicks: activeSignalPicks,
         },
       });
+      setSeededCount(typeof result?.seeded === 'number' ? result.seeded : null);
       setState((prev) => ({ ...prev, isCompleted: true }));
     } catch (err: any) {
       setError(err?.message || 'Could not finish setup. Please try again.');
@@ -245,7 +248,9 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete, onNavigate }
                 You're all set up.
               </h1>
               <p className="text-[16px] text-[#283a2e] max-w-[500px] mx-auto leading-relaxed">
-                Klerk is now watching live hiring triggers and funding filings. Head to your review queue to inspect your first drafted leads.
+                {seededCount && seededCount > 0
+                  ? <>We've added <strong>{seededCount} companies</strong> matching your ICP to your watch list. Your first signals typically appear within a few hours as we scan it — the dashboard looking quiet until then is normal.</>
+                  : <>We've started building your watch list of target companies. Your first signals typically appear within a few hours as we scan it — the dashboard looking quiet until then is normal.</>}
               </p>
             </div>
 
