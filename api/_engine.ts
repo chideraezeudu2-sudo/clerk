@@ -1,4 +1,4 @@
-import { getAdmin, groqChat } from './_lib.js';
+import { getAdmin, groqChat, generateDraftsForCampaign } from './_lib.js';
 import {
   hiringSignalsForOrg,
   fundingSignalsForOrg,
@@ -183,13 +183,22 @@ export async function scoutForUser(userId: string, campaignId?: string) {
     }
   }
 
+  // Turn every new lead into a draft right away — nothing sits at 'new' until
+  // someone clicks. The Drafts view then has a queue to approve/reject.
+  let draftsCreated = 0;
+  if (targetCampaignId && leadsCreated > 0) {
+    const drafts = await generateDraftsForCampaign(userId, targetCampaignId, leadsCreated).catch(() => []);
+    draftsCreated = Array.isArray(drafts) ? drafts.length : 0;
+  }
+
   return {
     scouted: orgs.length,
     newSignals,
     triggered,
     leads: leadsCreated,
+    drafts: draftsCreated,
     techStackRuns: techSpend,
-    message: `Scouted ${orgs.length} orgs: ${newSignals} new signals, ${triggered} triggered, ${leadsCreated} leads created. Tech-stack ran on ${techSpend} (pre-filtered only).`,
+    message: `Scouted ${orgs.length} orgs: ${newSignals} new signals, ${triggered} triggered, ${leadsCreated} leads, ${draftsCreated} drafts.`,
   };
 }
 
