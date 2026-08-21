@@ -121,7 +121,7 @@ export async function scoutForUser(userId: string, campaignId?: string) {
     //    so we never pay for the full company universe. keywords = competitor list
     //    the user watches for discontent signals.
     const competitors: string[] = Array.isArray(org.keywords) ? org.keywords : [];
-    const { freeSignals, tech } = await gatherSignals(org.name, org.domain, true, competitors).catch(() => ({ freeSignals: [] as any[], tech: null }));
+    const { freeSignals, tech } = await gatherSignals(org.name, org.domain, true, competitors, watchedTypes).catch(() => ({ freeSignals: [] as any[], tech: null }));
 
     // 2) Insert hiring/funding/competitor signals, weight them, update org score.
     // Enforce campaign scope: skip signal types this campaign isn't watching.

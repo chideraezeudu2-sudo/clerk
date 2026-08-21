@@ -76,12 +76,15 @@ export async function hiringSignalsForOrg(orgName: string, domain: string) {
         const title = h.title || '';
         if (!title.toLowerCase().includes(orgName.toLowerCase())) continue;
         if (!/hiring|job|role|engineer|open position|looking for/i.test(title)) continue;
+        const publishedAt = h.created_at_i ? h.created_at_i * 1000 : null;
+        if (publishedAt && Date.now() - publishedAt > 14 * 86400000) continue; // 2-week window for jobs
         out.push({
           type: 'hiring',
           title,
           detail: `Hacker News job mention — ${h.points || 0} points`,
           url: h.url || (h.objectID ? `https://news.ycombinator.com/item?id=${h.objectID}` : null),
           ats: 'hackernews',
+          publishedAt,
         });
         if (out.length >= 12) break;
       }
@@ -91,6 +94,10 @@ export async function hiringSignalsForOrg(orgName: string, domain: string) {
 }
 
 // ---------- FUNDING (free: SEC EDGAR full-text + Hacker News + GDELT news) ----------
+// Freshness cutoff for funding/news signals: a signal older than this is
+// stale intent, not live. "Just raised" only means something if it just happened.
+const FRESH_MS = 5 * 86400000;
+
 export async function fundingSignalsForOrg(orgName: string) {
   const out: any[] = [];
   // SEC EDGAR Form D full-text search (free, no key).
@@ -102,12 +109,15 @@ export async function fundingSignalsForOrg(orgName: string) {
     const hits = r?.hits?.hits || [];
     for (const h of hits.slice(0, 5)) {
       const f = h._source || {};
+      const publishedAt = f.file_date ? new Date(f.file_date).getTime() : null;
+      if (publishedAt && Date.now() - publishedAt > FRESH_MS) continue;
       out.push({
         type: 'funding',
         title: `Form D filing: ${f.display_names?.[0] || orgName}`,
         detail: `SEC Form D — ${f.form_type || 'D'} filed ${f.file_date || ''}`,
         url: f.ciks?.[0] ? `https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=${f.ciks[0]}&type=D&dateb=&owner=include&count=10` : null,
         source: 'sec-edgar',
+        publishedAt,
       });
     }
   } catch {}
@@ -122,12 +132,15 @@ export async function fundingSignalsForOrg(orgName: string) {
       if (!title.toLowerCase().includes(orgName.toLowerCase())) continue;
       if (/^(ask hn|tell hn|show hn|launch hn)[:]/i.test(title)) continue;
       if (!/raised|raises|funding|series [a-f]|seed round|closes?\s/i.test(title)) continue;
+      const publishedAt = h.created_at_i ? h.created_at_i * 1000 : null;
+      if (publishedAt && Date.now() - publishedAt > FRESH_MS) continue;
       out.push({
         type: 'funding',
         title,
         detail: `Hacker News story — ${h.points || 0} points`,
         url: h.url || (h.objectID ? `https://news.ycombinator.com/item?id=${h.objectID}` : null),
         source: 'hackernews',
+        publishedAt,
       });
     }
   } catch {}
@@ -140,12 +153,15 @@ export async function fundingSignalsForOrg(orgName: string) {
     for (const a of gd?.articles || []) {
       const title = a.title || '';
       if (!/fund|rais|series [a-f]|seed|investment|capital/i.test(title)) continue;
+      const publishedAt = a.seendate ? Date.parse(String(a.seendate).replace(/^(\d{8})T(\d{6})Z$/, '$1T$2Z')) : null;
+      if (publishedAt && Date.now() - publishedAt > FRESH_MS) continue;
       out.push({
         type: 'funding',
         title,
         detail: `${a.domain || 'news'} — ${a.seendate || ''}`.trim(),
         url: a.url || null,
         source: 'gdelt',
+        publishedAt,
       });
     }
   } catch {}
@@ -305,15 +321,22 @@ export async function lookupEmail(name: string, domain: string) {
 
 // Central: gather all signals for one org, but only spend the paid tech-stack
 // call when the org already has a free signal (hiring/funding) — cost control.
-export async function gatherSignals(orgName: string, domain: string, allowTechStack: boolean, competitors: string[] = []) {
+export async function gatherSignals(
+  orgName: string,
+  domain: string,
+  allowTechStack: boolean,
+  competitors: string[] = [],
+  watchedTypes?: string[] | null // campaign scope; null/absent = watch all
+) {
+  const want = (t: string) => !watchedTypes || watchedTypes.includes(t);
   const [hiring, funding, competitorDiscontent] = await Promise.all([
-    hiringSignalsForOrg(orgName, domain).catch(() => []),
-    fundingSignalsForOrg(orgName).catch(() => []),
-    competitorDiscontentForOrg(orgName, competitors).catch(() => []),
+    want('hiring') ? hiringSignalsForOrg(orgName, domain).catch(() => []) : Promise.resolve([]),
+    want('funding') ? fundingSignalsForOrg(orgName).catch(() => []) : Promise.resolve([]),
+    want('competitor_discontent') ? competitorDiscontentForOrg(orgName, competitors).catch(() => []) : Promise.resolve([]),
   ]);
   const freeSignals = [...hiring, ...funding, ...competitorDiscontent];
   let tech: any = null;
-  if (allowTechStack && freeSignals.length) {
+  if (allowTechStack && want('tech_changes') && freeSignals.length) {
     tech = await techStackForOrg(domain);
   }
   return { hiring, funding, competitorDiscontent, freeSignals, tech };
