@@ -97,6 +97,7 @@ export async function fundingSignalsForOrg(orgName: string) {
     );
     for (const h of hn?.hits || []) {
       const title = h.title || '';
+      if (/^(ask hn|tell hn|show hn|launch hn)[:]/i.test(title)) continue;
       if (!/raised|raises|funding|series [a-f]|seed round|closes?\s/i.test(title)) continue;
       out.push({
         type: 'funding',
