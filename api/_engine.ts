@@ -61,6 +61,7 @@ const ROLE_WEIGHTS: Array<{ match: RegExp; weight: number }> = [
   { match: /\b(engineer|developer)\b/i, weight: 10 },
 ];
 const FUNDING_WEIGHT = 25;
+const COMPETITOR_WEIGHT = 30;
 const TECH_HIGH_WEIGHT = 15;
 const TECH_LOW_WEIGHT = 8;
 const TRIGGER_THRESHOLD = 40;
@@ -93,13 +94,18 @@ export async function scoutForUser(userId: string, campaignId?: string) {
 
   for (const org of orgs) {
     // 1) Gather free signals first. Tech-stack only allowed once a free signal exists,
-    //    so we never pay for the full company universe.
-    const { freeSignals, tech } = await gatherSignals(org.name, org.domain, true).catch(() => ({ freeSignals: [] as any[], tech: null }));
+    //    so we never pay for the full company universe. keywords = competitor list
+    //    the user watches for discontent signals.
+    const competitors: string[] = Array.isArray(org.keywords) ? org.keywords : [];
+    const { freeSignals, tech } = await gatherSignals(org.name, org.domain, true, competitors).catch(() => ({ freeSignals: [] as any[], tech: null }));
 
-    // 2) Insert hiring/funding signals, weight them, update org score.
-    for (const sig of freeSignals.slice(0, 6)) {
-      const title = sig.type === 'funding' ? sig.title : `Hiring: ${sig.title}`;
-      const weight = sig.type === 'funding' ? FUNDING_WEIGHT : scoreJobTitle(sig.title);
+    // 2) Insert hiring/funding/competitor signals, weight them, update org score.
+    for (const sig of freeSignals.slice(0, 8)) {
+      const title = sig.type === 'hiring' ? `Hiring: ${sig.title}` : sig.title;
+      const weight =
+        sig.type === 'funding' ? FUNDING_WEIGHT :
+        sig.type === 'competitor_discontent' ? COMPETITOR_WEIGHT :
+        scoreJobTitle(sig.title);
       if (weight === 0) continue;
 
       const { data: existing } = await supa

@@ -1,9 +1,10 @@
-import { getAdmin } from './_lib.js';
+import { getAdmin, groqChat } from './_lib.js';
 
 // ---------------------------------------------------------------------------
 // Free + cheap signal sources. Hiring/funding are free; tech-stack runs only
 // on a company *already triggered* by a free signal (prevents $0.50/site on
-// the full company universe). Public reviews are deprioritized (hard scraping).
+// the full company universe). Competitor discontent uses GDELT's free news
+// index, filtered through Groq so only genuine churn/complaint items surface.
 // ---------------------------------------------------------------------------
 
 const APIFY_TOKEN = process.env.APIFY_TOKEN || '';
@@ -67,7 +68,7 @@ export async function hiringSignalsForOrg(orgName: string, domain: string) {
   return out;
 }
 
-// ---------- FUNDING (free: SEC EDGAR full-text + TechCrunch RSS) ----------
+// ---------- FUNDING (free: SEC EDGAR full-text + Hacker News + GDELT news) ----------
 export async function fundingSignalsForOrg(orgName: string) {
   const out: any[] = [];
   // SEC EDGAR Form D full-text search (free, no key).
@@ -83,17 +84,116 @@ export async function fundingSignalsForOrg(orgName: string) {
         type: 'funding',
         title: `Form D filing: ${f.display_names?.[0] || orgName}`,
         detail: `SEC Form D — ${f.form_type || 'D'} filed ${f.file_date || ''}`,
-        url: f.id ? `https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=${f.ciks?.[0]}&type=D&dateb=&owner=include&count=10` : null,
+        url: f.ciks?.[0] ? `https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=${f.ciks[0]}&type=D&dateb=&owner=include&count=10` : null,
         source: 'sec-edgar',
       });
     }
   } catch {}
-  // TechCrunch funding RSS mention.
+
+  // Hacker News (Algolia) — startup funding announcements surface here fast.
   try {
-    const rss = await fetchJson(
-      `https://techcrunch.com/feed/`
+    const hn = await fetchJson(
+      `https://hn.algolia.com/api/v1/search?query=${encodeURIComponent(orgName + ' raised')}&tags=story&hitsPerPage=5`
     );
+    for (const h of hn?.hits || []) {
+      const title = h.title || '';
+      if (!/raised|raises|funding|series [a-f]|seed round|closes?\s/i.test(title)) continue;
+      out.push({
+        type: 'funding',
+        title,
+        detail: `Hacker News story — ${h.points || 0} points`,
+        url: h.url || (h.objectID ? `https://news.ycombinator.com/item?id=${h.objectID}` : null),
+        source: 'hackernews',
+      });
+    }
   } catch {}
+
+  // GDELT free news index — funding round coverage across outlets.
+  try {
+    const gd = await fetchJson(
+      `https://api.gdeltproject.org/api/v2/doc/doc?query=${encodeURIComponent(`"${orgName}" (funding OR "raises" OR "raised" OR "series a" OR "series b" OR "series c" OR "seed round")`)}&mode=artlist&maxrecords=8&format=json&timespan=90d&sort=datedesc`
+    );
+    for (const a of gd?.articles || []) {
+      const title = a.title || '';
+      if (!/fund|rais|series [a-f]|seed|investment|capital/i.test(title)) continue;
+      out.push({
+        type: 'funding',
+        title,
+        detail: `${a.domain || 'news'} — ${a.seendate || ''}`.trim(),
+        url: a.url || null,
+        source: 'gdelt',
+      });
+    }
+  } catch {}
+
+  // De-dupe by URL, cap at 6.
+  const seen = new Set<string>();
+  return out.filter((s) => {
+    const key = s.url || s.title;
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  }).slice(0, 6);
+}
+
+// ---------- COMPETITOR DISCONTENT (free: GDELT news, filtered by Groq) ----------
+// `competitors` come from the org's keywords — the user lists which rival
+// tools their target uses. We scan recent news for churn/complaint signals,
+// then use Groq to keep only genuine discontent (layoffs, outages, lawsuits,
+// price hikes, bad reviews, "looking for alternatives") — not generic press.
+export async function competitorDiscontentForOrg(orgName: string, competitors: string[]) {
+  if (!competitors || !competitors.length) return [];
+  const out: any[] = [];
+
+  for (const comp of competitors.slice(0, 4)) {
+    const articles: any[] = [];
+    try {
+      const q = encodeURIComponent(
+        `"${comp}" (complaints OR outage OR lawsuit OR layoffs OR "price increase" OR "looking for alternatives" OR "switching from" OR churn OR "bad reviews")`
+      );
+      const gd = await fetchJson(
+        `https://api.gdeltproject.org/api/v2/doc/doc?query=${q}&mode=artlist&maxrecords=6&format=json&timespan=60d&sort=datedesc`
+      );
+      for (const a of gd?.articles || []) articles.push(a);
+    } catch {}
+    if (!articles.length) continue;
+
+    // Keep only articles Groq judges as real discontent toward the competitor.
+    let kept: any[] = [];
+    try {
+      const list = articles
+        .map((a, i) => `${i + 1}. ${a.title || ''} (${a.domain || ''})`)
+        .join('\n');
+      const reply = await groqChat([
+        {
+          role: 'system',
+          content:
+            'You filter news for genuine customer DISCONTENT toward a specific product/company. ' +
+            'Discontent = complaints, outages, lawsuits, layoffs, price hikes, bad reviews, churn, people seeking alternatives. ' +
+            'NOT discontent = funding news, product launches, hiring, partnerships, generic mentions. ' +
+            'Return JSON only: {"keep": [1, 3]} with the 1-based numbers of discontent items, or {"keep": []}.',
+        },
+        {
+          role: 'user',
+          content: `Competitor: ${comp}\nTarget company of interest: ${orgName}\n\nArticles:\n${list}`,
+        },
+      ], { temperature: 0.1, maxTokens: 200, json: true });
+      const nums: number[] = JSON.parse(reply || '{}')?.keep || [];
+      kept = articles.filter((_, i) => nums.includes(i + 1));
+    } catch {
+      kept = [];
+    }
+
+    for (const a of kept.slice(0, 3)) {
+      out.push({
+        type: 'competitor_discontent',
+        title: `Discontent with ${comp}: ${a.title || ''}`.slice(0, 140),
+        detail: `${orgName} may be re-evaluating ${comp} — ${a.domain || 'news'} ${a.seendate || ''}`.trim(),
+        url: a.url || null,
+        source: 'gdelt-competitor',
+      });
+    }
+  }
   return out;
 }
 
@@ -142,17 +242,18 @@ export async function lookupEmail(name: string, domain: string) {
 
 // Central: gather all signals for one org, but only spend the paid tech-stack
 // call when the org already has a free signal (hiring/funding) — cost control.
-export async function gatherSignals(orgName: string, domain: string, allowTechStack: boolean) {
-  const [hiring, funding] = await Promise.all([
+export async function gatherSignals(orgName: string, domain: string, allowTechStack: boolean, competitors: string[] = []) {
+  const [hiring, funding, competitorDiscontent] = await Promise.all([
     hiringSignalsForOrg(orgName, domain).catch(() => []),
     fundingSignalsForOrg(orgName).catch(() => []),
+    competitorDiscontentForOrg(orgName, competitors).catch(() => []),
   ]);
-  const freeSignals = [...hiring, ...funding];
+  const freeSignals = [...hiring, ...funding, ...competitorDiscontent];
   let tech: any = null;
   if (allowTechStack && freeSignals.length) {
     tech = await techStackForOrg(domain);
   }
-  return { hiring, funding, freeSignals, tech };
+  return { hiring, funding, competitorDiscontent, freeSignals, tech };
 }
 
 // ---------- LOOKALIKES (free: companies hiring the same roles you already watch) ----------
