@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
-import { effectiveDailyCap } from './send.ts';
+import { effectiveDailyCap } from '../api/send.js';
 
 function senderDaysAgo(days: number, dailyCap = 150) {
   return {

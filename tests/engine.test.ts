@@ -1,12 +1,12 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
-vi.mock('./_lib.ts', () => ({
+vi.mock('../api/_lib.js', () => ({
   getAdmin: vi.fn(),
   groqChat: vi.fn().mockResolvedValue('{}'),
 }));
 
-import { pickContactForSignal } from './_engine.ts';
-import { groqChat } from './_lib.ts';
+import { pickContactForSignal } from '../api/_engine.js';
+import { groqChat } from '../api/_lib.js';
 
 const groqMock = vi.mocked(groqChat);
 
