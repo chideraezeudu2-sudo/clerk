@@ -264,7 +264,9 @@ export async function findPersonName(orgName: string, role: string): Promise<str
             `or {"name": ""} if unsure. Never invent names.`,
         },
       ],
-      { json: true, temperature: 0, maxTokens: 60 }
+      // gpt-oss-120b burns most tokens on internal reasoning — give it room so
+      // the actual JSON answer isn't truncated to empty.
+      { json: true, temperature: 0, maxTokens: 512 }
     );
     const parsed = JSON.parse(raw);
     const name = String(parsed?.name || '').trim();
