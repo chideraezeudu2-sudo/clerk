@@ -103,15 +103,18 @@ export async function scoutForUser(userId: string, campaignId?: string) {
       camp = data;
       targetCampaignId = camp?.id || null;
     }
-    // Campaign signal_keywords holds option IDs (hiring_surges, funding_series_a);
-    // map to signal types. Empty selection = watch all (don't block everything).
+    // Campaign signal_keywords may hold option IDs (funding_series_a) OR the
+    // display titles the UI actually saves ("Funding Filings"). Map both to
+    // signal types. Empty selection = watch all (don't block everything).
     const ID_TO_TYPE: Record<string, string> = {
-      hiring_surges: 'hiring', funding_series_a: 'funding',
-      competitor_discontent: 'competitor_discontent', tech_changes: 'tech_changes',
+      hiring_surges: 'hiring', 'hiring surges': 'hiring',
+      funding_series_a: 'funding', 'funding filings': 'funding',
+      competitor_discontent: 'competitor_discontent', 'competitor discontent': 'competitor_discontent',
+      tech_changes: 'tech_changes', 'tech stack migrations': 'tech_changes',
     };
     const kw: string[] = Array.isArray(camp?.signal_keywords) ? camp.signal_keywords : [];
-    watchedTypes = kw.length ? kw.map((k) => ID_TO_TYPE[k]).filter(Boolean) : null;
-    if (watchedTypes && watchedTypes.length === 0) watchedTypes = null;
+    const mapped = kw.map((k) => ID_TO_TYPE[String(k).toLowerCase().trim()] || (['hiring','funding','competitor_discontent','tech_changes'].includes(String(k).toLowerCase()) ? String(k).toLowerCase() : null)).filter(Boolean) as string[];
+    watchedTypes = mapped.length ? [...new Set(mapped)] : null;
   }
 
   let newSignals = 0, triggered = 0, leadsCreated = 0, techSpend = 0;
