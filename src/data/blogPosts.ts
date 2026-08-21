@@ -21,7 +21,7 @@ export const BLOG_POSTS: BlogPost[] = [
     published: '2026-08-01',
     updated: '2026-08-19',
     readingMinutes: 5,
-    image: '/covers/signal-detection.svg',
+    image: '/covers/signal-detection.jpg',
     body: [
       {
         list: [
@@ -56,7 +56,7 @@ export const BLOG_POSTS: BlogPost[] = [
     published: '2026-08-01',
     updated: '2026-08-19',
     readingMinutes: 5,
-    image: '/covers/ai-drafting.svg',
+    image: '/covers/ai-drafting.jpg',
     body: [
       {
         p:
@@ -95,7 +95,7 @@ export const BLOG_POSTS: BlogPost[] = [
     published: '2026-08-01',
     updated: '2026-08-19',
     readingMinutes: 5,
-    image: '/covers/mailbox-warmup.svg',
+    image: '/covers/mailbox-warmup.jpg',
     body: [
       {
         p:
@@ -136,7 +136,7 @@ export const BLOG_POSTS: BlogPost[] = [
     published: '2026-08-01',
     updated: '2026-08-19',
     readingMinutes: 5,
-    image: '/covers/reply-tracking.svg',
+    image: '/covers/reply-tracking.jpg',
     body: [
       {
         p:
@@ -172,7 +172,7 @@ export const BLOG_POSTS: BlogPost[] = [
     published: '2026-08-01',
     updated: '2026-08-19',
     readingMinutes: 4,
-    image: '/covers/instantly-alternative.svg',
+    image: '/covers/instantly-alternative.jpg',
     body: [
       {
         p: 'Instantly earned its name as volume infrastructure: unlimited connected mailboxes, warmup rotation, a lead database. It solves “send a lot of email to a lot of people” well, but its pricing splinters (sending vs. lead database vs. CRM vs. verification), so a real setup usually clears $150–400/mo.',
@@ -202,7 +202,7 @@ export const BLOG_POSTS: BlogPost[] = [
     published: '2026-08-21',
     updated: '2026-08-21',
     readingMinutes: 6,
-    image: '/covers/real-vs-fake-warmup.svg',
+    image: '/covers/real-vs-fake-warmup.jpg',
     body: [
       {
         p: "If you've looked into cold email at all, you've probably seen a dozen tools bragging about their \"warmup network.\" Thousands of connected inboxes, all emailing each other, all day, every day. It sounds smart. It sounds like a shortcut. Let's look at what's actually happening under the hood, and why it might be quietly working against you.",
@@ -288,7 +288,7 @@ export const BLOG_POSTS: BlogPost[] = [
     published: '2026-08-01',
     updated: '2026-08-19',
     readingMinutes: 5,
-    image: '/covers/gmail-warmup.svg',
+    image: '/covers/gmail-warmup.jpg',
     body: [
       {
         p: 'Gmail trusts a sender the same way a bank trusts a new account: by watching behavior over time. A brand-new mailbox that suddenly sends a hundred emails on day one looks like a spam operation, because that is exactly what a spam operation looks like. Age and history cannot be faked, only built.',
