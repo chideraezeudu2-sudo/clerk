@@ -271,11 +271,15 @@ export async function lookupEmail(name: string, domain: string) {
   const actorUrl =
     process.env.EMAIL_LOOKUP_ACTOR ||
     'https://api.apify.com/v2/acts/ryanclinton~waterfall-contact-enrichment/run-sync-get-dataset-items?timeout=120';
+  // Actor schema splits first/last names — a combined "name" field is ignored.
+  const parts = name.trim().split(/\s+/);
+  const firstName = parts[0] || '';
+  const lastName = parts.slice(1).join(' ');
   try {
     const res = await fetch(actorUrl, {
       method: 'POST',
       headers: { Authorization: `Bearer ${APIFY_TOKEN}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ people: [{ name, domain }] }),
+      body: JSON.stringify({ people: [{ firstName, lastName, domain }] }),
     });
     if (!res.ok) return null;
     const items = await res.json();

@@ -16,7 +16,13 @@ export async function pickContactForSignal(
   signalTitle: string,
   orgName: string,
 ): Promise<{ name: string; role: string }> {
-  const fallback = { name: 'Hiring Manager', role: 'Hiring Manager' };
+  // Fallback matches the signal rules below so a Groq flake still targets the
+  // right function (funding → CEO), not a generic "Hiring Manager".
+  const fallback = signalType === 'funding'
+    ? { name: 'Founder / CEO', role: 'CEO' }
+    : signalType === 'tech_changes'
+      ? { name: 'Head of Engineering', role: 'Head of Engineering' }
+      : { name: 'VP of Sales', role: 'VP of Sales' };
   const prompt = [
     'Pick the single best job title to contact at a company, given the buying signal below.',
     'The contact is the person who feels the pain the signal points to and can buy a tool, not the person being hired.',
@@ -146,12 +152,21 @@ export async function scoutForUser(userId: string, campaignId?: string) {
     }
 
     // 4) Threshold -> trigger + lead (with stacked citations + cheap email lookup).
-    // Only re-trigger if it's been >1 day since the last trigger — so a fix to the
-    // pipeline lets us re-generate a lead, without spamming on every cron run.
-    const oneDayAgo = new Date(Date.now() - 86400000).toISOString();
-    if (org.score >= TRIGGER_THRESHOLD && (org.state !== 'triggered' || (org.last_signal_at || '') < oneDayAgo)) {
-      await supa.from('organizations').update({ state: 'triggered' }).eq('id', org.id);
-      org.state = 'triggered';
+    // A triggered org also re-leads if it has no lead yet in the campaign —
+    // covers pipeline fixes replaying without spamming duplicates.
+    if (org.score >= TRIGGER_THRESHOLD) {
+      let shouldLead = org.state !== 'triggered';
+      if (org.state !== 'triggered') {
+        await supa.from('organizations').update({ state: 'triggered' }).eq('id', org.id);
+        org.state = 'triggered';
+      }
+      if (!shouldLead && targetCampaignId) {
+        const { data: existingLead } = await supa
+          .from('leads').select('id')
+          .eq('organization_id', org.id).eq('campaign_id', targetCampaignId).limit(1);
+        shouldLead = !(existingLead && existingLead.length);
+      }
+      if (shouldLead) {
       triggered++;
 
       if (targetCampaignId) {
@@ -186,6 +201,7 @@ export async function scoutForUser(userId: string, campaignId?: string) {
           score: org.score, status: 'new',
         });
         if (!error) leadsCreated++;
+      }
       }
     }
   }
