@@ -4,6 +4,7 @@ import { Campaign, DashboardTab, SenderMailbox } from '../../types';
 interface HomeViewProps {
   campaigns: Campaign[];
   senders?: SenderMailbox[];
+  organizationsCount?: number;
   onOpenCampaign: (campaignId: string) => void;
   onNavigateTab: (tab: DashboardTab) => void;
 }
@@ -23,6 +24,7 @@ interface DataPoint {
 export const HomeView: React.FC<HomeViewProps> = ({
   campaigns,
   senders = [],
+  organizationsCount,
   onOpenCampaign,
   onNavigateTab,
 }) => {
@@ -196,7 +198,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
               {activeCampaigns.length} Active Campaigns
             </span>
             <span className="text-[13px] text-[#607166]">
-              Watching <strong className="text-[#0a2414] font-semibold">{totalLeads}+ verified targets</strong>
+              Watching <strong className="text-[#0a2414] font-semibold">{organizationsCount ?? 0} {organizationsCount === 1 ? 'company' : 'companies'}</strong>
             </span>
           </div>
 

@@ -643,7 +643,7 @@ export const CampaignsView: React.FC<CampaignsViewProps> = ({
             <div className="p-6 rounded-[10px] bg-[#ffffff] border border-[#0a2414]/10 shadow-xs">
               <div className="text-[12px] text-[#607166] font-medium mb-1">Total Leads Detected</div>
               <div className="text-[24px] font-semibold text-[#0a2414]">{totalLeads}</div>
-              <div className="text-[11.5px] text-[#607166] mt-1">100% verified work emails</div>
+              <div className="text-[11.5px] text-[#607166] mt-1">{totalLeads > 0 ? 'Verified work emails' : 'No leads yet'}</div>
             </div>
 
             <div className="p-6 rounded-[10px] bg-[#ffffff] border border-[#0a2414]/10 shadow-xs">
@@ -658,7 +658,9 @@ export const CampaignsView: React.FC<CampaignsViewProps> = ({
                 <span>{avgReplyRate}%</span>
                 <span className="text-[13px] font-medium text-[#0a2414]">({totalReplies} replies)</span>
               </div>
-              <div className="text-[11.5px] text-[#607166] mt-1">3.8x industry average</div>
+              <div className="text-[11.5px] text-[#607166] mt-1">
+                {totalReplies > 0 ? 'vs 0.9% industry average' : 'No replies yet'}
+              </div>
             </div>
           </div>
 

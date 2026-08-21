@@ -247,6 +247,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
             <HomeView
               campaigns={campaigns}
               senders={senders}
+              organizationsCount={organizations.length}
               onOpenCampaign={(id) => {
                 onOpenCampaign(id);
                 onSelectTab('campaigns');
@@ -295,6 +296,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
             <DraftsView
               drafts={drafts}
               campaigns={campaigns}
+              organizationCount={organizations.length}
               onApproveDraft={onApproveDraft}
               onApproveAll={onApproveAllDrafts}
               onEditDraft={onEditDraft}

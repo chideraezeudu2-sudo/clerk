@@ -6,6 +6,7 @@ import { PLANS } from '../../data/plansData';
 interface DraftsViewProps {
   drafts: DraftEmail[];
   campaigns: Campaign[];
+  organizationCount?: number;
   onApproveDraft: (id: string) => void;
   onApproveAll: () => void;
   onBatchApproveDrafts?: (ids: string[]) => void;
@@ -21,6 +22,7 @@ interface DraftsViewProps {
 export const DraftsView: React.FC<DraftsViewProps> = ({
   drafts,
   campaigns,
+  organizationCount,
   onApproveDraft,
   onApproveAll,
   onBatchApproveDrafts,
@@ -227,10 +229,12 @@ export const DraftsView: React.FC<DraftsViewProps> = ({
             </button>
           </div>
 
-          <span className="hidden sm:inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-[10px] bg-[#f3fbe9] border border-[#17b267]/30 text-[#0a2414] font-medium">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#1ad379]"></span>
-            <span>Watching 64 companies</span>
-          </span>
+          {typeof organizationCount === 'number' && (
+            <span className="hidden sm:inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-[10px] bg-[#f3fbe9] border border-[#17b267]/30 text-[#0a2414] font-medium">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#1ad379]"></span>
+              <span>Watching {organizationCount} {organizationCount === 1 ? 'company' : 'companies'}</span>
+            </span>
+          )}
 
           {pendingDrafts.length > 1 && (
             <button
