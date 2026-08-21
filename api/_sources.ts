@@ -74,6 +74,7 @@ export async function hiringSignalsForOrg(orgName: string, domain: string) {
       );
       for (const h of hn?.hits || []) {
         const title = h.title || '';
+        if (!title.toLowerCase().includes(orgName.toLowerCase())) continue;
         if (!/hiring|job|role|engineer|open position|looking for/i.test(title)) continue;
         out.push({
           type: 'hiring',
@@ -118,6 +119,7 @@ export async function fundingSignalsForOrg(orgName: string) {
     );
     for (const h of hn?.hits || []) {
       const title = h.title || '';
+      if (!title.toLowerCase().includes(orgName.toLowerCase())) continue;
       if (/^(ask hn|tell hn|show hn|launch hn)[:]/i.test(title)) continue;
       if (!/raised|raises|funding|series [a-f]|seed round|closes?\s/i.test(title)) continue;
       out.push({
