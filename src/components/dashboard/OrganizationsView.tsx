@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Loader2, Plus, Radar, Radio, Sparkles, X } from 'lucide-react';
 import { Organization } from '../../types';
 
 interface OrganizationsViewProps {
@@ -61,7 +62,7 @@ export const OrganizationsView: React.FC<OrganizationsViewProps> = ({ organizati
           </p>
         </div>
 
-        <div className="flex items-center space-x-2">
+        <div className="flex flex-wrap items-center gap-2.5">
           {onSuggestLookalikes && (
             <button
               onClick={async () => {
@@ -73,37 +74,51 @@ export const OrganizationsView: React.FC<OrganizationsViewProps> = ({ organizati
                   setIsSuggesting(false);
                 }
               }}
-              className="px-3.5 py-2 rounded-[10px] bg-[#ffffff] border border-[#0a2414]/15 text-[#0a2414] text-[13px] font-semibold hover:bg-[#f3fbe9] transition-all"
+              disabled={isSuggesting}
+              title="AI suggests similar companies worth watching"
+              className="inline-flex items-center gap-2 h-10 px-4 rounded-[10px] bg-[#ffffff] border border-[#0a2414]/12 text-[#0a2414] text-[13px] font-medium shadow-[0_1px_2px_rgba(10,36,20,0.05)] hover:border-[#17b267]/50 hover:shadow-[0_4px_12px_-4px_rgba(23,178,103,0.3)] hover:text-[#129556] active:scale-[0.98] transition-all disabled:opacity-60 disabled:pointer-events-none"
             >
-              {isSuggesting ? 'Finding…' : '✨ Suggest lookalikes'}
+              {isSuggesting ? (
+                <Loader2 className="w-4 h-4 animate-spin text-[#17b267]" />
+              ) : (
+                <Sparkles className="w-4 h-4 text-[#17b267]" />
+              )}
+              {isSuggesting ? 'Finding…' : 'Suggest lookalikes'}
             </button>
           )}
           {onScout && (
             <button
               onClick={onScout}
-              className="px-3.5 py-2 rounded-[10px] bg-[#0a2414] text-[#ffffff] text-[13px] font-semibold hover:bg-[#17b267] transition-all"
+              title="Run the signal scout across watched organizations now"
+              className="inline-flex items-center gap-2 h-10 px-4 rounded-[10px] bg-[#ffffff] border border-[#0a2414]/12 text-[#0a2414] text-[13px] font-medium shadow-[0_1px_2px_rgba(10,36,20,0.05)] hover:border-[#17b267]/50 hover:shadow-[0_4px_12px_-4px_rgba(23,178,103,0.3)] hover:text-[#129556] active:scale-[0.98] transition-all"
             >
+              <Radar className="w-4 h-4 text-[#17b267]" />
               Scout now
-            </button>
-          )}
-          {onAddOrganization && (
-            <button
-              onClick={() => setShowAdd((v) => !v)}
-              className="px-3.5 py-2 rounded-[10px] bg-[#1ad379] hover:bg-[#17b267] text-[#0a2414] text-[13px] font-semibold transition-all"
-            >
-              + Add organization
             </button>
           )}
           <button
             onClick={() => setSelectedSignalFilter(selectedSignalFilter === 'active' ? 'all' : 'active')}
-            className={`px-3.5 py-2 rounded-[10px] text-[13px] font-semibold transition-all ${
+            title="Show only organizations with a live buying signal"
+            aria-pressed={selectedSignalFilter === 'active'}
+            className={`inline-flex items-center gap-2 h-10 px-4 rounded-full text-[13px] font-medium active:scale-[0.98] transition-all ${
               selectedSignalFilter === 'active'
-                ? 'bg-[#0a2414] text-[#ffffff]'
-                : 'bg-[#ffffff] border border-[#0a2414]/12 text-[#0a2414] hover:bg-[#fafaf9]'
+                ? 'bg-[#0a2414] text-white shadow-[0_4px_14px_-4px_rgba(10,36,20,0.5)]'
+                : 'bg-[#ffffff] border border-dashed border-[#0a2414]/20 text-[#607166] hover:border-[#17b267]/60 hover:text-[#129556]'
             }`}
           >
-            {selectedSignalFilter === 'active' ? 'Showing Active Signals Only' : 'Filter by Live Signals'}
+            <Radio className={`w-4 h-4 ${selectedSignalFilter === 'active' ? 'text-[#1ad379] animate-pulse' : 'text-[#17b267]'}`} />
+            {selectedSignalFilter === 'active' ? 'Live signals: on' : 'Live signals'}
           </button>
+          {onAddOrganization && (
+            <button
+              onClick={() => setShowAdd((v) => !v)}
+              title="Watch a new organization"
+              className="inline-flex items-center gap-2 h-10 px-5 rounded-[10px] bg-[#1ad379] text-[#0a2414] text-[13px] font-semibold shadow-[0_4px_14px_-4px_rgba(26,211,121,0.6)] hover:bg-[#4ce39a] hover:shadow-[0_6px_18px_-4px_rgba(26,211,121,0.7)] active:scale-[0.98] transition-all"
+            >
+              {showAdd ? <X className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
+              {showAdd ? 'Cancel' : 'Add organization'}
+            </button>
+          )}
         </div>
       </div>
 
