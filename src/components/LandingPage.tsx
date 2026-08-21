@@ -129,6 +129,12 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, onOpenAuth
             >
               FAQ
             </a>
+            <a
+              href="#/blog"
+              className="hover:text-[#0a2414] transition-colors hidden sm:inline-block cursor-pointer"
+            >
+              Blog
+            </a>
           </nav>
 
           {/* Center: Brand Logo */}
@@ -675,6 +681,11 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, onOpenAuth
               <li>
                 <a href="#faq" onClick={(e) => scrollToSection(e, 'faq')} className="hover:text-[#17b267] transition-colors">
                   FAQ
+                </a>
+              </li>
+              <li>
+                <a href="#/blog" className="hover:text-[#17b267] transition-colors">
+                  Blog
                 </a>
               </li>
               <li>

@@ -556,7 +556,14 @@ export default function App() {
     }
   };
 
-  const isBlog = window.location.hash.startsWith('#/blog');
+  // Reactive hash so in-app links to #/blog (and back) re-render without reload.
+  const [hash, setHash] = useState(window.location.hash);
+  useEffect(() => {
+    const onHash = () => setHash(window.location.hash);
+    window.addEventListener('hashchange', onHash);
+    return () => window.removeEventListener('hashchange', onHash);
+  }, []);
+  const isBlog = hash.startsWith('#/blog');
 
   return (
     <div className="min-h-screen bg-[#f3fbe9] text-[#0a2414] font-sans selection:bg-[#ffbac3] selection:text-[#360003]">

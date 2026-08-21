@@ -32,7 +32,8 @@ export function BlogIndex() {
 
   return (
     <div className="max-w-3xl mx-auto px-4 py-16">
-      <h1 className="text-3xl font-semibold tracking-tight mb-2">Klerk — Blog</h1>
+      <a href="#" className="text-[13px] text-[#17b267] hover:underline">← Klerk home</a>
+      <h1 className="text-3xl font-semibold tracking-tight mt-4 mb-2">Klerk — Blog</h1>
       <p className="text-[#607166] mb-10">Product + notes.</p>
 
       {products.length > 0 && (
@@ -89,7 +90,10 @@ export function BlogPostView({ post }: { post: BlogPost }) {
 
   return (
     <article className="max-w-2xl mx-auto px-4 py-16 text-[#0a2414]">
-      <a href="#/blog" className="text-[13px] text-[#17b267] hover:underline">← all posts</a>
+      <div className="flex items-center gap-4">
+        <a href="#/blog" className="text-[13px] text-[#17b267] hover:underline">← all posts</a>
+        <a href="#" className="text-[13px] text-[#17b267] hover:underline">Klerk home</a>
+      </div>
       <h1 className="text-3xl font-semibold tracking-tight mt-4 mb-2">{post.title}</h1>
       <div className="text-[12.5px] text-[#607166] mb-6">
         Published {post.published} · updated {post.updated} · {post.readingMinutes} min read
