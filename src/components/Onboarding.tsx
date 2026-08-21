@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { OnboardingState, ViewMode } from '../types';
 import { apiFetch } from '../lib/api';
 import { supabase } from '../lib/supabase';
+import { SIGNAL_OPTIONS } from '../data/signalOptions';
 
 interface OnboardingProps {
   onComplete: () => void;
@@ -169,6 +170,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete, onNavigate }
           targetAudience: state.targetAudience,
           voiceSample: state.voiceSample,
           voiceTone: state.voiceTone,
+          signalPicks: activeSignalPicks,
         },
       });
       setState((prev) => ({ ...prev, isCompleted: true }));
@@ -609,28 +611,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete, onNavigate }
                     Active Signal Watchers:
                   </span>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                    {[
-                      {
-                        id: 'hiring_surges',
-                        title: 'Hiring Surges',
-                        desc: 'Engineering, Sales Ops & GTM roles posted on job boards',
-                      },
-                      {
-                        id: 'funding_series_a',
-                        title: 'Funding Filings',
-                        desc: 'Series Seed/A/B round announcements & SEC disclosures',
-                      },
-                      {
-                        id: 'competitor_discontent',
-                        title: 'Competitor Discontent',
-                        desc: 'Deliverability complaints & legacy sequencer migrations',
-                      },
-                      {
-                        id: 'tech_changes',
-                        title: 'Tech Stack Migrations',
-                        desc: 'Replatforming to Postgres, AWS, or modern developer APIs',
-                      },
-                    ].map((sig) => {
+                    {SIGNAL_OPTIONS.map((sig) => {
                       const isSelected = activeSignalPicks.includes(sig.id);
                       return (
                         <div

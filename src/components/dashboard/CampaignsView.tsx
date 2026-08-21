@@ -1,8 +1,11 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { Loader2 } from 'lucide-react';
 import { Campaign, Persona, UserSubscription } from '../../types';
 import { exportCampaignsToCSV, exportSingleCampaignDetailsToCSV } from '../../utils/csvExport';
 import { EmptyState } from '../EmptyState';
 import { PLANS } from '../../data/plansData';
+import { SIGNAL_OPTIONS } from '../../data/signalOptions';
+import { apiFetch } from '../../lib/api';
 
 interface CampaignsViewProps {
   campaigns: Campaign[];
@@ -44,8 +47,38 @@ export const CampaignsView: React.FC<CampaignsViewProps> = ({
   // New Campaign Form State
   const [newTitle, setNewTitle] = useState('');
   const [newPersonaId, setNewPersonaId] = useState(personas[0]?.id || '');
-  const [newSignalsText, setNewSignalsText] = useState('Hiring VP Eng, Raised $8M+, Apollo Migration');
-  const [newVoiceNote, setNewVoiceNote] = useState('Concise, peer-to-peer, under 85 words');
+  const [newSignals, setNewSignals] = useState<string[]>([]);
+  const [newVoiceNote, setNewVoiceNote] = useState('');
+  const [isPrefilling, setIsPrefilling] = useState(false);
+
+  // Pre-fill signals + drafting directive from the selected persona (spec: never
+  // re-derive what onboarding already captured). Silent degrade to manual entry.
+  useEffect(() => {
+    if (!showCreateModal || !newPersonaId) return;
+    let cancelled = false;
+    setIsPrefilling(true);
+    apiFetch('/api/campaign-prefill', { method: 'POST', body: { personaId: newPersonaId } })
+      .then((data: any) => {
+        if (cancelled) return;
+        if (Array.isArray(data?.signals) && data.signals.length) setNewSignals(data.signals);
+        if (typeof data?.directive === 'string' && data.directive.trim()) {
+          setNewVoiceNote(data.directive);
+        }
+      })
+      .catch(() => {})
+      .finally(() => {
+        if (!cancelled) setIsPrefilling(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [showCreateModal, newPersonaId]);
+
+  const toggleNewSignal = (id: string) => {
+    setNewSignals((prev) =>
+      prev.includes(id) ? prev.filter((s) => s !== id) : [...prev, id]
+    );
+  };
 
   const currentPlan = subscription ? PLANS[subscription.plan] : PLANS.growth;
   const isCampaignCapHit = subscription ? campaigns.length >= currentPlan.maxCampaigns : false;
@@ -161,7 +194,7 @@ export const CampaignsView: React.FC<CampaignsViewProps> = ({
     onCreateCampaign({
       name: newTitle,
       personaId: newPersonaId,
-      signalKeywords: newSignalsText.split(',').map((s) => s.trim()).filter(Boolean),
+      signalKeywords: SIGNAL_OPTIONS.filter((o) => newSignals.includes(o.id)).map((o) => o.title),
       voiceNotes: newVoiceNote,
     });
 
@@ -942,20 +975,44 @@ export const CampaignsView: React.FC<CampaignsViewProps> = ({
 
               <div>
                 <label className="block text-[13px] font-semibold text-[#0a2414] mb-1">
-                  Intent Signals to Watch (comma separated)
+                  Intent Signals to Watch
+                  {isPrefilling && (
+                    <span className="ml-2 inline-flex items-center gap-1 text-[11px] font-medium text-[#17b267]">
+                      <Loader2 className="w-3 h-3 animate-spin" />
+                      Suggesting from your persona…
+                    </span>
+                  )}
                 </label>
-                <input
-                  type="text"
-                  value={newSignalsText}
-                  onChange={(e) => setNewSignalsText(e.target.value)}
-                  placeholder="e.g. Hiring VP Eng, Raised $8M+, G2 negative review, Apollo Migration"
-                  className="w-full px-3.5 py-2 rounded-[10px] border border-[#0a2414]/15 text-[14px] outline-none focus:border-[#17b267]"
-                />
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                  {SIGNAL_OPTIONS.map((sig) => {
+                    const isSelected = newSignals.includes(sig.id);
+                    return (
+                      <div
+                        key={sig.id}
+                        onClick={() => toggleNewSignal(sig.id)}
+                        className={`p-2.5 rounded-[8px] border cursor-pointer transition-all text-left ${
+                          isSelected
+                            ? 'border-[#17b267] bg-[#f3fbe9] ring-1 ring-[#17b267]'
+                            : 'border-[#0a2414]/10 bg-[#ffffff] hover:border-[#0a2414]/25'
+                        }`}
+                      >
+                        <span className="font-medium text-[12.5px] text-[#0a2414]">{sig.title}</span>
+                        <p className="text-[11.5px] text-[#607166] mt-0.5">{sig.desc}</p>
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
 
               <div>
                 <label className="block text-[13px] font-semibold text-[#0a2414] mb-1">
                   Drafting Directive / Voice Notes
+                  {isPrefilling && (
+                    <span className="ml-2 inline-flex items-center gap-1 text-[11px] font-medium text-[#17b267]">
+                      <Loader2 className="w-3 h-3 animate-spin" />
+                      Drafting in your voice…
+                    </span>
+                  )}
                 </label>
                 <textarea
                   rows={3}

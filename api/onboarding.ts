@@ -9,6 +9,7 @@ export default async function handler(req: any, res: any) {
     mailboxEmail, mailboxPassword, provider,
     mailingAddress,
     personaName, personaDescription, personaWebsite, targetAudience, voiceSample, voiceTone,
+    signalPicks,
   } = req.body || {};
 
   const supa = getAdmin();
@@ -47,11 +48,13 @@ export default async function handler(req: any, res: any) {
 
   // 2. Persona
   if (personaName?.trim()) {
+    const picks = Array.isArray(signalPicks) ? signalPicks.filter((p: any) => typeof p === 'string') : [];
     const description = [
       personaDescription || '',
       targetAudience ? `Target audience: ${targetAudience}` : '',
       voiceSample ? `Voice: ${voiceSample}` : '',
       voiceTone ? `Tone: ${voiceTone}` : '',
+      picks.length ? `Watched signals: ${picks.join(', ')}` : '',
     ].filter(Boolean).join('\n');
     await supa.from('personas').insert({
       user_id: user.id,
