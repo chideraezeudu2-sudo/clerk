@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0a2414"/>
+      <stop offset="1" stop-color="#0f3320"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0.7" cy="0.3" r="0.8">
+      <stop offset="0" stop-color="#1ad379" stop-opacity="0.35"/>
+      <stop offset="1" stop-color="#1ad379" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <rect width="1200" height="630" fill="url(#glow)"/>
+  <g fill="none" stroke="#1ad379" stroke-opacity="0.5">
+    <circle cx="860" cy="250" r="180" stroke-width="1.5" stroke-dasharray="4 8"/>
+    <circle cx="860" cy="250" r="120" stroke-width="1.5" stroke-dasharray="4 8"/>
+    <circle cx="860" cy="250" r="60" stroke-width="1.5"/>
+  </g>
+  <circle cx="860" cy="250" r="10" fill="#1ad379"/>
+  <circle cx="940" cy="190" r="6" fill="#baf3d2"/>
+  <circle cx="780" cy="300" r="6" fill="#baf3d2"/>
+  <circle cx="900" cy="330" r="5" fill="#baf3d2"/>
+  <circle cx="790" cy="170" r="5" fill="#baf3d2"/>
+  <g stroke="#baf3d2" stroke-opacity="0.35" stroke-width="1">
+    <line x1="860" y1="250" x2="940" y2="190"/>
+    <line x1="860" y1="250" x2="780" y2="300"/>
+    <line x1="860" y1="250" x2="900" y2="330"/>
+    <line x1="860" y1="250" x2="790" y2="170"/>
+  </g>
+  <text x="90" y="270" font-family="system-ui, -apple-system, sans-serif" font-size="64" font-weight="700" fill="#ffffff">Signal Detection</text>
+  <text x="90" y="330" font-family="system-ui, -apple-system, sans-serif" font-size="30" fill="#9db5a4">Find companies before they start looking</text>
+  <g transform="translate(90, 380)">
+    <rect width="150" height="44" rx="22" fill="#1ad379"/>
+    <text x="75" y="29" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="20" font-weight="600" fill="#0a2414">Klerk</text>
+  </g>
+</svg>

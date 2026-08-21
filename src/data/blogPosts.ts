@@ -21,7 +21,7 @@ export const BLOG_POSTS: BlogPost[] = [
     published: '2026-08-01',
     updated: '2026-08-19',
     readingMinutes: 5,
-    image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=1200',
+    image: '/covers/signal-detection.svg',
     body: [
       {
         list: [
@@ -56,6 +56,7 @@ export const BLOG_POSTS: BlogPost[] = [
     published: '2026-08-01',
     updated: '2026-08-19',
     readingMinutes: 5,
+    image: '/covers/ai-drafting.svg',
     body: [
       {
         p:
@@ -94,6 +95,7 @@ export const BLOG_POSTS: BlogPost[] = [
     published: '2026-08-01',
     updated: '2026-08-19',
     readingMinutes: 5,
+    image: '/covers/mailbox-warmup.svg',
     body: [
       {
         p:
@@ -134,6 +136,7 @@ export const BLOG_POSTS: BlogPost[] = [
     published: '2026-08-01',
     updated: '2026-08-19',
     readingMinutes: 5,
+    image: '/covers/reply-tracking.svg',
     body: [
       {
         p:
@@ -169,7 +172,7 @@ export const BLOG_POSTS: BlogPost[] = [
     published: '2026-08-01',
     updated: '2026-08-19',
     readingMinutes: 4,
-    image: 'https://images.unsplash.com/photo-1557804506-669a47965b66?w=1200',
+    image: '/covers/instantly-alternative.svg',
     body: [
       {
         p: 'Instantly earned its name as volume infrastructure: unlimited connected mailboxes, warmup rotation, a lead database. It solves “send a lot of email to a lot of people” well, but its pricing splinters (sending vs. lead database vs. CRM vs. verification), so a real setup usually clears $150–400/mo.',
@@ -199,7 +202,7 @@ export const BLOG_POSTS: BlogPost[] = [
     published: '2026-08-01',
     updated: '2026-08-19',
     readingMinutes: 5,
-    image: 'https://images.unsplash.com/photo-1589395937658-c8e0dc70dc87?w=1200',
+    image: '/covers/gmail-warmup.svg',
     body: [
       {
         p: 'Gmail trusts a sender the same way a bank trusts a new account: by watching behavior over time. A brand-new mailbox that suddenly sends a hundred emails on day one looks like a spam operation, because that is exactly what a spam operation looks like. Age and history cannot be faked, only built.',

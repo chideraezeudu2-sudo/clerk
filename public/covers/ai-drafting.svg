@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="bg2" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0a2414"/>
+      <stop offset="1" stop-color="#123a22"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg2)"/>
+  <g transform="translate(760, 120)">
+    <rect width="360" height="400" rx="20" fill="#ffffff" fill-opacity="0.06" stroke="#1ad379" stroke-opacity="0.4"/>
+    <rect x="30" y="40" width="200" height="14" rx="7" fill="#1ad379" fill-opacity="0.8"/>
+    <rect x="30" y="80" width="300" height="10" rx="5" fill="#baf3d2" fill-opacity="0.35"/>
+    <rect x="30" y="104" width="270" height="10" rx="5" fill="#baf3d2" fill-opacity="0.35"/>
+    <rect x="30" y="128" width="290" height="10" rx="5" fill="#baf3d2" fill-opacity="0.35"/>
+    <rect x="30" y="170" width="140" height="12" rx="6" fill="#1ad379" fill-opacity="0.55"/>
+    <rect x="30" y="204" width="300" height="10" rx="5" fill="#baf3d2" fill-opacity="0.25"/>
+    <rect x="30" y="228" width="250" height="10" rx="5" fill="#baf3d2" fill-opacity="0.25"/>
+    <rect x="30" y="300" width="120" height="36" rx="18" fill="#1ad379"/>
+    <text x="90" y="324" text-anchor="middle" font-family="system-ui, sans-serif" font-size="16" font-weight="600" fill="#0a2414">Draft</text>
+  </g>
+  <text x="90" y="270" font-family="system-ui, -apple-system, sans-serif" font-size="64" font-weight="700" fill="#ffffff">AI Drafting</text>
+  <text x="90" y="330" font-family="system-ui, -apple-system, sans-serif" font-size="30" fill="#9db5a4">Every email cites the real reason</text>
+  <g transform="translate(90, 380)">
+    <rect width="150" height="44" rx="22" fill="#1ad379"/>
+    <text x="75" y="29" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="20" font-weight="600" fill="#0a2414">Klerk</text>
+  </g>
+</svg>

@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="bg5" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0a2414"/>
+      <stop offset="1" stop-color="#0d2b1a"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg5)"/>
+  <g transform="translate(790, 170)">
+    <rect width="340" height="100" rx="16" fill="#1ad379" fill-opacity="0.14" stroke="#1ad379" stroke-opacity="0.7"/>
+    <text x="28" y="44" font-family="system-ui, sans-serif" font-size="22" font-weight="700" fill="#ffffff">Klerk</text>
+    <text x="28" y="72" font-family="system-ui, sans-serif" font-size="15" fill="#9db5a4">Signal-based, cited emails</text>
+    <circle cx="300" cy="50" r="12" fill="#1ad379"/>
+    <path d="M 295 50 L 299 54 L 306 45" stroke="#0a2414" stroke-width="2.5" fill="none"/>
+  </g>
+  <g transform="translate(830, 330)">
+    <rect width="340" height="100" rx="16" fill="#ffffff" fill-opacity="0.05" stroke="#baf3d2" stroke-opacity="0.25"/>
+    <text x="28" y="44" font-family="system-ui, sans-serif" font-size="22" font-weight="700" fill="#baf3d2" fill-opacity="0.7">Instantly</text>
+    <text x="28" y="72" font-family="system-ui, sans-serif" font-size="15" fill="#9db5a4" fill-opacity="0.7">Volume infrastructure</text>
+  </g>
+  <text x="90" y="270" font-family="system-ui, -apple-system, sans-serif" font-size="60" font-weight="700" fill="#ffffff">Klerk vs Instantly</text>
+  <text x="90" y="330" font-family="system-ui, -apple-system, sans-serif" font-size="30" fill="#9db5a4">Signal quality over send volume</text>
+  <g transform="translate(90, 380)">
+    <rect width="150" height="44" rx="22" fill="#1ad379"/>
+    <text x="75" y="29" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="20" font-weight="600" fill="#0a2414">Klerk</text>
+  </g>
+</svg>
