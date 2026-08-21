@@ -1,5 +1,19 @@
 import { requireUser, getAdmin, ok, fail, senderTransport, mapSent } from './_lib.ts';
 
+// Real warmup ramp: start at 5/day on connection day and roughly double
+// every 2-3 days until hitting the provider's hard cap. Exported for tests.
+export function effectiveDailyCap(sender: { daily_cap: number; created_at?: string }): number {
+  const hardCap = sender.daily_cap || 150;
+  if (!sender.created_at) return hardCap;
+  const days = Math.max(0, (Date.now() - new Date(sender.created_at).getTime()) / 86400000);
+  let cap: number;
+  if (days <= 3) cap = 5;
+  else if (days <= 7) cap = 10;
+  else if (days <= 14) cap = 20;
+  else cap = 40;
+  return Math.min(cap, hardCap);
+}
+
 export default async function handler(req: any, res: any) {
   if (req.method !== 'POST') return fail(res, 405, 'Method not allowed');
   const user = await requireUser(req);
@@ -34,7 +48,7 @@ export default async function handler(req: any, res: any) {
   const counts: Record<string, number> = {};
   for (const s of todaySent || []) counts[s.sender_id] = (counts[s.sender_id] || 0) + 1;
 
-  const available = senders.filter((s: any) => (counts[s.id] || 0) < s.daily_cap);
+  const available = senders.filter((s: any) => (counts[s.id] || 0) < effectiveDailyCap(s));
   const pool = available.length > 0 ? available : senders;
   const sender = pool.sort((a: any, b: any) => (counts[a.id] || 0) - (counts[b.id] || 0))[0];
 

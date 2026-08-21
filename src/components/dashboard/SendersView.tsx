@@ -31,7 +31,17 @@ export const SendersView: React.FC<SendersViewProps> = ({
   const currentPlan = subscription ? PLANS[subscription.plan] : PLANS.growth;
   const isMailboxCapHit = subscription ? senders.length >= currentPlan.maxMailboxes : false;
 
-  const totalDailyCap = senders.reduce((acc, s) => acc + (s.status === 'active' ? s.dailyCap : 0), 0);
+  // Warmup ramp mirrors api/send.ts effectiveDailyCap: 5/day days 0-3,
+  // 10/day days 4-7, 20/day days 8-14, 40/day after, capped at provider max.
+  const rampedCap = (s: { connectedDays: number; dailyCap: number }) => {
+    const d = s.connectedDays || 0;
+    const ramp = d <= 3 ? 5 : d <= 7 ? 10 : d <= 14 ? 20 : 40;
+    return Math.min(ramp, s.dailyCap);
+  };
+  const totalDailyCap = senders.reduce(
+    (acc, s) => acc + (s.status === 'active' ? rampedCap(s) : 0),
+    0
+  );
   const totalSentToday = senders.reduce((acc, s) => acc + s.sentToday, 0);
   const avgHealth = senders.length > 0 ? (senders.reduce((acc, s) => acc + s.healthScore, 0) / senders.length).toFixed(0) : '100';
 
@@ -207,7 +217,11 @@ export const SendersView: React.FC<SendersViewProps> = ({
                     </span>
                     <span>•</span>
                     <span>
-                      Daily Cap: <strong className="text-[#0a2414]">{s.dailyCap} sends/day</strong>
+                      Daily Cap:{' '}
+                      <strong className="text-[#0a2414]">{rampedCap(s)} sends/day</strong>
+                      {rampedCap(s) < s.dailyCap && (
+                        <span className="text-[#607166]"> (warmup, max {s.dailyCap})</span>
+                      )}
                     </span>
                     <span>•</span>
                     <span>
