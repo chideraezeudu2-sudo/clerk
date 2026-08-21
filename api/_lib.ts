@@ -238,6 +238,12 @@ export function draftGuard(
   return { ok: true };
 }
 
+// A composed draft is only valid if it has a real subject AND body. Empty
+// fields mean compose failed partway — never let that reach the queue.
+export function isCompleteDraft(draft: { subject?: string | null; body?: string | null }): boolean {
+  return Boolean(draft.subject?.trim()) && Boolean(draft.body?.trim());
+}
+
 export async function generateDraftsForCampaign(userId: string, campaignId: string, maxLeads = 10) {
   const supa = getAdmin();
 
@@ -258,6 +264,15 @@ export async function generateDraftsForCampaign(userId: string, campaignId: stri
     .select('*')
     .eq('user_id', userId)
     .single();
+
+  // Sender first name for the human sign-off. Only use a real, short, plausible
+  // name from the profile. Deriving from an email local-part ("francisezeuduusa@")
+  // produces garbage, so if there's no clean name we fall back to a neutral
+  // greeting instead of inventing one.
+  const { data: profile } = await supa.from('profiles').select('full_name, email').eq('id', userId).maybeSingle();
+  const rawName = (profile?.full_name || '').trim();
+  const firstName = rawName.split(/[\s]+/)[0] || '';
+  const senderFirstName = /^[A-Za-z]{2,15}$/.test(firstName) ? firstName : '';
 
   const { data: leads } = await supa
     .from('leads')
@@ -286,31 +301,43 @@ export async function generateDraftsForCampaign(userId: string, campaignId: stri
       continue;
     }
 
-    const prompt = `You are an expert B2B cold email writer working for the product described below.
+    const prompt = `You write cold emails that sound like a real founder typed them fast, not an AI. Study this example of the exact voice to copy:
 
-PRODUCT / SENDER PERSONA:
-Name: ${persona?.name || 'Klerk'}
-Company: ${persona?.company_name || ''}
+EXAMPLE (this is the voice — match its structure and tone, not its content):
+"Hey Josh my name is Francis, I saw you're company is currently hiring an Employee Relations Partner so i decided to reach out. I built a SaaS that reaches out to candidates or new hires through signal-based outcomes, I would love for you to check us out completely for free and see if it would be of any use to you.
+
+Would a 10-minute chat next week work for you?"
+
+WHY THAT EXAMPLE WORKS (internalize this):
+- Opens with "Hey {firstName} my name is {senderFirstName}," — a human introduction, not a hook.
+- Names the specific signal plainly as the reason for reaching out ("so i decided to reach out").
+- Says what the product is in ONE short plain clause ("I built a SaaS that..."), no jargon, no feature list.
+- Makes a soft, no-pressure offer ("check us out for free... see if it would be of any use").
+- Closes with ONE short scheduling question on its own line.
+- Reads slightly imperfect and human, not polished-corporate.
+
+PRODUCT / SENDER:
+Sender first name: ${senderFirstName}
+Product name: ${persona?.name || 'Klerk'}
 What it does: ${persona?.description || 'Signal-based outreach platform'}
-Website: ${persona?.website_url || ''}
 
-RECIPIENT (a real lead with a detected buying signal):
+RECIPIENT:
 Name: ${lead.name}
 Role: ${lead.role}
 Company: ${lead.company}
-Signal type: ${lead.signal_type}
 Signal: ${lead.signal_title}
-Signal context (for your understanding only — never quote this in the email): ${lead.signal_detail}
+Signal context (never quote this): ${lead.signal_detail}
 
-WRITING STYLE DIRECTIVE — follow this exactly, it overrides all other tone guidance:
-${campaign.voice_notes || 'Short, peer-to-peer, under 90 words. Cite the exact signal in the opening line. No buzzwords.'}
+WRITING STYLE DIRECTIVE — follow this exactly, it overrides the example if they conflict:
+${campaign.voice_notes || 'Short, peer-to-peer, human. Cite the signal plainly. No buzzwords.'}
 
 RULES:
 ${EMAIL_BODY_RULES}
-- Plain-text email, no markdown, no bullet-point feature dumps.
-- End with a soft, low-friction question as the call to action.
-- Do NOT invent facts beyond what is given.
-- Sign off with a first name only.
+- Open with "Hey {recipientFirstName}," using the recipient's real first name.${senderFirstName ? ` Then introduce yourself: "my name is ${senderFirstName}".` : ' Do not state a sender name.'}
+- One short plain clause on what the product does. No "leverage", "streamline", "synergy", "unlock".
+- Plain-text, 3-5 short sentences max in the body.
+- End with ONE short scheduling question on its own line.
+- ${senderFirstName ? `Sign off with "${senderFirstName}" only.` : 'Sign off plainly with no fake name (e.g. "Best," or the company name).'}
 
 Return ONLY valid JSON: {"subject": "...", "body": "..."}`;
 
@@ -329,7 +356,12 @@ Return ONLY valid JSON: {"subject": "...", "body": "..."}`;
       const m = raw.match(/\{[\s\S]*\}/);
       if (m) parsed = JSON.parse(m[0]);
     }
-    if (!parsed.subject || !parsed.body) continue;
+    // Compose must produce a real subject AND body — anything less means compose
+    // failed partway. Mark the lead failed, don't let a blank card reach the queue.
+    if (!isCompleteDraft(parsed)) {
+      await supa.from('leads').update({ status: 'draft_failed' }).eq('id', lead.id);
+      continue;
+    }
 
     const { data: draft, error } = await supa
       .from('email_drafts')

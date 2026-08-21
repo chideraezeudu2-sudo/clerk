@@ -1,5 +1,20 @@
 import { describe, it, expect } from 'vitest';
-import { draftGuard, EMAIL_BODY_RULES } from '../api/_lib.js';
+import { draftGuard, isCompleteDraft, EMAIL_BODY_RULES } from '../api/_lib.js';
+
+describe('isCompleteDraft', () => {
+  it('rejects a draft with a blank subject', () => {
+    expect(isCompleteDraft({ subject: '  ', body: 'Hello there' })).toBe(false);
+  });
+  it('rejects a draft with a blank body', () => {
+    expect(isCompleteDraft({ subject: 'Quick note', body: '' })).toBe(false);
+  });
+  it('rejects a draft with neither', () => {
+    expect(isCompleteDraft({})).toBe(false);
+  });
+  it('accepts a draft with both subject and body', () => {
+    expect(isCompleteDraft({ subject: 'Quick note', body: 'Hey Josh...' })).toBe(true);
+  });
+});
 
 describe('draftGuard', () => {
   it('blocks a lead with a missing email', () => {
