@@ -4,6 +4,7 @@ import {
   fundingSignalsForOrg,
   techStackForOrg,
   lookupEmail,
+  findPersonName,
   gatherSignals,
 } from './_sources.js';
 
@@ -164,9 +165,12 @@ export async function scoutForUser(userId: string, campaignId?: string) {
           org.name
         );
 
+        // Resolve a real person name first — the email waterfall needs a name,
+        // not a bare role. Falls back to role if no name resolves.
+        const personName = await findPersonName(org.name, contact.role).catch(() => null);
         let email = '';
         if (org.domain) {
-          const hit = await lookupEmail(contact.role, org.domain).catch(() => null);
+          const hit = await lookupEmail(personName || contact.role, org.domain).catch(() => null);
           email = hit?.email || '';
         }
 

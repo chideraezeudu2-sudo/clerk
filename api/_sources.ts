@@ -239,6 +239,32 @@ export async function techStackForOrg(domain: string) {
   }
 }
 
+// ---------- NAME RESOLUTION (free: DuckDuckGo instant answers) ----------
+// The email waterfall needs a person's name, not a bare role. Resolve a likely
+// real executive for the company + role, e.g. "Rippling founder CEO".
+export async function findPersonName(orgName: string, role: string): Promise<string | null> {
+  if (!orgName) return null;
+  const q = role ? `${orgName} ${role}` : `${orgName} founder CEO`;
+  try {
+    const r = await fetchJson(
+      `https://api.duckduckgo.com/?q=${encodeURIComponent(q)}&format=json&no_html=1&skip_disambig=1`
+    );
+    const topics = [
+      ...(r?.Results || []),
+      ...((r?.RelatedTopics || []).flatMap((t: any) => (t.Topics ? t.Topics : [t]))),
+      ...(r?.AbstractText ? [{ Text: r.AbstractText }] : []),
+    ];
+    for (const t of topics) {
+      const text = t?.Text || '';
+      const m = text.match(/\b([A-Z][a-zA-Z']+\s+[A-Z][a-zA-Z']+)/);
+      if (m) return m[1];
+    }
+    return null;
+  } catch {
+    return null;
+  }
+}
+
 // ---------- EMAIL LOOKUP (cheapest Apify waterfall actor) ----------
 export async function lookupEmail(name: string, domain: string) {
   if (!APIFY_TOKEN || !domain) return null;
