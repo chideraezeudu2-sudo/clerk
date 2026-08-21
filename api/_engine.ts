@@ -69,6 +69,9 @@ const ROLE_WEIGHTS: Array<{ match: RegExp; weight: number }> = [
 ];
 const FUNDING_WEIGHT = 25;
 const COMPETITOR_WEIGHT = 30;
+// Every live ATS posting is a real hiring signal — GTM/engineering titles still
+// score higher, but "company has 20 open roles" is itself a surge worth crediting.
+const HIRING_BASE_WEIGHT = 6;
 const TECH_HIGH_WEIGHT = 15;
 const TECH_LOW_WEIGHT = 8;
 const TRIGGER_THRESHOLD = 40;
@@ -134,7 +137,7 @@ export async function scoutForUser(userId: string, campaignId?: string) {
       const weight =
         sig.type === 'funding' ? FUNDING_WEIGHT :
         sig.type === 'competitor_discontent' ? COMPETITOR_WEIGHT :
-        scoreJobTitle(sig.title);
+        Math.max(scoreJobTitle(sig.title), HIRING_BASE_WEIGHT);
       if (weight === 0) continue;
 
       const { data: existing } = await supa
