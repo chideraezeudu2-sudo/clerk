@@ -146,7 +146,10 @@ export async function scoutForUser(userId: string, campaignId?: string) {
     }
 
     // 4) Threshold -> trigger + lead (with stacked citations + cheap email lookup).
-    if (org.score >= TRIGGER_THRESHOLD && org.state !== 'triggered') {
+    // Only re-trigger if it's been >1 day since the last trigger — so a fix to the
+    // pipeline lets us re-generate a lead, without spamming on every cron run.
+    const oneDayAgo = new Date(Date.now() - 86400000).toISOString();
+    if (org.score >= TRIGGER_THRESHOLD && (org.state !== 'triggered' || (org.last_signal_at || '') < oneDayAgo)) {
       await supa.from('organizations').update({ state: 'triggered' }).eq('id', org.id);
       org.state = 'triggered';
       triggered++;
