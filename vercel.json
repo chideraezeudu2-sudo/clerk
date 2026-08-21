@@ -4,6 +4,8 @@
     { "source": "/((?!api/).*)", "destination": "/index.html" }
   ],
   "crons": [
-    { "path": "/api/scout", "schedule": "0 6 * * *" }
+    { "path": "/api/scout", "schedule": "0 6 * * *" },
+    { "path": "/api/scout", "schedule": "0 14 * * *" },
+    { "path": "/api/scout", "schedule": "0 21 * * *" }
   ]
 }

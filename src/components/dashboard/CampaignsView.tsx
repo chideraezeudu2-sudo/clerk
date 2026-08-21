@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Loader2 } from 'lucide-react';
+import { Loader2, ExternalLink } from 'lucide-react';
 import { Campaign, Persona, UserSubscription } from '../../types';
 import { exportCampaignsToCSV, exportSingleCampaignDetailsToCSV } from '../../utils/csvExport';
 import { EmptyState } from '../EmptyState';
@@ -423,9 +423,17 @@ export const CampaignsView: React.FC<CampaignsViewProps> = ({
                       </p>
 
                       {sig.sourceUrl && (
-                        <div className="text-[12px] text-[#17b267] font-medium flex items-center space-x-1">
-                          <span>Verified Source:</span>
-                          <span className="underline">{sig.sourceUrl}</span>
+                        <div className="text-[12px] font-medium flex items-center space-x-1.5">
+                          <span className="text-[#607166]">Verified Source:</span>
+                          <a
+                            href={sig.sourceUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-[#17b267] underline underline-offset-2 hover:text-[#0e9152] break-all"
+                          >
+                            {sig.sourceUrl}
+                          </a>
+                          <ExternalLink className="w-3.5 h-3.5 text-[#17b267] flex-shrink-0" />
                         </div>
                       )}
                     </div>

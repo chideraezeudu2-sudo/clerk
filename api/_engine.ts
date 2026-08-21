@@ -100,7 +100,7 @@ export async function scoutForUser(userId: string, campaignId?: string) {
     const { freeSignals, tech } = await gatherSignals(org.name, org.domain, true, competitors).catch(() => ({ freeSignals: [] as any[], tech: null }));
 
     // 2) Insert hiring/funding/competitor signals, weight them, update org score.
-    for (const sig of freeSignals.slice(0, 8)) {
+    for (const sig of freeSignals.slice(0, 12)) {
       const title = sig.type === 'hiring' ? `Hiring: ${sig.title}` : sig.title;
       const weight =
         sig.type === 'funding' ? FUNDING_WEIGHT :

@@ -65,6 +65,27 @@ export async function hiringSignalsForOrg(orgName: string, domain: string) {
       break;
     }
   }
+
+  // 3) Hacker News — broad job index; catches roles not on Greenhouse/Lever.
+  if (!out.length) {
+    try {
+      const hn = await fetchJson(
+        `https://hn.algolia.com/api/v1/search?query=${encodeURIComponent(orgName + ' hiring')}&tags=story&hitsPerPage=8`
+      );
+      for (const h of hn?.hits || []) {
+        const title = h.title || '';
+        if (!/hiring|job|role|engineer|open position|looking for/i.test(title)) continue;
+        out.push({
+          type: 'hiring',
+          title,
+          detail: `Hacker News job mention — ${h.points || 0} points`,
+          url: h.url || (h.objectID ? `https://news.ycombinator.com/item?id=${h.objectID}` : null),
+          ats: 'hackernews',
+        });
+        if (out.length >= 12) break;
+      }
+    } catch {}
+  }
   return out;
 }
 
