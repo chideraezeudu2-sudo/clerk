@@ -57,7 +57,7 @@ export const CampaignsView: React.FC<CampaignsViewProps> = ({
     if (!showCreateModal || !newPersonaId) return;
     let cancelled = false;
     setIsPrefilling(true);
-    apiFetch('/api/campaign-prefill', { method: 'POST', body: { personaId: newPersonaId } })
+    apiFetch('/api/campaigns', { method: 'POST', body: { prefill: true, personaId: newPersonaId } })
       .then((data: any) => {
         if (cancelled) return;
         if (Array.isArray(data?.signals) && data.signals.length) setNewSignals(data.signals);
