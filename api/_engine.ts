@@ -184,11 +184,12 @@ export async function scoutForUser(userId: string, campaignId?: string) {
         );
 
         // Resolve a real person name first — the email waterfall needs a name,
-        // not a bare role. Falls back to role if no name resolves.
+        // not a bare role. Without a name we skip lookup entirely: feeding it
+        // role words makes the actor guess pattern emails (vp.ofsales@...).
         const personName = await findPersonName(org.name, contact.role).catch(() => null);
         let email = '';
-        if (org.domain) {
-          const hit = await lookupEmail(personName || contact.role, org.domain).catch(() => null);
+        if (org.domain && personName) {
+          const hit = await lookupEmail(personName, org.domain).catch(() => null);
           email = hit?.email || '';
         }
 

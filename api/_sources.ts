@@ -239,27 +239,34 @@ export async function techStackForOrg(domain: string) {
   }
 }
 
-// ---------- NAME RESOLUTION (free: DuckDuckGo instant answers) ----------
-// The email waterfall needs a person's name, not a bare role. Resolve a likely
-// real executive for the company + role, e.g. "Rippling founder CEO".
+// ---------- NAME RESOLUTION (Groq — LLM knows public executives) ----------
+// The email waterfall needs a person's name, not a bare role. Ask the model for
+// the publicly-known person holding the role at the company. Returns null when
+// unsure — never invent a name.
 export async function findPersonName(orgName: string, role: string): Promise<string | null> {
   if (!orgName) return null;
-  const q = role ? `${orgName} ${role}` : `${orgName} founder CEO`;
   try {
-    const r = await fetchJson(
-      `https://api.duckduckgo.com/?q=${encodeURIComponent(q)}&format=json&no_html=1&skip_disambig=1`
+    const raw = await groqChat(
+      [
+        {
+          role: 'system',
+          content:
+            'You return JSON only. You know public company executives from news. ' +
+            'If you are not confident a specific real person holds the role, return an empty name.',
+        },
+        {
+          role: 'user',
+          content:
+            `Who is the current ${role || 'CEO'} at ${orgName}? ` +
+            `Return ONLY JSON: {"name": "First Last"} using a real, publicly-known person, ` +
+            `or {"name": ""} if unsure. Never invent names.`,
+        },
+      ],
+      { json: true, temperature: 0, maxTokens: 60 }
     );
-    const topics = [
-      ...(r?.Results || []),
-      ...((r?.RelatedTopics || []).flatMap((t: any) => (t.Topics ? t.Topics : [t]))),
-      ...(r?.AbstractText ? [{ Text: r.AbstractText }] : []),
-    ];
-    for (const t of topics) {
-      const text = t?.Text || '';
-      const m = text.match(/\b([A-Z][a-zA-Z']+\s+[A-Z][a-zA-Z']+)/);
-      if (m) return m[1];
-    }
-    return null;
+    const parsed = JSON.parse(raw);
+    const name = String(parsed?.name || '').trim();
+    return name.split(/\s+/).length >= 2 ? name : null;
   } catch {
     return null;
   }
