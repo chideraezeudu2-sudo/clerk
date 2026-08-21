@@ -1,4 +1,4 @@
-import { requireUser, getAdmin, ok, fail, generateDraftsForCampaign, mapDraft } from './_lib.ts';
+import { requireUser, getAdmin, ok, fail, generateDraftsForCampaign, mapDraft } from './_lib.js';
 
 export default async function handler(req: any, res: any) {
   const user = await requireUser(req);

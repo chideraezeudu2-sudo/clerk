@@ -1,7 +1,7 @@
 import {
   requireUser, getAdmin, ok, fail,
   mapCampaign, mapDraft, mapSent, mapSender,
-} from './_lib.ts';
+} from './_lib.js';
 
 export default async function handler(req: any, res: any) {
   if (req.method !== 'GET') return fail(res, 405, 'Method not allowed');

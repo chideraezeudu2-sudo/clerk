@@ -1,6 +1,6 @@
-import { requireUser, getAdmin, ok, fail } from './_lib.ts';
-import { scoutForUser, applyDecay } from './_engine.ts';
-import { findLookalikes } from './_sources.ts';
+import { requireUser, getAdmin, ok, fail } from './_lib.js';
+import { scoutForUser, applyDecay } from './_engine.js';
+import { findLookalikes } from './_sources.js';
 
 // POST /api/scout  { campaignId? }       -> run a signal scout pass.
 // POST /api/scout  { decay: true }       -> apply daily score decay.

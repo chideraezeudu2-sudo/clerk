@@ -1,4 +1,4 @@
-import { getAdmin } from './_lib.ts';
+import { getAdmin } from './_lib.js';
 
 // ---------------------------------------------------------------------------
 // Free + cheap signal sources. Hiring/funding are free; tech-stack runs only

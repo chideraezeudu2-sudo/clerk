@@ -1,11 +1,11 @@
-import { getAdmin, groqChat } from './_lib.ts';
+import { getAdmin, groqChat } from './_lib.js';
 import {
   hiringSignalsForOrg,
   fundingSignalsForOrg,
   techStackForOrg,
   lookupEmail,
   gatherSignals,
-} from './_sources.ts';
+} from './_sources.js';
 
 // Pick the right contact for a signal. Hiring → current manager of the open
 // role's function (not the future hire). Funding → founder/CEO. Tech → tool

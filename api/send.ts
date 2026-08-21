@@ -1,4 +1,4 @@
-import { requireUser, getAdmin, ok, fail, senderTransport, mapSent } from './_lib.ts';
+import { requireUser, getAdmin, ok, fail, senderTransport, mapSent } from './_lib.js';
 
 // Real warmup ramp: start at 5/day on connection day and roughly double
 // every 2-3 days until hitting the provider's hard cap. Exported for tests.

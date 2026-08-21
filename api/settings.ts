@@ -1,4 +1,4 @@
-import { requireUser, getAdmin, ok, fail } from './_lib.ts';
+import { requireUser, getAdmin, ok, fail } from './_lib.js';
 
 export default async function handler(req: any, res: any) {
   if (req.method !== 'PATCH') return fail(res, 405, 'Method not allowed');
