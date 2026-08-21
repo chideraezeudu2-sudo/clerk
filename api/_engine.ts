@@ -42,7 +42,7 @@ export async function pickContactForSignal(
     const raw = await groqChat([{ role: 'user', content: prompt }], {
       temperature: 0.1,
       json: true,
-      maxTokens: 80,
+      maxTokens: 512, // gpt-oss reasoning burns most of the budget — 80 truncated to empty
     });
     const parsed = JSON.parse(raw);
     const role = String(parsed?.role || '').trim();
@@ -211,7 +211,10 @@ export async function scoutForUser(userId: string, campaignId?: string) {
         // Resolve a real person name first — the email waterfall needs a name,
         // not a bare role. Without a name we skip lookup entirely: feeding it
         // role words makes the actor guess pattern emails (vp.ofsales@...).
-        const personName = await findPersonName(org.name, contact.role).catch(() => null);
+        // Role-specific execs at private companies often aren't public knowledge —
+        // fall back to the founder/CEO, who almost always is.
+        let personName = await findPersonName(org.name, contact.role).catch(() => null);
+        if (!personName) personName = await findPersonName(org.name, 'founder CEO').catch(() => null);
         let email = '';
         if (org.domain && personName) {
           const hit = await lookupEmail(personName, org.domain).catch(() => null);
