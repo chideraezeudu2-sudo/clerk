@@ -503,23 +503,14 @@ export const DraftsView: React.FC<DraftsViewProps> = ({
                     </div>
                   </div>
                 ) : (
-                  <>
-                    <p>Hi {currentDraft.recipientName.split(' ')[0] || 'there'},</p>
-                    <p className="bg-[#f3fbe9] p-3 rounded-[6px] border-l-2 border-[#1ad379] text-[#0a2414]">
-                      {currentDraft.detectedDetail ||
-                        `Saw you posted backend roles this week to scale infrastructure at ${currentDraft.recipientCompany}.`}
-                    </p>
-                    <p className="text-[#283a2e]">
-                      Typically when engineering teams ramp GTM data infrastructure, maintaining clean email deliverability and coordinating multi-inbox limits becomes an unnecessary dev distraction.
-                    </p>
-                    <p className="text-[#283a2e]">
-                      We built Klerk to run intent-triggered outreach directly from your own Gmail mailboxes with zero shared-pool contamination and automatic warm-up pacing.
-                    </p>
-                    <p>Open to seeing a 2-minute walkthrough of how it monitors engineering signals?</p>
-                    <div className="pt-4 text-[13px] text-[#607166] border-t border-[#0a2414]/6">
-                      Best,<br />Chidera • Sent via Klerk (native Gmail app pass)
-                    </div>
-                  </>
+                  <div className="space-y-3">
+                    {(currentDraft.body || '').split(/\n+/).filter(Boolean).map((line, i) => (
+                      <p key={i} className="text-[#283a2e]">{line}</p>
+                    ))}
+                    {!currentDraft.body && (
+                      <p className="text-[#607166] italic">No body content — this draft failed to compose.</p>
+                    )}
+                  </div>
                 )}
               </div>
 
