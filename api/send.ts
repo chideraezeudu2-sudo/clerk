@@ -28,6 +28,17 @@ export default async function handler(req: any, res: any) {
     .from('email_drafts').select('*').eq('id', draftId).eq('user_id', user.id).single();
   if (!draft) return fail(res, 404, 'Draft not found');
   if (!draft.lead_id) return fail(res, 400, 'Draft has no recipient');
+  if (draft.status === 'sent') return fail(res, 400, 'Draft already sent');
+
+  // Never double-send a lead: if a successful send already exists for this
+  // lead, refuse. Two identical sends 3s apart is a deliverability hit.
+  const { data: priorSend } = await supa
+    .from('sent_emails')
+    .select('id')
+    .eq('lead_id', draft.lead_id)
+    .eq('status', 'sent')
+    .limit(1);
+  if (priorSend && priorSend.length) return fail(res, 409, 'Already sent to this lead');
 
   const { data: lead } = await supa
     .from('leads').select('*').eq('id', draft.lead_id).single();
